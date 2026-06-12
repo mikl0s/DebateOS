@@ -801,9 +801,11 @@ exec python3 -m translators.arch.generator "$RESOLVED_JSON" "$PROFILE" "$OUT_DIR
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Which opinions in examples/omarchy/ should be `status: required` vs `status: nice-to-have`?**
+> All four questions RESOLVED 2026-06-12 by the orchestrator under the locked autonomous-run mandate (docs/09 process notes). Each resolution adopts the recommendation: (1) required = repo/compositor/DM/bootloader + hardware-conditional opinions; themes nice-to-have; (2) embed the key fingerprint in OM-001, fingerprint-checked at install time; (3) verify `pacman -Si limine` in-container during the relevant execution task, with the `[omarchy]` repo as the documented fallback source; (4) points map 1:N to opinions, single-opinion points allowed where natural.
+
+1. **Which opinions in examples/omarchy/ should be `status: required` vs `status: nice-to-have`? — RESOLVED per recommendation.**
    - What we know: The Omarchy inventory has 134 opinions; the CONTEXT.md says "resolver-resolved without hard conflicts" implies careful status assignment.
    - What's unclear: Whether core desktop opinions (compositor, terminal, display manager) should all be required, or whether some can be nice-to-have (allowing substitution).
    - Recommendation: Mark as required: OM-001 (repo), OM-006 (compositor), OM-097 (display manager), OM-099 (bootloader). Mark hardware-conditional as required (their hardware condition already gates them). Mark theme opinions (OM-114..134) as nice-to-have.
