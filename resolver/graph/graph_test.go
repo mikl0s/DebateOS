@@ -308,6 +308,50 @@ func TestBuildGraphPhantomNode(t *testing.T) {
 	}
 }
 
+// TestTopoSortPhaseTieBreak verifies that when two independent opinions (no
+// explicit ordering edges) belong to different install_phases, the phase order
+// takes precedence over lexicographic opinion ID order.
+//
+// Scenario: "config/aa-dotfiles" is in the "config" phase and
+// "pkg/zz-mesa" is in the "packaging" phase. Lexicographically "config/aa"
+// would come before "pkg/zz", but packaging (weight 2) precedes config
+// (weight 3), so "pkg/zz-mesa" must appear first.
+func TestTopoSortPhaseTieBreak(t *testing.T) {
+	configOp := resolver.Opinion{
+		Schema:       1,
+		ID:           "config/aa-dotfiles",
+		Name:         "config aa dotfiles",
+		Category:     "config-dotfile",
+		Status:       resolver.StatusRequired,
+		InstallPhase: "config",
+	}
+	packagingOp := resolver.Opinion{
+		Schema:       1,
+		ID:           "pkg/zz-mesa",
+		Name:         "packaging zz mesa",
+		Category:     "package-install",
+		Status:       resolver.StatusRequired,
+		InstallPhase: "packaging",
+	}
+	// No explicit ordering edges: only phase order should govern the outcome.
+	opinions := []resolver.Opinion{configOp, packagingOp}
+	g, err := graph.BuildGraph(opinions)
+	if err != nil {
+		t.Fatalf("PhaseTieBreak: BuildGraph error: %v", err)
+	}
+	order, cycle, err := graph.TopoSort(g)
+	if err != nil {
+		t.Fatalf("PhaseTieBreak: TopoSort error: %v (cycle: %v)", err, cycle)
+	}
+	if len(order) != 2 {
+		t.Fatalf("PhaseTieBreak: expected 2 nodes, got %v", order)
+	}
+	if order[0] != "pkg/zz-mesa" || order[1] != "config/aa-dotfiles" {
+		t.Errorf("PhaseTieBreak: expected [pkg/zz-mesa, config/aa-dotfiles], got %v\n"+
+			"  packaging (weight 2) must precede config (weight 3) even when config ID is lexicographically smaller", order)
+	}
+}
+
 // equalIDSlice checks two OpinionID slices for equality.
 func equalIDSlice(a, b []resolver.OpinionID) bool {
 	if len(a) != len(b) {

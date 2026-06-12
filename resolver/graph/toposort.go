@@ -8,19 +8,45 @@ import (
 	"github.com/mikkelraglan/debateos/resolver"
 )
 
-// opinionIDHeap is a min-heap of OpinionID strings for lexicographic tie-breaking.
-// container/heap requires the heap.Interface: Len, Less, Swap, Push, Pop.
-type opinionIDHeap []resolver.OpinionID
-
-func (h opinionIDHeap) Len() int           { return len(h) }
-func (h opinionIDHeap) Less(i, j int) bool { return h[i] < h[j] } // lexicographic
-func (h opinionIDHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
-
-func (h *opinionIDHeap) Push(x any) {
-	*h = append(*h, x.(resolver.OpinionID))
+// heapEntry is the element type for the topoSort min-heap. Tie-breaking uses
+// phase weight first (lower weight = earlier install phase), then lexicographic
+// OpinionID for same-phase or unspecified-phase opinions.
+type heapEntry struct {
+	id    resolver.OpinionID
+	phase int // from phaseOrder[g.phase[id]]; 0 means unspecified
 }
 
-func (h *opinionIDHeap) Pop() any {
+// heapEntries is a min-heap of heapEntry values for deterministic toposort
+// tie-breaking: phase order first, lexicographic ID second.
+type heapEntries []heapEntry
+
+func (h heapEntries) Len() int { return len(h) }
+
+// Less orders by phase weight first (lower weight = earlier). Unspecified
+// phase (weight 0) sorts last — treated as MaxInt for the comparison.
+// Within the same phase, ordering is lexicographic on OpinionID.
+func (h heapEntries) Less(i, j int) bool {
+	pi, pj := h[i].phase, h[j].phase
+	const maxPhase = 1<<31 - 1
+	if pi == 0 {
+		pi = maxPhase
+	}
+	if pj == 0 {
+		pj = maxPhase
+	}
+	if pi != pj {
+		return pi < pj
+	}
+	return h[i].id < h[j].id
+}
+
+func (h heapEntries) Swap(i, j int) { h[i], h[j] = h[j], h[i] }
+
+func (h *heapEntries) Push(x any) {
+	*h = append(*h, x.(heapEntry))
+}
+
+func (h *heapEntries) Pop() any {
 	old := *h
 	n := len(old)
 	x := old[n-1]
@@ -30,8 +56,12 @@ func (h *opinionIDHeap) Pop() any {
 
 // TopoSort performs a deterministic Kahn's algorithm topological sort on the
 // given Graph. Tie-breaking among equally-eligible nodes uses a min-heap keyed
-// on OpinionID string (lexicographic order), guaranteeing reproducible output
-// regardless of input order (Pitfall 1 guard).
+// on install-phase order first (preflight < packaging < config < login <
+// post-install < first-run), then lexicographic OpinionID within the same
+// phase. Unspecified phases sort last, with lexicographic tie-breaking among
+// them. This guarantees reproducible output regardless of input order
+// (Pitfall 1 guard) and correct cross-phase ordering when no explicit edges
+// are declared.
 //
 // Returns:
 //   - order: the full topological install order when no cycle exists.
@@ -55,31 +85,32 @@ func TopoSort(g *Graph) (order []resolver.OpinionID, cycle []resolver.OpinionID,
 		}
 	}
 
-	// Seed the heap with all zero-in-degree nodes.
-	h := &opinionIDHeap{}
+	// Seed the heap with all zero-in-degree nodes, attaching each node's
+	// phase weight so the heap can order by phase first.
+	h := &heapEntries{}
 	heap.Init(h)
 	for _, id := range nodes {
 		if inDegree[id] == 0 {
-			heap.Push(h, id)
+			heap.Push(h, heapEntry{id: id, phase: phaseOrder[g.phase[id]]})
 		}
 	}
 
 	order = make([]resolver.OpinionID, 0, len(nodes))
 
 	for h.Len() > 0 {
-		// Pop the lexicographically smallest eligible node.
-		id := heap.Pop(h).(resolver.OpinionID)
-		order = append(order, id)
+		// Pop the node with the smallest (phase, id) key.
+		entry := heap.Pop(h).(heapEntry)
+		order = append(order, entry.id)
 
 		// Sort successors before iterating to avoid map/slice non-determinism.
-		succs := make([]resolver.OpinionID, len(g.edges[id]))
-		copy(succs, g.edges[id])
+		succs := make([]resolver.OpinionID, len(g.edges[entry.id]))
+		copy(succs, g.edges[entry.id])
 		sort.Slice(succs, func(i, j int) bool { return succs[i] < succs[j] })
 
 		for _, succ := range succs {
 			inDegree[succ]--
 			if inDegree[succ] == 0 {
-				heap.Push(h, succ)
+				heap.Push(h, heapEntry{id: succ, phase: phaseOrder[g.phase[succ]]})
 			}
 		}
 	}
