@@ -36,7 +36,7 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
 **Wave 1**
 
 - [x] 00-01-PLAN.md — Exhaustive Omarchy opinion inventory (OM-NNN atomic entries from cloned source)
-- [ ] 00-03-PLAN.md — CachyOS/Garuda variant delta study + declarative variant-profile sketch
+- [x] 00-03-PLAN.md — CachyOS/Garuda variant delta study + declarative variant-profile sketch
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -124,7 +124,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Omarchy Research & Arch-Variant Study | 1/4 | In progress | - |
+| 0. Omarchy Research & Arch-Variant Study | 2/4 | In Progress|  |
 | 1. Schema & Resolver Core | 0/TBD | Not started | - |
 | 2. Arch Translator | 0/TBD | Not started | - |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |

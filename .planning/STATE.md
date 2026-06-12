@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 0 Plan 01 complete — research/omarchy-opinion-inventory.md written (134 OM-NNN entries, commit 2693211)
-last_updated: "2026-06-12T18:54:58Z"
+stopped_at: Phase 0 Plan 03 complete — research/arch-variants-delta.md written (CachyOS+Garuda delta catalog, commit f61f821)
+last_updated: "2026-06-12T19:09:02.716Z"
 last_activity: 2026-06-12 -- Phase 0 Plan 01 completed
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
-  percent: 4
+  completed_plans: 2
+  percent: 0
 ---
 
 # Project State
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 0 (Omarchy Research & Arch-Variant Study) — EXECUTING
-Plan: 2 of 4 (Plan 01 complete)
-Status: Executing Phase 0
+Plan: 3 of 4 (Plan 01 complete)
+Status: Ready to execute
 Last activity: 2026-06-12 -- Phase 0 Plan 01 completed
 
 Progress: [█░░░░░░░░░] 4%
@@ -49,6 +49,7 @@ Progress: [█░░░░░░░░░] 4%
 **Recent Trend:** Phase 0 Plan 01 complete in ~10 min (research/document plan)
 
 *Updated after each plan completion*
+| Phase 00-omarchy-research-arch-variant-study P03 | 10 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -60,6 +61,8 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - D19: TDD everywhere — every phase plan specifies test scenarios before implementation tasks; resolver near-total coverage; determinism + WASM/native parity are automated tests
 - Process: fully autonomous run to v1.0; no pausing between phases except true blockers; record new fork decisions and continue
 - Roadmapper: phases numbered 0–5 to match ADR/SPEC naming exactly; Omarchy-on-variant retarget is a non-gating Phase 2 stretch criterion
+- [Phase ?]: CachyOS snapper assumption A2 corrected: cachyos-snapper-support exists (optional)
+- [Phase ?]: Garuda uses dracut exclusively, conflicts mkinitcpio — hard conflict with Omarchy login phase
 
 ### Decisions from Plan 00-01
 
@@ -86,7 +89,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12
-Stopped at: Phase 0 Plan 01 complete — research/omarchy-opinion-inventory.md (134 OM-NNN entries, commit 2693211)
+Last session: 2026-06-12T19:09:02.712Z
+Stopped at: Phase 0 Plan 03 complete — research/arch-variants-delta.md written (CachyOS+Garuda delta catalog, commit f61f821)
 Resume file: None
 Next: Phase 0 Plan 02 (00-02-PLAN.md) or Plan 03 (00-03-PLAN.md) — both Wave 1 plans now complete
