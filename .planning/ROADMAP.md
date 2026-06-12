@@ -12,7 +12,7 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
 - Decimal phases (e.g. 2.1): urgent insertions only (marked INSERTED)
 
 - [x] **Phase 0: Omarchy Research & Arch-Variant Study** - Evidence-backed opinion inventory + CachyOS/Garuda delta study; six deliverables that gate all design (completed 2026-06-12)
-- [ ] **Phase 1: Schema & Resolver Core** - Opinion/Point/Speech schemas from Phase 0 data; rule-based Go resolver, native + WASM, built test-first
+- [x] **Phase 1: Schema & Resolver Core** - Opinion/Point/Speech schemas from Phase 0 data; rule-based Go resolver, native + WASM, built test-first (completed 2026-06-12)
 - [ ] **Phase 2: Arch Translator** - mkarchiso-wrapping translator with variant-profile structure; NORTH STAR: Omarchy as a speech on vanilla Arch
 - [ ] **Phase 3: CLI & Build Channels** - Go CLI, private-pane/secrets model, deterministic Docker + GitHub Actions builds at zero cost
 - [ ] **Phase 4: Debian Translator** - live-build/preseed translator; dual-foundation proof from one resolved speech; de-Arch the abstraction
@@ -73,7 +73,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 01-05-PLAN.md — WASM entrypoint + native/WASM parity + coverage gate + 4 example compositions (RSLV-05, RSLV-06)
+- [x] 01-05-PLAN.md — WASM entrypoint + native/WASM parity + coverage gate + 4 example compositions (RSLV-05, RSLV-06)
 
 ### Phase 2: Arch Translator
 
@@ -142,7 +142,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Omarchy Research & Arch-Variant Study | 4/4 | Complete   | 2026-06-12 |
-| 1. Schema & Resolver Core | 4/5 | In Progress|  |
+| 1. Schema & Resolver Core | 5/5 | Complete   | 2026-06-12 |
 | 2. Arch Translator | 0/TBD | Not started | - |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |
 | 4. Debian Translator | 0/TBD | Not started | - |

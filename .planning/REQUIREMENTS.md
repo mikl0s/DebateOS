@@ -30,8 +30,8 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 - [ ] **RSLV-02**: Patch opinions are first-class: attached to conflict pairs in metadata, discovered and offered automatically by the resolver, able to override the hierarchy when one exists for the pair
 - [x] **RSLV-03**: Ordering constraints feed a topological sort producing the concrete install order; cycles are a hard composition-time error naming the offending opinions
 - [ ] **RSLV-04**: Hardware-conditional opinions evaluate against declared hardware at composition time; mismatches surface during the debate with suggested swaps
-- [ ] **RSLV-05**: Resolver compiles to native and WASM (`resolver/wasm` entrypoint) and produces identical results in both targets, verified by automated parity tests
-- [ ] **RSLV-06**: TDD conflict test harness covers the Phase 0 edge-case corpus plus required-vs-required, hardware mismatch, version clash, and at least one patchable pair, with near-total resolver coverage; 3–4 example files exist including one deliberately conflicting
+- [x] **RSLV-05**: Resolver compiles to native and WASM (`resolver/wasm` entrypoint) and produces identical results in both targets, verified by automated parity tests
+- [x] **RSLV-06**: TDD conflict test harness covers the Phase 0 edge-case corpus plus required-vs-required, hardware mismatch, version clash, and at least one patchable pair, with near-total resolver coverage; 3–4 example files exist including one deliberately conflicting
 
 ### Arch Translator
 
@@ -143,8 +143,8 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | RSLV-02 | Phase 1 | Pending |
 | RSLV-03 | Phase 1 | Complete |
 | RSLV-04 | Phase 1 | Pending |
-| RSLV-05 | Phase 1 | Pending |
-| RSLV-06 | Phase 1 | Pending |
+| RSLV-05 | Phase 1 | Complete |
+| RSLV-06 | Phase 1 | Complete |
 | ARCH-01 | Phase 2 | Pending |
 | ARCH-02 | Phase 2 | Pending |
 | ARCH-03 | Phase 2 | Pending |
