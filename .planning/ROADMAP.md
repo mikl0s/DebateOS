@@ -28,7 +28,12 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
   2. Every post-base-Arch Omarchy decision is recorded as a candidate atomic opinion with category, OS-agnostic intent, dependencies/ordering, and anything un-agnostic flagged as a translator capability requirement; opinions grouped into candidate points
   3. The proposed opinion metadata surface is justified by real Omarchy decisions (schema surprises like ordering, script payloads, theming assets explicitly captured), and CachyOS/Garuda deltas are cataloged with a proposed declarative variant-profile shape
   4. The resolver edge-case corpus is written as concrete test scenarios ready to seed the Phase 1 TDD harness (foundation-default vs opinion collisions, repo-priority conflicts, cross-variant effectuation differences)
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 00-01-PLAN.md — Exhaustive Omarchy opinion inventory (OM-NNN atomic entries from cloned source)
+- [ ] 00-02-PLAN.md — Point groupings + evidence-backed schema-requirements floor (SR-NNN)
+- [ ] 00-03-PLAN.md — CachyOS/Garuda variant delta study + declarative variant-profile sketch
+- [ ] 00-04-PLAN.md — Resolver edge-case corpus (EC-NNN Given/When/Then) + open-questions
 
 ### Phase 1: Schema & Resolver Core
 **Goal**: A composition can be parsed, validated, and resolved — every conflict handled per the docs/04 hierarchy with a human-readable explanation, identically in native and WASM
@@ -96,7 +101,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Omarchy Research & Arch-Variant Study | 0/TBD | Not started | - |
+| 0. Omarchy Research & Arch-Variant Study | 0/4 | Not started | - |
 | 1. Schema & Resolver Core | 0/TBD | Not started | - |
 | 2. Arch Translator | 0/TBD | Not started | - |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |
