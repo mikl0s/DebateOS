@@ -40,7 +40,7 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 - [ ] **ARCH-01**: Arch translator (`translators/arch/`, shell/Python) consumes a resolved speech via the defined JSON/YAML input contract, wraps mkarchiso, and emits a bootable, fully-unattended Arch installer ISO
 - [ ] **ARCH-02**: NORTH STAR — building the Omarchy speech (`examples/omarchy/`) produces an installed system equivalent to Omarchy on vanilla Arch
 - [x] **ARCH-03**: Translator declares its supported opinions/capabilities; unsupported required opinions break visibly at composition time, never silently at install time (02-01: capabilities.json + check_capabilities() gate, 43 pytest GREEN)
-- [ ] **ARCH-04**: Translator is structured for 1–2 Arch variants via declarative variant profiles (repo list + keyring + kernel + defaults) informed by the Phase 0 delta study — no per-variant forks
+- [x] **ARCH-04**: Translator is structured for 1–2 Arch variants via declarative variant profiles (repo list + keyring + kernel + defaults) informed by the Phase 0 delta study — no per-variant forks (02-03: vanilla-arch/cachyos/garuda YAML profiles, schema README, 4 Garuda conflicts as structured data)
 
 ### CLI
 
@@ -148,7 +148,7 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | ARCH-01 | Phase 2 | In Progress (foundation complete 02-01; mkarchiso/ISO in 02-02) |
 | ARCH-02 | Phase 2 | Pending |
 | ARCH-03 | Phase 2 | Complete (02-01) |
-| ARCH-04 | Phase 2 | Pending |
+| ARCH-04 | Phase 2 | Complete (02-03) |
 | CLI-01 | Phase 3 | Pending |
 | CLI-02 | Phase 3 | Pending |
 | BLD-01 | Phase 3 | Pending |

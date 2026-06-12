@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 Plan 01 complete — Arch translator data layer (capabilities gate + BuildManifest), 43 pytest GREEN, ARCH-01 foundation + ARCH-03 satisfied
-last_updated: "2026-06-12T22:34:00.000Z"
-last_activity: 2026-06-12 -- Phase 2 Plan 01 complete
+stopped_at: Phase 2 Plan 03 complete — Declarative variant profiles (vanilla-arch, cachyos, garuda), ARCH-04 satisfied
+last_updated: "2026-06-12T22:42:35.000Z"
+last_activity: 2026-06-12 -- Phase 2 Plan 03 complete
 progress:
   total_phases: 6
   completed_phases: 2
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 2 (Arch Translator) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Executing Phase 2
-Last activity: 2026-06-12 -- Phase 2 Plan 01 complete (capability gate + BuildManifest)
+Last activity: 2026-06-12 -- Phase 2 Plan 03 complete (declarative variant profiles)
 
 Progress: [███░░░░░░░] 36%
 
@@ -56,6 +56,7 @@ Progress: [███░░░░░░░] 36%
 | Phase 01-schema-resolver-core P04 | 12 min | 3 tasks | 31 files |
 | Phase 01-schema-resolver-core P05 | 11 | 3 tasks | 19 files |
 | Phase 02-arch-translator P01 | 6 min | 2 tasks (4 commits) | 14 files |
+| Phase 02-arch-translator P03 | 4 min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,10 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [02-01]: install-npm-global-packages intentionally absent from capabilities.json — leave undeclared until npm handler is implemented; gate correctly drops nice-to-haves with this token
 - [02-01]: first_run opinions (execution_phase=="first-run") excluded from install-time package/service aggregation; collected as {id, script_payload} for Plan 02 systemd oneshot unit generation
 - [02-01]: check_capabilities returns list[(id, reason)] for dropped nice-to-haves (empty list on clean pass); CapabilityError message always contains opinion ID + token + "composition time" (SC-3)
+- [02-03]: vanilla-arch bootloader/filesystem set to null — translator/speech choice, not profile-forced; Omarchy OM-099 handles limine at speech time
+- [02-03]: Garuda above_core=false for custom repos — unlike CachyOS (above_core=true), Garuda adds custom repos BELOW standard Arch repos per pacman-default.conf (VERIFIED)
+- [02-03]: repos_by_arch_level extension key in cachyos.yaml allows v3/v4 ISA-optimised tiers without code fork (ARCH-04 invariant preserved)
+- [02-03]: 4 Garuda hard Omarchy conflicts captured as structured data (dracut/mkinitcpio, GRUB/limine, snapper/snapper, SDDM theme) — generator surfaces via trust_warnings
 
 ### Decisions from Plan 00-01
 
@@ -114,7 +119,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12T22:34:00.000Z
-Stopped at: Phase 2 Plan 01 complete — Arch translator data layer (capabilities gate + BuildManifest), 43 pytest GREEN
+Last session: 2026-06-12T22:42:35.000Z
+Stopped at: Phase 2 Plan 03 complete — Declarative variant profiles (vanilla-arch, cachyos, garuda), ARCH-04 satisfied
 Resume file: None
 Next: Phase 2 Plan 02 (02-02-PLAN.md) — archiso profile emitter (packages.x86_64, airootfs tree, profiledef.sh)
