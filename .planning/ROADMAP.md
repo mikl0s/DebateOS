@@ -88,7 +88,21 @@ Plans:
   4. The translator is structured around declarative variant profiles (repo list + keyring + kernel + defaults) per the Phase 0 delta study, with no per-variant fork
   5. STRETCH (non-gating, per D20): the Omarchy speech retargeted to CachyOS or Garuda via a variant profile builds with only declared, explainable differences
 
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — Translator package + input-contract loader + capability gate (SC-3) + BuildManifest builder (ARCH-01, ARCH-03)
+- [ ] 02-03-PLAN.md — Declarative variant profiles: vanilla-arch / cachyos / garuda YAML with marked Omarchy conflicts (ARCH-04)
+- [ ] 02-04-PLAN.md — examples/omarchy authoring: 134 opinions + 32 points + speech + clean-resolve Go harness (ARCH-02)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-02-PLAN.md — archiso profile emitter + variant application (no fork) + first-run units + generate()/translate entrypoint (ARCH-01, ARCH-04)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-05-PLAN.md — Slow gates (Docker mkarchiso build, ISO structural validation, north-star equivalence) + README + status (ARCH-01..04)
 
 ### Phase 3: CLI & Build Channels
 
@@ -143,7 +157,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 |-------|----------------|--------|-----------|
 | 0. Omarchy Research & Arch-Variant Study | 4/4 | Complete   | 2026-06-12 |
 | 1. Schema & Resolver Core | 5/5 | Complete   | 2026-06-12 |
-| 2. Arch Translator | 0/TBD | Not started | - |
+| 2. Arch Translator | 0/5 | Not started | - |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |
 | 4. Debian Translator | 0/TBD | Not started | - |
 | 5. Registry, Forum & Debate UI | 0/TBD | Not started | - |
