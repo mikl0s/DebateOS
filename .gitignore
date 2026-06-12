@@ -1,0 +1,38 @@
+# Founding inputs — distilled into docs/, kept out of the repo.
+# Remove these folders before kicking off the autonomous GSD run.
+NewDocs/
+OldDocs/
+
+# Scratch exploration syntheses (superseded by docs/)
+.exploration/
+
+# --- Go ---
+*.exe
+*.test
+*.out
+/bin/
+/dist/
+*.wasm
+
+# --- Node / SvelteKit (web/) ---
+node_modules/
+.svelte-kit/
+build/
+.vercel/
+*.log
+.env
+.env.*
+!.env.example
+
+# --- Python (translators/) ---
+__pycache__/
+*.py[cod]
+.venv/
+.ruff_cache/
+.pytest_cache/
+
+# --- OS / editor ---
+.DS_Store
+*.swp
+.idea/
+.vscode/
