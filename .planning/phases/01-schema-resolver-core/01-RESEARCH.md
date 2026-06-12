@@ -19,7 +19,7 @@
 - Schema surprises from Phase 0 must be expressible: file/asset payloads, custom repo + keyring registration (with per-repo trust level per SR-009), runtime-tool-install category (SR-010), execution-phase field install-time vs first-run (SR-011), compound hardware predicates, arbitrary script payloads with declared capabilities, phase-level ordering.
 
 **Resolver Architecture**
-- Package layout locked by docs/11: `resolver/parse`, `resolver/graph`, `resolver/resolve`, `resolver/patch`, `resolver/hardware`, `resolver/wasm` — single Go module at repo root (`module github.com/mikkelraglan/debateos`).
+- Package layout locked by docs/11: `resolver/parse`, `resolver/graph`, `resolver/resolve`, `resolver/patch`, `resolver/hardware`, `resolver/wasm` — single Go module at repo root (`module github.com/mikl0s/debateos`).
 - First-class `Explanation` type attached to every resolution decision: human-readable text plus structured fields (rule applied, opinions involved, what was dropped/kept and why). Every EC scenario's "expected explanation" must be producible.
 - Determinism discipline: stable sorts everywhere, no map-iteration-order leaks, canonical JSON output for resolved speeches.
 - Dependencies minimal: `gopkg.in/yaml.v3` only; stdlib otherwise; NO SAT/constraint libraries (D6); rule-based resolution only.
@@ -66,13 +66,13 @@
 
 ## Summary
 
-Phase 1 creates the first code in the DebateOS repository: a Go module (`module github.com/mikkelraglan/debateos`), JSON Schema 2020-12 validation files for Opinion/Point/Speech, and the `resolver/` library implementing the six packages prescribed by docs/11. The module is test-driven against the 27 EC-NNN edge-case scenarios from `research/resolver-edge-cases.md`. It compiles to both native Go and `GOOS=js GOARCH=wasm`, and a parity script asserts byte-identical canonical JSON output for all fixtures under both targets.
+Phase 1 creates the first code in the DebateOS repository: a Go module (`module github.com/mikl0s/debateos`), JSON Schema 2020-12 validation files for Opinion/Point/Speech, and the `resolver/` library implementing the six packages prescribed by docs/11. The module is test-driven against the 27 EC-NNN edge-case scenarios from `research/resolver-edge-cases.md`. It compiles to both native Go and `GOOS=js GOARCH=wasm`, and a parity script asserts byte-identical canonical JSON output for all fixtures under both targets.
 
 The dependency decision locked in CONTEXT.md (`gopkg.in/yaml.v3` only, stdlib otherwise) needs a one-word update: `gopkg.in/yaml.v3` was archived by the go-yaml authors in April 2025. The official YAML organization (`yaml/go-yaml`) took over as the maintained fork under the import path `go.yaml.in/yaml/v3` (v3.0.4 as of June 2025). This is an API-identical, security-maintained drop-in. The planner should treat `go.yaml.in/yaml/v3` as the implementation of the locked "gopkg.in/yaml.v3 only" decision — the intent (YAML + stdlib, no extras) is preserved. The second allowed package is `github.com/santhosh-tekuri/jsonschema/v6` (v6.0.2, May 2025) for JSON Schema 2020-12 validation of the schema files themselves and for the parse layer's document validation.
 
 The host Go toolchain is 1.24.1 (`/usr/local/go`); current Go stable is 1.26.4 (released May 2026). The project should set `go 1.24` in go.mod so existing toolchain works without auto-download; CI can upgrade later. WASM test infrastructure (Node.js v24.12.0, `go_js_wasm_exec` script at `/usr/local/go/lib/wasm/go_js_wasm_exec`) is fully present on this host.
 
-**Primary recommendation:** Start with `go mod init github.com/mikkelraglan/debateos`, add `go.yaml.in/yaml/v3` and `santhosh-tekuri/jsonschema/v6` as the only two external dependencies, write EC-NNN table-driven tests RED in all six resolver packages, then implement GREEN.
+**Primary recommendation:** Start with `go mod init github.com/mikl0s/debateos`, add `go.yaml.in/yaml/v3` and `santhosh-tekuri/jsonschema/v6` as the only two external dependencies, write EC-NNN table-driven tests RED in all six resolver packages, then implement GREEN.
 
 ---
 
@@ -123,7 +123,7 @@ The host Go toolchain is 1.24.1 (`/usr/local/go`); current Go stable is 1.26.4 (
 
 **Installation:**
 ```bash
-go mod init github.com/mikkelraglan/debateos
+go mod init github.com/mikl0s/debateos
 go get go.yaml.in/yaml/v3@v3.0.4
 go get github.com/santhosh-tekuri/jsonschema/v6@v6.0.2
 ```
@@ -523,7 +523,7 @@ func validateOpinion(v any) error {
 ### Monorepo go.mod Setup
 
 ```
-module github.com/mikkelraglan/debateos
+module github.com/mikl0s/debateos
 
 go 1.24
 

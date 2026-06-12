@@ -15,7 +15,7 @@
 package resolve
 
 import (
-	"github.com/mikkelraglan/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver"
 )
 
 // Explanation is a first-class record of why a resolution decision was made.

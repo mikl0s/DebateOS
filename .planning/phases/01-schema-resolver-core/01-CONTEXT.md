@@ -64,7 +64,7 @@ Out of scope: translators (Phase 2/4), CLI (Phase 3), any UI (Phase 5), variant-
 ### Integration Points
 - Phase 2 (Arch translator) consumes the resolved-speech canonical JSON/YAML output — the resolver's output format is the translator input contract (docs/11).
 - Phase 3 CLI wraps the native resolver library; Phase 5 UI calls the WASM build — both depend on this module's public API.
-- Go module path: use `module github.com/mikkelraglan/debateos` placeholder unless a repo remote exists (none configured); record as a decision in STATE.md.
+- Go module path: use `module github.com/mikl0s/debateos` placeholder unless a repo remote exists (none configured); record as a decision in STATE.md.
 
 </code_context>
 

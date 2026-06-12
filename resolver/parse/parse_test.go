@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	resolver "github.com/mikkelraglan/debateos/resolver"
+	resolver "github.com/mikl0s/debateos/resolver"
 )
 
 func openFixture(t *testing.T, name string) *os.File {

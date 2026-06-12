@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mikkelraglan/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver"
 )
 
 // maxHardwareExprDepth is the maximum recursion depth allowed for HardwareExpr

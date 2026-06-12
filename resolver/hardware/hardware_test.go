@@ -7,8 +7,8 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"github.com/mikkelraglan/debateos/resolver"
-	"github.com/mikkelraglan/debateos/resolver/hardware"
+	"github.com/mikl0s/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver/hardware"
 )
 
 // loadProfile reads a HardwareProfile from a YAML testdata file.

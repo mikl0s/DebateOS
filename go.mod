@@ -1,4 +1,4 @@
-module github.com/mikkelraglan/debateos
+module github.com/mikl0s/debateos
 
 go 1.24
 

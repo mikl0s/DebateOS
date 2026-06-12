@@ -25,9 +25,9 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"github.com/mikkelraglan/debateos/resolver"
-	"github.com/mikkelraglan/debateos/resolver/hardware"
-	"github.com/mikkelraglan/debateos/resolver/resolve"
+	"github.com/mikl0s/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver/hardware"
+	"github.com/mikl0s/debateos/resolver/resolve"
 )
 
 // resolveInput is the JSON-decoded payload accepted by debateosResolve.

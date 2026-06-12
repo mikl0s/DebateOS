@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/mikkelraglan/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver"
 )
 
 // phaseOrder assigns a numeric weight to install_phase values for tie-breaking.

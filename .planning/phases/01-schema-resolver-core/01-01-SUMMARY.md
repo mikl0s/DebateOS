@@ -40,7 +40,7 @@ execute-phase runtime fallback, the orchestrator ran the plan directly).
 
 ## What was built
 
-- **Module:** `github.com/mikkelraglan/debateos` (placeholder path — no git
+- **Module:** `github.com/mikl0s/debateos` (placeholder path — no git
   remote configured; revisit when a remote exists), `go 1.24`. Exactly two
   external deps: `go.yaml.in/yaml/v3 v3.0.4` (maintained fork implementing the
   locked "yaml.v3" decision; archived `gopkg.in/yaml.v3` forbidden) and

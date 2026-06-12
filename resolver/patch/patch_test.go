@@ -6,8 +6,8 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"github.com/mikkelraglan/debateos/resolver"
-	"github.com/mikkelraglan/debateos/resolver/patch"
+	"github.com/mikl0s/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver/patch"
 )
 
 // loadOpinion reads a resolver.Opinion from a YAML testdata file.

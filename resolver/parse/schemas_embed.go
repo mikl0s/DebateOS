@@ -1,7 +1,7 @@
 package parse
 
 import (
-	"github.com/mikkelraglan/debateos/schemas"
+	"github.com/mikl0s/debateos/schemas"
 )
 
 // schemaBytes returns the raw bytes of one embedded canonical schema file.

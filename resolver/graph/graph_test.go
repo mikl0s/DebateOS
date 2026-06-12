@@ -3,8 +3,8 @@ package graph_test
 import (
 	"testing"
 
-	"github.com/mikkelraglan/debateos/resolver"
-	"github.com/mikkelraglan/debateos/resolver/graph"
+	"github.com/mikl0s/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver/graph"
 )
 
 // buildOp is a helper that constructs a minimal resolver.Opinion for graph tests.

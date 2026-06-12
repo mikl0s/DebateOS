@@ -15,7 +15,7 @@ import (
 
 	yaml "go.yaml.in/yaml/v3"
 
-	resolver "github.com/mikkelraglan/debateos/resolver"
+	resolver "github.com/mikl0s/debateos/resolver"
 )
 
 // decodeStrict decodes one YAML document into out, rejecting unknown fields.

@@ -21,7 +21,7 @@ package patch
 import (
 	"sort"
 
-	"github.com/mikkelraglan/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver"
 )
 
 // PatchOffer is returned by FindPatch when a patch opinion exists that can

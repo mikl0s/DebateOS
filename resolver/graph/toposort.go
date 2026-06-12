@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/mikkelraglan/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver"
 )
 
 // heapEntry is the element type for the topoSort min-heap. Tie-breaking uses

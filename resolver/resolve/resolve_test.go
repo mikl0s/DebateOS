@@ -9,9 +9,9 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	"github.com/mikkelraglan/debateos/resolver"
-	"github.com/mikkelraglan/debateos/resolver/hardware"
-	"github.com/mikkelraglan/debateos/resolver/resolve"
+	"github.com/mikl0s/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver/hardware"
+	"github.com/mikl0s/debateos/resolver/resolve"
 )
 
 // fixtureDoc holds the top-level structure of a testdata/ec*.yaml fixture.

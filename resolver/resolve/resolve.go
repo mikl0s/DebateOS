@@ -5,10 +5,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mikkelraglan/debateos/resolver"
-	"github.com/mikkelraglan/debateos/resolver/graph"
-	"github.com/mikkelraglan/debateos/resolver/hardware"
-	"github.com/mikkelraglan/debateos/resolver/patch"
+	"github.com/mikl0s/debateos/resolver"
+	"github.com/mikl0s/debateos/resolver/graph"
+	"github.com/mikl0s/debateos/resolver/hardware"
+	"github.com/mikl0s/debateos/resolver/patch"
 )
 
 // Resolve applies the docs/04 four-rule resolution hierarchy to the given

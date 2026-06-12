@@ -37,7 +37,7 @@ per the docs/04 hierarchy with a human-readable explanation, identically in nati
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `go.mod` | module github.com/mikkelraglan/debateos, go 1.24, two external deps | VERIFIED | module path, go 1.24, exactly santhosh-tekuri/jsonschema/v6 and go.yaml.in/yaml/v3 |
+| `go.mod` | module github.com/mikl0s/debateos, go 1.24, two external deps | VERIFIED | module path, go 1.24, exactly santhosh-tekuri/jsonschema/v6 and go.yaml.in/yaml/v3 |
 | `schemas/opinion.schema.json` | JSON Schema 2020-12 covering SR-001..SR-020 | VERIFIED | $schema = https://json-schema.org/draft/2020-12/schema |
 | `schemas/point.schema.json` | JSON Schema 2020-12 for Point (SR-021) | VERIFIED | $schema = https://json-schema.org/draft/2020-12/schema |
 | `schemas/speech.schema.json` | JSON Schema 2020-12 for Speech (SR-022) incl. pci_ids | VERIFIED | $schema declared; pci_ids added in CR-02 fix |

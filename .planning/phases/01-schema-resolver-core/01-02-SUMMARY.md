@@ -102,7 +102,7 @@ func TopoSort(g *Graph) (order []resolver.OpinionID, cycle []resolver.OpinionID,
 **1. [Rule 1 - Bug] External test package required package prefix for BuildGraph/TopoSort**
 - **Found during:** Task 2 GREEN verification (first `go test` run)
 - **Issue:** `graph_test.go` used `package graph_test` (external) but called `BuildGraph` / `TopoSort` without the `graph.` qualifier — compilation failed.
-- **Fix:** Added `"github.com/mikkelraglan/debateos/resolver/graph"` import and prefixed all calls with `graph.`. Standard external-package test pattern — not a logic change, no TDD gate impact (RED was still RED; fix applied before GREEN commit).
+- **Fix:** Added `"github.com/mikl0s/debateos/resolver/graph"` import and prefixed all calls with `graph.`. Standard external-package test pattern — not a logic change, no TDD gate impact (RED was still RED; fix applied before GREEN commit).
 - **Files modified:** `resolver/graph/graph_test.go`
 - **Commit:** 2950b54 (GREEN commit includes both implementation and corrected test import)
 
