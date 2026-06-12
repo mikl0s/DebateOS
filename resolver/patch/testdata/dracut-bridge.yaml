@@ -1,0 +1,15 @@
+# Patch opinion: dracut-omarchy-bridge
+# Resolves the required-vs-required conflict between Omarchy's mkinitcpio
+# initramfs method and Garuda's dracut initramfs method (EC-032).
+# This patch rewrites Omarchy's UKI generation steps to use dracut hooks
+# instead of mkinitcpio hooks, removing the mkinitcpio dependency.
+schema: 1
+id: patch/dracut-omarchy-bridge
+name: Dracut-Omarchy Bridge
+category: patch
+intent: Rewrite Omarchy UKI generation to use dracut hooks instead of mkinitcpio
+status: nice-to-have
+translator_capabilities:
+  - install-named-packages
+  - write-dracut-config
+  - rebuild-initramfs
