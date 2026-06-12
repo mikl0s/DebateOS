@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/mikkelraglan/debateos/resolver"
+	"github.com/mikkelraglan/debateos/resolver/graph"
 )
 
 // buildOp is a helper that constructs a minimal resolver.Opinion for graph tests.
@@ -36,11 +37,11 @@ func TestTopoSort(t *testing.T) {
 			buildOp("OM-041", []resolver.OpinionID{"OM-009"}),
 			buildOp("OM-023", []resolver.OpinionID{"OM-041"}),
 		}
-		g, err := BuildGraph(opinions)
+		g, err := graph.BuildGraph(opinions)
 		if err != nil {
 			t.Fatalf("EC-035: BuildGraph returned unexpected error: %v", err)
 		}
-		order, cycle, err := TopoSort(g)
+		order, cycle, err := graph.TopoSort(g)
 		if err != nil {
 			t.Fatalf("EC-035: TopoSort returned unexpected error: %v (cycle: %v)", err, cycle)
 		}
@@ -57,11 +58,11 @@ func TestTopoSort(t *testing.T) {
 			buildOp("docker-service", []resolver.OpinionID{"docker-dns"}),
 			buildOp("docker-dns", []resolver.OpinionID{"docker-service"}),
 		}
-		g, err := BuildGraph(opinions)
+		g, err := graph.BuildGraph(opinions)
 		if err != nil {
 			t.Fatalf("EC-036: BuildGraph returned unexpected error: %v", err)
 		}
-		_, cycle, err := TopoSort(g)
+		_, cycle, err := graph.TopoSort(g)
 		if err == nil {
 			t.Fatal("EC-036: expected a cycle error, got nil")
 		}
@@ -106,11 +107,11 @@ func TestTopoSort(t *testing.T) {
 			},
 		}
 		opinions := []resolver.Opinion{configOp, packagingOp}
-		g, err := BuildGraph(opinions)
+		g, err := graph.BuildGraph(opinions)
 		if err != nil {
 			t.Fatalf("CrossPhase: BuildGraph returned unexpected error: %v", err)
 		}
-		order, cycle, err := TopoSort(g)
+		order, cycle, err := graph.TopoSort(g)
 		if err != nil {
 			t.Fatalf("CrossPhase: TopoSort returned unexpected error: %v (cycle: %v)", err, cycle)
 		}
@@ -158,11 +159,11 @@ func TestTopoSortDeterministic(t *testing.T) {
 	want := []resolver.OpinionID{"alpha", "beta", "gamma"} // lexicographic
 
 	for i, ops := range [][]resolver.Opinion{opinions1, opinions2, opinions3} {
-		g, err := BuildGraph(ops)
+		g, err := graph.BuildGraph(ops)
 		if err != nil {
 			t.Fatalf("Deterministic[%d]: BuildGraph error: %v", i, err)
 		}
-		order, _, err := TopoSort(g)
+		order, _, err := graph.TopoSort(g)
 		if err != nil {
 			t.Fatalf("Deterministic[%d]: TopoSort error: %v", i, err)
 		}
