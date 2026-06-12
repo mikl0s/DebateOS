@@ -5,7 +5,7 @@
     "name": "Omarchy custom repo registration",
     "category": "custom-repo",
     "status": "required",
-    "translator_capabilities": ["add-signed-external-repo", "import-gpg-key-by-fingerprint"],
+    "translator_capabilities": ["add-custom-package-repo", "import-gpg-key"],
     "custom_repos": [
       {
         "name": "omarchy",
@@ -22,7 +22,7 @@
     "name": "Omarchy base package install — core compositor",
     "category": "package-install",
     "status": "required",
-    "translator_capabilities": ["install-named-packages"],
+    "translator_capabilities": ["install-packages"],
     "packages": ["hyprland", "hyprlock", "hypridle", "waybar"]
   },
   {
@@ -67,7 +67,7 @@
     "name": "Omarchy Docker service enablement",
     "category": "service-enable",
     "status": "required",
-    "translator_capabilities": ["enable-systemd-service-chroot"],
+    "translator_capabilities": ["enable-systemd-service-unit"],
     "services": [
       {
         "name": "docker.service",
@@ -83,7 +83,7 @@
     "category": "first-run",
     "status": "required",
     "execution_phase": "first-run",
-    "translator_capabilities": ["systemd-user-service-firstrun"],
+    "translator_capabilities": ["enable-user-scoped-systemd-service-unit"],
     "script_payload": "#!/bin/bash\ngsettings set org.gnome.desktop.interface gtk-theme 'Omarchy'\n"
   },
   {
@@ -92,7 +92,7 @@
     "name": "Omarchy theme bundle — default desktop theme",
     "category": "theming",
     "status": "nice-to-have",
-    "translator_capabilities": ["deploy-file-asset-bundle"],
+    "translator_capabilities": ["deploy-file-asset-payloads-to-theme-directories"],
     "file_assets": [
       {
         "src": "themes/omarchy",

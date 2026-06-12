@@ -11,4 +11,4 @@ translator_capabilities:
 - restart-gpg-daemon
 file_assets:
 - src: gnupg/gpg-agent.conf
-  dst: /etc/gnupg/gpg-agent.conf
+  dst: etc/gnupg/gpg-agent.conf

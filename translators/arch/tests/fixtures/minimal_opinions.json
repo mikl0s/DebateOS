@@ -5,7 +5,7 @@
     "name": "Omarchy custom repo registration",
     "category": "custom-repo",
     "status": "required",
-    "translator_capabilities": ["add-signed-external-repo", "import-gpg-key-by-fingerprint"],
+    "translator_capabilities": ["add-custom-package-repo", "import-gpg-key"],
     "custom_repos": [
       {
         "name": "omarchy",
@@ -22,7 +22,7 @@
     "name": "Omarchy base package install — core compositor",
     "category": "package-install",
     "status": "required",
-    "translator_capabilities": ["install-named-packages"],
+    "translator_capabilities": ["install-packages"],
     "packages": ["hyprland", "hyprlock", "hypridle"]
   }
 ]

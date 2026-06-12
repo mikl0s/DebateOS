@@ -15,4 +15,4 @@ translator_capabilities:
 - write-systemd-service-drop-in-with-ac-power-condition
 file_assets:
 - src: systemd/plocate-ac-only.conf
-  dst: /etc/systemd/system/plocate-updatedb.service.d/ac-only.conf
+  dst: etc/systemd/system/plocate-updatedb.service.d/ac-only.conf

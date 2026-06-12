@@ -14,4 +14,4 @@ translator_capabilities:
 - write-libinput-quirks-override-file
 file_assets:
 - src: libinput/asus-b9406-touchpad.quirks
-  dst: /etc/libinput/local-overrides.quirks
+  dst: etc/libinput/local-overrides.quirks

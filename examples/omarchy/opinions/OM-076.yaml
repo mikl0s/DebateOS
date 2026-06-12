@@ -21,4 +21,4 @@ translator_capabilities:
 - write-kernel-module-option-config
 file_assets:
 - src: modprobe/fix-wifi7-eht.conf
-  dst: /etc/modprobe.d/iwlwifi-no-eht.conf
+  dst: etc/modprobe.d/iwlwifi-no-eht.conf

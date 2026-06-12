@@ -40,20 +40,20 @@ def test_load_capabilities_returns_set():
     assert len(caps) > 0
 
 
-def test_load_capabilities_contains_install_named_packages():
-    """capabilities.json must declare install-named-packages."""
+def test_load_capabilities_contains_install_packages():
+    """capabilities.json must declare install-packages (the actual token used by opinions)."""
     from capabilities import load_capabilities  # noqa: E402
 
     caps = load_capabilities()
-    assert "install-named-packages" in caps
+    assert "install-packages" in caps
 
 
-def test_load_capabilities_contains_add_signed_external_repo():
-    """capabilities.json must declare add-signed-external-repo."""
+def test_load_capabilities_contains_add_custom_package_repo():
+    """capabilities.json must declare add-custom-package-repo (the actual token used by OM-001)."""
     from capabilities import load_capabilities  # noqa: E402
 
     caps = load_capabilities()
-    assert "add-signed-external-repo" in caps
+    assert "add-custom-package-repo" in caps
 
 
 # ---------------------------------------------------------------------------
@@ -112,7 +112,7 @@ def test_check_capabilities_passes_when_all_required_supported():
     rs = load_fixture("minimal_resolved.json")
     opinions = load_fixture("minimal_opinions.json")
     opinions_index = {op["id"]: op for op in opinions}
-    caps = {"add-signed-external-repo", "import-gpg-key-by-fingerprint", "install-named-packages"}
+    caps = {"add-custom-package-repo", "import-gpg-key", "install-packages"}
 
     # Must not raise
     dropped = check_capabilities(rs, opinions_index, caps)
@@ -186,10 +186,10 @@ def test_nicetohave_drop_does_not_raise():
         "OM-006": {
             "id": "OM-006",
             "status": "required",
-            "translator_capabilities": ["install-named-packages"],
+            "translator_capabilities": ["install-packages"],
         },
     }
-    caps = {"install-named-packages"}  # no npm support
+    caps = {"install-packages"}  # no npm support
 
     # Must not raise
     dropped = check_capabilities(rs, opinions_index, caps)
@@ -213,10 +213,10 @@ def test_nicetohave_dropped_entry_has_reason():
         "OM-006": {
             "id": "OM-006",
             "status": "required",
-            "translator_capabilities": ["install-named-packages"],
+            "translator_capabilities": ["install-packages"],
         },
     }
-    caps = {"install-named-packages"}
+    caps = {"install-packages"}
 
     dropped = check_capabilities(rs, opinions_index, caps)
     # Find OM-001 entry
@@ -236,15 +236,15 @@ def test_nicetohave_with_supported_cap_not_in_dropped():
         "OM-001": {
             "id": "OM-001",
             "status": "nice-to-have",
-            "translator_capabilities": ["add-signed-external-repo"],
+            "translator_capabilities": ["add-custom-package-repo"],
         },
         "OM-006": {
             "id": "OM-006",
             "status": "required",
-            "translator_capabilities": ["install-named-packages"],
+            "translator_capabilities": ["install-packages"],
         },
     }
-    caps = {"install-named-packages", "add-signed-external-repo"}
+    caps = {"install-packages", "add-custom-package-repo"}
 
     dropped = check_capabilities(rs, opinions_index, caps)
     dropped_ids = [d[0] for d in dropped]

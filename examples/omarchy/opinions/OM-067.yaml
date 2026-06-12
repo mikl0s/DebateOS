@@ -10,4 +10,4 @@ translator_capabilities:
 - modify-logind-conf-handle-power-key
 file_assets:
 - src: logind/ignore-power-button.conf
-  dst: /etc/systemd/logind.conf.d/ignore-power-button.conf
+  dst: etc/systemd/logind.conf.d/ignore-power-button.conf

@@ -10,4 +10,4 @@ translator_capabilities:
 - install-executable-sleep-hook-script
 file_assets:
 - src: sleep-hooks/unmount-fuse.sh
-  dst: /usr/lib/systemd/system-sleep/unmount-fuse
+  dst: usr/lib/systemd/system-sleep/unmount-fuse

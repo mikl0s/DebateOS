@@ -135,7 +135,7 @@ docker run \
     --privileged \
     --rm \
     --name "debateos-arch-build-$$" \
-    -v "${PROFILE_ABS}:/profile:ro" \
+    -v "${PROFILE_ABS}:/debateos-overlay:ro" \
     -v "${OUT_ABS}:/out" \
     -e "SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}" \
     "${DOCKER_IMAGE}" \
@@ -144,6 +144,23 @@ docker run \
         echo '[arch-build] Updating package DB and installing archiso...'
         pacman -Sy --noconfirm archiso 2>&1 | tail -5
         pacman -Q archiso
+        echo '[arch-build] Copying releng baseline profile...'
+        # Use the releng baseline as the foundation (02-RESEARCH.md: Minimal Deviation from releng).
+        # The generator overlay only provides targeted modifications on top of releng:
+        #   - packages.x86_64 (live-env set)
+        #   - airootfs/root/debateos-install.sh (0755)
+        #   - airootfs/root/.zlogin (installer hook)
+        #   - airootfs/etc/systemd/user/ (first-run units)
+        #   - build-manifest.json (runtime data for installer)
+        #   - profiledef.sh (iso_name/bootmodes/file_permissions)
+        #   - pacman.conf (variant repos injected)
+        # All other releng files (syslinux/, efiboot/, autologin conf, etc.) come from baseline.
+        cp -r /usr/share/archiso/configs/releng /profile
+        # Apply the DebateOS generator overlay on top of the releng baseline.
+        # rsync-style: overlay wins on conflict (our profiledef, packages, installer override releng's).
+        cp -r /debateos-overlay/. /profile/
+        echo '[arch-build] Profile overlay applied. Contents:'
+        ls /profile/
         echo '[arch-build] Running mkarchiso...'
         mkarchiso -v -w /tmp/work -o /out /profile
         echo '[arch-build] Build complete.'

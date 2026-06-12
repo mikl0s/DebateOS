@@ -10,4 +10,4 @@ translator_capabilities:
 - write-kernel-module-option-config
 file_assets:
 - src: modprobe/hid_apple.conf
-  dst: /etc/modprobe.d/hid_apple.conf
+  dst: etc/modprobe.d/hid_apple.conf

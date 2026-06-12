@@ -9,4 +9,4 @@ translator_capabilities:
 - write-kernel-module-option-config-to-disable-usb-autosuspend
 file_assets:
 - src: modprobe/usbcore-autosuspend.conf
-  dst: /etc/modprobe.d/usbcore-autosuspend.conf
+  dst: etc/modprobe.d/usbcore-autosuspend.conf

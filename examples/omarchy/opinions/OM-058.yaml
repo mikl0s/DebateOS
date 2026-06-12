@@ -19,4 +19,4 @@ services:
   enable: true
 file_assets:
 - src: udev/power-profiles.rules
-  dst: /etc/udev/rules.d/80-power-profiles.rules
+  dst: etc/udev/rules.d/80-power-profiles.rules

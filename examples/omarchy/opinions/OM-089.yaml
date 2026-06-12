@@ -14,4 +14,4 @@ translator_capabilities:
 - write-kernel-module-option-config-for-sound-driver-pin-quirk
 file_assets:
 - src: modprobe/yoga-pro7-bass.conf
-  dst: /etc/modprobe.d/yoga-pro7-bass.conf
+  dst: etc/modprobe.d/yoga-pro7-bass.conf

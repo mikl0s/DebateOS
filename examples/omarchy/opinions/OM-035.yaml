@@ -11,4 +11,4 @@ translator_capabilities:
 - modify-pam-sddm-autologin
 file_assets:
 - src: pam-faillock.conf
-  dst: /etc/security/faillock.conf
+  dst: etc/security/faillock.conf

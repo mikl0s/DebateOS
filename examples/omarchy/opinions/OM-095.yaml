@@ -16,4 +16,4 @@ translator_capabilities:
 - set-default-plymouth-theme
 file_assets:
 - src: plymouth-themes/omarchy/
-  dst: /usr/share/plymouth/themes/omarchy/
+  dst: usr/share/plymouth/themes/omarchy/

@@ -50,6 +50,10 @@ _LIVE_ENV_PACKAGES = [
     "base",
     "linux",
     "linux-firmware",
+    # Boot support packages required by profiledef.sh bootmodes (02-RESEARCH.md Minimal Deviation)
+    # The generator overlays packages.x86_64 on top of the releng baseline, so these
+    # must be included here to satisfy mkarchiso's bootmode validation.
+    "syslinux",               # required for bios.syslinux bootmode (BIOS legacy)
     # Installer deps (used by debateos-install.sh)
     "arch-install-scripts",   # pacstrap + arch-chroot + genfstab
     "btrfs-progs",            # mkfs.btrfs + btrfs subvol operations

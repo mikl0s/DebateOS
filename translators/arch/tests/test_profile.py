@@ -366,7 +366,7 @@ class TestFileAssetDstSanitization:
                 "name": "Traversal test",
                 "category": "config-dotfile",
                 "status": "required",
-                "translator_capabilities": ["install-named-packages"],
+                "translator_capabilities": ["install-packages"],
                 "packages": [],
                 "file_assets": [
                     {"src": "config/evil", "dst": dst_value, "mode": "0644"}
@@ -413,7 +413,7 @@ class TestFileAssetDstSanitization:
                 "name": "Valid dst test",
                 "category": "config-dotfile",
                 "status": "required",
-                "translator_capabilities": ["install-named-packages"],
+                "translator_capabilities": ["install-packages"],
                 "packages": [],
                 "file_assets": [
                     {"src": "config/good", "dst": "home/user/.config/good", "mode": "0644"}

@@ -10,4 +10,4 @@ translator_capabilities:
 - write-sudoers-drop-in
 file_assets:
 - src: sudoers-timezone
-  dst: /etc/sudoers.d/timezone
+  dst: etc/sudoers.d/timezone

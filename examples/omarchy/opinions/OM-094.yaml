@@ -25,4 +25,4 @@ packages:
 - tuxedo-drivers-nocompatcheck-dkms
 file_assets:
 - src: modprobe/clevo-blacklist.conf
-  dst: /etc/modprobe.d/clevo-blacklist.conf
+  dst: etc/modprobe.d/clevo-blacklist.conf

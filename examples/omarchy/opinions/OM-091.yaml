@@ -15,4 +15,4 @@ translator_capabilities:
 - write-mkinitcpio-module-list-configuration
 file_assets:
 - src: mkinitcpio/surface-keyboard.conf
-  dst: /etc/mkinitcpio.conf.d/surface-keyboard.conf
+  dst: etc/mkinitcpio.conf.d/surface-keyboard.conf
