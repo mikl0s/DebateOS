@@ -111,3 +111,15 @@ None beyond what was already in the plan's threat model. SR-009 explicitly mitig
 ---
 *Phase: 00-omarchy-research-arch-variant-study*
 *Completed: 2026-06-12*
+
+## Self-Check: PASSED
+
+- research/omarchy-points.md: FOUND
+- research/schema-requirements.md: FOUND
+- 00-02-SUMMARY.md: FOUND
+- Commit 331c80d (Task 1): FOUND
+- Commit fc50a37 (Task 2): FOUND
+- omarchy-points.md: 499 lines (min 80) ✓
+- schema-requirements.md: 448 lines (min 120) ✓
+- check-points.sh: PASSED (134 OM-IDs, no duplicates, no phantoms, 32 points)
+- check-schema.sh: PASSED (22 SR >= 7, 91 evidence citations, all 7 surprises)
