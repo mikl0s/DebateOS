@@ -1,0 +1,23 @@
+schema: 1
+id: OM-019
+status: required
+name: Neovim with LazyVim Configuration
+category: package-install
+intent: Install the Neovim editor with the Omarchy-curated LazyVim configuration and color scheme themes via a post-install
+  setup script.
+install_phase: packaging
+depends_on:
+- id: OM-001
+- id: OM-007
+ordering:
+  after:
+  - id: OM-007
+translator_capabilities:
+- install-packages
+- run-post-install-setup-script
+packages:
+- neovim
+script_payload:
+  script: setup-omarchy-nvim
+  capabilities:
+  - run-post-install-setup-script

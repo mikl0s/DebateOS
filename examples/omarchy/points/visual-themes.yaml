@@ -1,0 +1,49 @@
+schema: 1
+id: omarchy/visual-themes
+name: Visual Themes
+intent: Provide the complete set of 21 selectable visual theme bundles that a user can switch between at runtime without reinstalling
+  the system.
+curator: omarchy@basecamp.com
+members:
+- id: OM-114
+  status: nice-to-have
+- id: OM-115
+  status: nice-to-have
+- id: OM-116
+  status: nice-to-have
+- id: OM-117
+  status: nice-to-have
+- id: OM-118
+  status: nice-to-have
+- id: OM-119
+  status: nice-to-have
+- id: OM-120
+  status: nice-to-have
+- id: OM-121
+  status: nice-to-have
+- id: OM-122
+  status: nice-to-have
+- id: OM-123
+  status: nice-to-have
+- id: OM-124
+  status: nice-to-have
+- id: OM-125
+  status: nice-to-have
+- id: OM-126
+  status: nice-to-have
+- id: OM-127
+  status: nice-to-have
+- id: OM-128
+  status: nice-to-have
+- id: OM-129
+  status: nice-to-have
+- id: OM-130
+  status: nice-to-have
+- id: OM-131
+  status: nice-to-have
+- id: OM-132
+  status: nice-to-have
+- id: OM-133
+  status: nice-to-have
+- id: OM-134
+  status: nice-to-have

@@ -1,0 +1,23 @@
+schema: 1
+id: OM-049
+status: required
+name: Walker Application Launcher Setup
+category: arbitrary-script
+intent: Configure the Walker application launcher as an autostart entry, set it up as a systemd user service with automatic
+  restart on crash, create a package manager post-upgrade hook to restart Walker after updates, and link the Omarchy visual
+  theme menu configuration files.
+install_phase: config
+depends_on:
+- id: OM-015
+- id: OM-028
+translator_capabilities:
+- create-xdg-autostart-entries
+- write-systemd-user-service-drop-ins
+- create-package-manager-post-update-hooks
+- create-config-symlinks
+script_payload:
+  script: setup-walker-launcher
+  capabilities:
+  - create-xdg-autostart-entries
+  - write-systemd-user-service-drop-ins
+  - create-config-symlinks

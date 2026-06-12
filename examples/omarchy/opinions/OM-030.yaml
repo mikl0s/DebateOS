@@ -1,0 +1,15 @@
+schema: 1
+id: OM-030
+status: nice-to-have
+name: ASCII Branding Assets
+category: config-dotfile
+intent: Allow users to customize the ASCII-art branding shown in the system info display and the screensaver. Copies default
+  branding assets to a user-owned branding directory.
+install_phase: config
+depends_on:
+- id: OM-028
+translator_capabilities:
+- copy-branding-assets-to-user-config
+file_assets:
+- src: omarchy-branding/
+  dst: ~/.config/omarchy/branding/

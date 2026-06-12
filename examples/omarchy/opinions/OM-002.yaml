@@ -1,0 +1,17 @@
+schema: 1
+id: OM-002
+status: required
+name: Disable Initramfs Hooks During Install
+category: service-enable
+intent: Disable automatic initramfs regeneration hooks during the installation run to prevent multiple redundant rebuilds.
+  Hooks are restored after the bootloader configuration phase completes.
+install_phase: preflight
+ordering:
+  before:
+  - id: OM-006
+translator_capabilities:
+- disable-package-manager-hooks
+- restore-package-manager-hooks
+services:
+- name: mkinitcpio-trigger
+  enable: false

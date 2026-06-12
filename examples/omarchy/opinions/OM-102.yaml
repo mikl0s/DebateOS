@@ -1,0 +1,20 @@
+schema: 1
+id: OM-102
+status: nice-to-have
+name: GTK Dark Mode and Icon Theme
+category: theming
+intent: Apply GTK theme settings for dark mode and an appropriate icon theme via desktop settings, and update the icon cache.
+  Requires a running display session and settings backend.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-015
+- id: OM-029
+translator_capabilities:
+- invoke-gsettings-to-set-desktop-theme-and-icon-theme
+- invoke-gtk-update-icon-cache
+script_payload:
+  script: apply-gtk-dark-mode
+  capabilities:
+  - invoke-gsettings-to-set-desktop-theme-and-icon-theme
+  - invoke-gtk-update-icon-cache

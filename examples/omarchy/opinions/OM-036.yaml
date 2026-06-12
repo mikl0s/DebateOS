@@ -1,0 +1,13 @@
+schema: 1
+id: OM-036
+status: required
+name: TCP MTU Probing
+category: sysctl-param
+intent: Enable TCP MTU probing to reduce connection flakiness caused by path MTU issues.
+install_phase: config
+translator_capabilities:
+- write-sysctl-drop-in
+sysctl_params:
+- key: net.ipv4.tcp_mtu_probing
+  value: '1'
+  drop_in_file: omarchy-tcp-mtu.conf

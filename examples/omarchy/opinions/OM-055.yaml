@@ -1,0 +1,18 @@
+schema: 1
+id: OM-055
+status: nice-to-have
+name: Pi Agent Omarchy Extension
+category: arbitrary-script
+intent: Install a custom Pi coding agent extension that provides Omarchy system theme awareness to the Pi agent.
+install_phase: config
+depends_on:
+- id: OM-023
+ordering:
+  after:
+  - id: OM-023
+translator_capabilities:
+- deploy-agent-extension-file
+script_payload:
+  script: deploy-pi-omarchy-extension
+  capabilities:
+  - deploy-agent-extension-file

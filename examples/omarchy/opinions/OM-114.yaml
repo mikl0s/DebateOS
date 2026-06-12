@@ -1,0 +1,14 @@
+schema: 1
+id: OM-114
+status: nice-to-have
+name: Catppuccin Dark Theme
+category: theming
+intent: Provide the Catppuccin dark (Mocha variant) visual theme bundle including desktop backgrounds, color palette definitions,
+  icon theme link, editor color scheme, lock screen image, and preview images.
+install_phase: first-run
+depends_on:
+- id: OM-029
+translator_capabilities:
+- deploy-file-asset-payloads-to-theme-directories
+theme:
+  bundle_dir: themes/catppuccin

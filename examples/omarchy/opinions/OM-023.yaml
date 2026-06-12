@@ -1,0 +1,26 @@
+schema: 1
+id: OM-023
+status: nice-to-have
+name: AI Development Tools via Runtime Package Manager
+category: npm-global-install
+intent: Install AI coding assistant and development tools as global command-line tools via the Node.js package manager.
+install_phase: packaging
+depends_on:
+- id: OM-009
+- id: OM-041
+ordering:
+  after:
+  - id: OM-041
+translator_capabilities:
+- install-npm-global-packages
+runtime_tool_installs:
+- manager: npm
+  packages:
+  - '@openai/codex'
+  - '@google/gemini-cli'
+  - '@githubnext/github-copilot-cli'
+  - opencode-ai
+  - playwright
+  - '@pi-ai/pi'
+  - ghui
+  - hunk

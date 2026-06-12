@@ -1,0 +1,28 @@
+schema: 1
+id: OM-094
+status: required
+name: Tuxedo/Clevo Keyboard Backlight Drivers
+category: hardware-conditional
+intent: Install Tuxedo/Clevo keyboard backlight DKMS drivers for Tuxedo laptops and Slimbook Executive. Blacklist the conflicting
+  legacy module. Remove any orphaned legacy module files.
+install_phase: config
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: or
+  operands:
+  - type: leaf
+    predicate: hw-dmi-sys-vendor
+    match: TUXEDO
+  - type: leaf
+    predicate: hw-dmi-sys-vendor
+    match: Slimbook
+translator_capabilities:
+- detect-system-vendor-from-dmi
+- install-dkms-driver-packages
+- write-kernel-module-blacklist-configuration
+packages:
+- tuxedo-drivers-nocompatcheck-dkms
+file_assets:
+- src: modprobe/clevo-blacklist.conf
+  dst: /etc/modprobe.d/clevo-blacklist.conf

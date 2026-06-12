@@ -1,0 +1,18 @@
+schema: 1
+id: OM-060
+status: required
+name: Plocate AC-Only Update
+category: config-dotfile
+intent: Configure the file-locate database update service to only run when the system is on AC power, preventing battery drain
+  from index rebuilds on portable hardware.
+install_phase: config
+depends_on:
+- id: OM-014
+hardware_condition:
+  type: leaf
+  predicate: hw-battery-present
+translator_capabilities:
+- write-systemd-service-drop-in-with-ac-power-condition
+file_assets:
+- src: systemd/plocate-ac-only.conf
+  dst: /etc/systemd/system/plocate-updatedb.service.d/ac-only.conf

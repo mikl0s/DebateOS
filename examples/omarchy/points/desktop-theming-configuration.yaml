@@ -1,0 +1,9 @@
+schema: 1
+id: omarchy/desktop-theming-configuration
+name: Desktop Theming Configuration
+intent: Configure the active theme system including the browser policy integration, application-specific symlinks, and Plymouth
+  boot splash branding.
+curator: omarchy@basecamp.com
+members:
+- id: OM-029
+  status: required

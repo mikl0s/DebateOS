@@ -1,0 +1,21 @@
+schema: 1
+id: OM-098
+status: required
+name: Hibernation Support
+category: arbitrary-script
+intent: 'Set up hibernation support: configure the swap device, set resume kernel parameters, and install the initramfs resume
+  hook. The initramfs rebuild is deferred to the bootloader configuration step.'
+install_phase: login
+ordering:
+  before:
+  - id: OM-099
+translator_capabilities:
+- configure-swap-resume-device
+- add-kernel-resume-parameters
+- install-initramfs-hooks
+script_payload:
+  script: setup-hibernation
+  capabilities:
+  - configure-swap-resume-device
+  - add-kernel-resume-parameters
+  - install-initramfs-hooks

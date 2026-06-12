@@ -1,0 +1,17 @@
+schema: 1
+id: omarchy/developer-toolchain
+name: Developer Toolchain
+intent: 'Install the core development tooling: language runtimes and version manager, build tools, database libraries, the
+  editor with curated plugin configuration, version control tooling, and the work-directory setup.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-009
+  status: required
+- id: OM-017
+  status: required
+- id: OM-019
+  status: required
+- id: OM-041
+  status: required
+- id: OM-042
+  status: required

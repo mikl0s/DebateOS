@@ -1,0 +1,13 @@
+schema: 1
+id: omarchy/web-applications-and-launcher-entries
+name: Web Applications and Launcher Entries
+intent: Install web applications as Chromium PWAs and configure TUI applications as windowed launcher entries with custom
+  icons and compositor layout hints.
+curator: omarchy@basecamp.com
+members:
+- id: OM-020
+  status: nice-to-have
+- id: OM-021
+  status: nice-to-have
+- id: OM-022
+  status: nice-to-have

@@ -1,0 +1,13 @@
+schema: 1
+id: OM-067
+status: required
+name: Ignore Hardware Power Button
+category: config-dotfile
+intent: Configure the system to ignore the hardware power button press, allowing the power button to be bound to a user-visible
+  power menu in the desktop environment.
+install_phase: config
+translator_capabilities:
+- modify-logind-conf-handle-power-key
+file_assets:
+- src: logind/ignore-power-button.conf
+  dst: /etc/systemd/logind.conf.d/ignore-power-button.conf

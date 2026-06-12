@@ -1,0 +1,15 @@
+schema: 1
+id: omarchy/ai-tooling
+name: AI Tooling
+intent: Install and configure all AI coding assistant and agent tooling, including native packages, runtime global installs,
+  agent skill links, and the Pi agent extension.
+curator: omarchy@basecamp.com
+members:
+- id: OM-010
+  status: required
+- id: OM-023
+  status: nice-to-have
+- id: OM-054
+  status: nice-to-have
+- id: OM-055
+  status: nice-to-have

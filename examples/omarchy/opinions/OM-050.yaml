@@ -1,0 +1,14 @@
+schema: 1
+id: OM-050
+status: required
+name: Fast Shutdown Configuration
+category: config-dotfile
+intent: 'Configure the service manager for fast shutdown: reduce the default timeout for stopping services and user sessions
+  to allow quicker power-off and reboot operations.'
+install_phase: config
+translator_capabilities:
+- deploy-systemd-system-conf-drop-in
+- deploy-systemd-user-service-drop-in
+file_assets:
+- src: systemd/fast-shutdown.conf
+  dst: /etc/systemd/system.conf.d/fast-shutdown.conf

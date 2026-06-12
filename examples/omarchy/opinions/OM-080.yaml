@@ -1,0 +1,17 @@
+schema: 1
+id: OM-080
+status: required
+name: ASUS B9406 Touchpad Fix
+category: hardware-conditional
+intent: Work around the touchpad's touch jump detection discarding all motion events on ASUS ExpertBook B9406 by masking pressure
+  axes via a libinput quirks file.
+install_phase: config
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-product-name
+  match: ExpertBook B9406
+translator_capabilities:
+- write-libinput-quirks-override-file
+file_assets:
+- src: libinput/asus-b9406-touchpad.quirks
+  dst: /etc/libinput/local-overrides.quirks

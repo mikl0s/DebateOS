@@ -1,0 +1,8 @@
+schema: 1
+id: omarchy/browser-and-web-access
+name: Browser and Web Access
+intent: Install the primary web browser and its supporting libraries.
+curator: omarchy@basecamp.com
+members:
+- id: OM-008
+  status: required

@@ -1,0 +1,14 @@
+schema: 1
+id: OM-035
+status: required
+name: Account Lockout Threshold
+category: config-dotfile
+intent: Set the account lockout threshold to ten failed attempts with a two-minute unlock timeout, and ensure the auto-login
+  session resets the fail counter on success.
+install_phase: config
+translator_capabilities:
+- modify-pam-system-auth
+- modify-pam-sddm-autologin
+file_assets:
+- src: pam-faillock.conf
+  dst: /etc/security/faillock.conf

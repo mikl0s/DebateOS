@@ -1,0 +1,19 @@
+schema: 1
+id: OM-113
+status: nice-to-have
+name: Voxtype Install Offer Notification
+category: arbitrary-script
+intent: Send a desktop notification offering to install Voxtype voice dictation. The hook script removes itself after running.
+  This is a deferred optional feature prompt, not an automatic install.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-015
+translator_capabilities:
+- send-desktop-notification
+- self-delete-hook-script-after-execution
+script_payload:
+  script: offer-voxtype-install
+  capabilities:
+  - send-desktop-notification
+  - self-delete-hook-script-after-execution

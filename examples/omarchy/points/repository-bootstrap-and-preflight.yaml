@@ -1,0 +1,17 @@
+schema: 1
+id: omarchy/repository-bootstrap-and-preflight
+name: Repository Bootstrap and Preflight
+intent: Establish the package manager configuration, apply any pending migrations, and set the install-time execution context
+  before any packages are installed.
+curator: omarchy@basecamp.com
+members:
+- id: OM-001
+  status: required
+- id: OM-002
+  status: required
+- id: OM-003
+  status: required
+- id: OM-004
+  status: required
+- id: OM-005
+  status: required

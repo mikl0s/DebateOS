@@ -1,0 +1,20 @@
+schema: 1
+id: OM-105
+status: nice-to-have
+name: HiDPI GDK Scale Detection
+category: config-dotfile
+intent: Detect the current monitor's reported scale factor from the compositor and write it as the default display scale environment
+  variable in the monitors configuration, ensuring applications render at the correct scale on HiDPI displays.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-028
+- id: OM-006
+translator_capabilities:
+- query-compositor-for-monitor-scale
+- write-scale-factor-to-compositor-environment-config
+script_payload:
+  script: detect-and-set-gdk-scale
+  capabilities:
+  - query-compositor-for-monitor-scale
+  - write-scale-factor-to-compositor-environment-config

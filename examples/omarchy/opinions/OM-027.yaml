@@ -1,0 +1,18 @@
+schema: 1
+id: OM-027
+status: required
+name: Microsoft Surface WiFi Firmware
+category: hardware-conditional
+intent: Install Marvell WiFi firmware for Microsoft Surface devices.
+install_phase: packaging
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-sys-vendor
+  match: Microsoft
+translator_capabilities:
+- install-packages
+- eval-dmi-hardware-condition
+packages:
+- linux-firmware-marvell

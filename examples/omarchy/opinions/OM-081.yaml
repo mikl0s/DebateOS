@@ -1,0 +1,20 @@
+schema: 1
+id: OM-081
+status: required
+name: ASUS ROG Audio Volume Fix
+category: hardware-conditional
+intent: Fix audio volume control on ASUS ROG laptops by enabling a soft mixer profile for the ALC285 codec. Also unmute the
+  Master control which is often muted by default.
+install_phase: config
+depends_on:
+- id: OM-028
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-chassis-vendor
+  match: ASUS
+translator_capabilities:
+- deploy-wireplumber-config-file
+- invoke-alsa-mixer-controls
+file_assets:
+- src: wireplumber/asus-rog-audio.conf
+  dst: ~/.config/wireplumber/wireplumber.conf.d/asus-rog-audio.conf

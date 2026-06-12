@@ -1,0 +1,23 @@
+schema: 1
+id: omarchy/other-vendor-hardware-support
+name: Other Vendor Hardware Support
+intent: Install hardware support for Dell, Microsoft Surface, Lenovo, Broadcom WiFi, Motorcomm Ethernet, Synaptics touchpad,
+  and Tuxedo/Clevo keyboard backlight hardware.
+curator: omarchy@basecamp.com
+members:
+- id: OM-026
+  status: required
+- id: OM-027
+  status: required
+- id: OM-089
+  status: required
+- id: OM-090
+  status: required
+- id: OM-091
+  status: required
+- id: OM-092
+  status: required
+- id: OM-093
+  status: required
+- id: OM-094
+  status: required

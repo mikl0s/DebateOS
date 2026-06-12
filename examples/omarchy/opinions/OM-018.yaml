@@ -1,0 +1,18 @@
+schema: 1
+id: OM-018
+status: required
+name: Omarchy Brand Font
+category: font-install
+intent: Deploy the custom Omarchy brand font to the user's local font directory and rebuild the font cache so the font is
+  immediately available to desktop applications.
+install_phase: packaging
+depends_on:
+- id: OM-001
+ordering:
+  after:
+  - id: OM-006
+translator_capabilities:
+- deploy-font-file
+- rebuild-font-cache
+packages:
+- omarchy-font

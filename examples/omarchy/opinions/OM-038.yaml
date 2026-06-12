@@ -1,0 +1,15 @@
+schema: 1
+id: OM-038
+status: required
+name: File Descriptor Limits
+category: sysctl-param
+intent: Raise the system-wide and per-user file descriptor limit so development tools, container daemons, and databases operate
+  without running out of file handles.
+install_phase: config
+translator_capabilities:
+- write-systemd-system-conf-drop-in
+- write-systemd-user-conf-drop-in
+sysctl_params:
+- key: fs.file-max
+  value: '524288'
+  drop_in_file: omarchy-fd-limit.conf

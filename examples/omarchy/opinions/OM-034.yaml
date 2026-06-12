@@ -1,0 +1,14 @@
+schema: 1
+id: OM-034
+status: required
+name: Increase Password Attempt Limit
+category: config-dotfile
+intent: Increase the maximum number of password entry attempts in the sudo and screen-lock tools from the default three to
+  ten, reducing accidental lockouts from mistyped passwords.
+install_phase: config
+translator_capabilities:
+- write-sudoers-drop-in
+- modify-pam-faillock-config
+file_assets:
+- src: sudoers-passwd-tries
+  dst: /etc/sudoers.d/passwd-tries

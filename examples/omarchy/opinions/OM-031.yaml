@@ -1,0 +1,15 @@
+schema: 1
+id: OM-031
+status: required
+name: Global Git Identity
+category: config-dotfile
+intent: Set the user's global git identity (name and email) from the values provided at install time, so version control commits
+  are correctly attributed from first use.
+install_phase: config
+depends_on:
+- id: OM-009
+translator_capabilities:
+- write-global-git-configuration
+file_assets:
+- src: git-config-template
+  dst: ~/.gitconfig

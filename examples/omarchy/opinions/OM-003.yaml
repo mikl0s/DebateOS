@@ -1,0 +1,22 @@
+schema: 1
+id: OM-003
+status: required
+name: Apply Pending System Migrations
+category: arbitrary-script
+intent: Run all pending system-migration scripts so the existing installation is current before new opinions are applied.
+  Mark each migration as applied so it will not re-run on future install invocations.
+install_phase: preflight
+depends_on:
+- id: OM-001
+ordering:
+  after:
+  - id: OM-001
+  before:
+  - id: OM-006
+translator_capabilities:
+- run-migration-scripts
+- maintain-applied-migrations-state
+script_payload:
+  script: run-pending-migrations
+  capabilities:
+  - run-migration-scripts

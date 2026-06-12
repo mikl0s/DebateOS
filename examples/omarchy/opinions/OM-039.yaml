@@ -1,0 +1,18 @@
+schema: 1
+id: OM-039
+status: required
+name: Keyboard Layout Detection
+category: config-dotfile
+intent: Detect the keyboard layout and variant configured in the base system and propagate those settings into the compositor
+  input configuration, so keyboard layout carries over from the install step without requiring manual re-entry.
+install_phase: config
+depends_on:
+- id: OM-028
+translator_capabilities:
+- read-system-keyboard-config
+- write-compositor-keyboard-layout
+script_payload:
+  script: detect-and-set-keyboard-layout
+  capabilities:
+  - read-system-keyboard-config
+  - write-compositor-keyboard-layout

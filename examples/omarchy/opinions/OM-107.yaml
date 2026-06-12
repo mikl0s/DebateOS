@@ -1,0 +1,21 @@
+schema: 1
+id: OM-107
+status: required
+name: Cleanup First-Run Sudoers Rule
+category: arbitrary-script
+intent: Remove the temporary first-run sudoers rule file that granted passwordless sudo access to the set of commands needed
+  during first-run configuration, restoring normal sudo behavior after all first-run scripts have completed.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-004
+ordering:
+  after:
+  - id: OM-103
+  - id: OM-104
+translator_capabilities:
+- remove-specific-sudoers-drop-in-file
+script_payload:
+  script: cleanup-first-run-sudoers
+  capabilities:
+  - remove-specific-sudoers-drop-in-file

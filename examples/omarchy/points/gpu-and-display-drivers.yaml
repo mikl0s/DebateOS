@@ -1,0 +1,13 @@
+schema: 1
+id: omarchy/gpu-and-display-drivers
+name: GPU and Display Drivers
+intent: Detect and install GPU drivers and video acceleration packages for NVIDIA, AMD, Intel, and Apple Silicon GPUs, including
+  Vulkan drivers.
+curator: omarchy@basecamp.com
+members:
+- id: OM-068
+  status: required
+- id: OM-069
+  status: required
+- id: OM-070
+  status: required

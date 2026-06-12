@@ -1,0 +1,29 @@
+schema: 1
+id: OM-012
+status: required
+name: Media and Creative Tools
+category: package-install
+intent: 'Install media consumption and creation tools: video player, audio tools, screen recorder, image viewer, image editor,
+  PDF viewer, screenshot tools, and screen annotation.'
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- mpv
+- mpv-mpris
+- alsa-utils
+- pamixer
+- playerctl
+- wireplumber
+- wiremix
+- gpu-screen-recorder
+- obs-studio
+- imv
+- pinta
+- evince
+- grim
+- slurp
+- satty
+- xournalpp

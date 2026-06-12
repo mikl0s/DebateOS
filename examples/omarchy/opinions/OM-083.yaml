@@ -1,0 +1,22 @@
+schema: 1
+id: OM-083
+status: required
+name: ASUS ROG Flow Z13 Touchpad Classification
+category: hardware-conditional
+intent: Mark the ASUS ROG Flow Z13 detachable keyboard touchpad as an integrated input device via a rule, so disable-while-typing
+  correctly pairs it with the keyboard.
+install_phase: config
+hardware_condition:
+  type: and
+  operands:
+  - type: leaf
+    predicate: hw-dmi-chassis-vendor
+    match: ASUS
+  - type: leaf
+    predicate: hw-dmi-product-name
+    match: GZ302
+translator_capabilities:
+- write-udev-rules-file-to-set-device-integration-attributes
+file_assets:
+- src: udev/asus-z13-touchpad.rules
+  dst: /etc/udev/rules.d/70-asus-z13-touchpad.rules

@@ -1,0 +1,12 @@
+schema: 1
+id: OM-040
+status: required
+name: XCompose Emoji and Identity Shortcuts
+category: config-dotfile
+intent: Configure XCompose for fast emoji input and personal identity shortcuts using CapsLock as the compose key.
+install_phase: config
+translator_capabilities:
+- write-xcompose-config
+file_assets:
+- src: xcompose-template
+  dst: ~/.XCompose

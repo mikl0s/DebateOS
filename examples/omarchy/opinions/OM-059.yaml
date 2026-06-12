@@ -1,0 +1,18 @@
+schema: 1
+id: OM-059
+status: required
+name: WiFi Power Save Mode Switching
+category: config-dotfile
+intent: 'Configure automatic WiFi power-save mode switching via rules: enable power-save on battery, disable it on AC power.
+  Only applied on systems with a battery.'
+install_phase: config
+depends_on:
+- id: OM-014
+hardware_condition:
+  type: leaf
+  predicate: hw-battery-present
+translator_capabilities:
+- write-udev-rules
+file_assets:
+- src: udev/wifi-powersave.rules
+  dst: /etc/udev/rules.d/80-wifi-powersave.rules

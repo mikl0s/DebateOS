@@ -1,0 +1,23 @@
+schema: 1
+id: OM-041
+status: required
+name: Mise Work Directory and Node.js Setup
+category: arbitrary-script
+intent: Set up a default work directory structure with a version manager configuration that adds project bin/ to PATH. Install
+  Node.js via the version manager and configure it globally.
+install_phase: config
+depends_on:
+- id: OM-009
+ordering:
+  after:
+  - id: OM-009
+  before:
+  - id: OM-023
+translator_capabilities:
+- configure-version-manager
+- set-global-runtime-versions
+script_payload:
+  script: setup-mise-work-and-nodejs
+  capabilities:
+  - configure-version-manager
+  - set-global-runtime-versions

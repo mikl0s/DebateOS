@@ -1,0 +1,14 @@
+schema: 1
+id: OM-037
+status: required
+name: Inotify File Watcher Limit
+category: sysctl-param
+intent: Increase the inotify file watcher limit from the default 8192 to 524288, sufficient for large development projects
+  using file watchers and bundlers.
+install_phase: config
+translator_capabilities:
+- write-sysctl-drop-in
+sysctl_params:
+- key: fs.inotify.max_user_watches
+  value: '524288'
+  drop_in_file: omarchy-inotify.conf

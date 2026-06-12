@@ -1,0 +1,13 @@
+schema: 1
+id: omarchy/first-run-desktop-services
+name: First-Run Desktop Services
+intent: 'Start and enable desktop services that require an active user session on first login: the Elephant application launcher,
+  SwayOSD on-screen display server, and internal monitor recovery service.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-108
+  status: required
+- id: OM-110
+  status: required
+- id: OM-111
+  status: required

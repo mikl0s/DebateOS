@@ -1,0 +1,14 @@
+schema: 1
+id: OM-109
+status: nice-to-have
+name: GTK Primary Paste
+category: config-dotfile
+intent: Enable GTK primary paste (middle-click paste from selection clipboard) as a system-wide GTK preference.
+install_phase: first-run
+execution_phase: first-run
+translator_capabilities:
+- invoke-gsettings-to-set-gtk-interface-preference
+script_payload:
+  script: enable-gtk-primary-paste
+  capabilities:
+  - invoke-gsettings-to-set-gtk-interface-preference

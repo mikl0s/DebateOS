@@ -1,0 +1,15 @@
+schema: 1
+id: OM-096
+status: required
+name: Passwordless GNOME Keyring
+category: config-dotfile
+intent: Create a pre-configured GNOME keyring file that is unlocked without a password for use with auto-login setups. This
+  prevents prompts for keyring unlock that would appear at desktop startup.
+install_phase: login
+depends_on:
+- id: OM-016
+translator_capabilities:
+- write-keyring-descriptor-files-with-correct-permissions
+file_assets:
+- src: gnome-keyrings/default.keyring
+  dst: ~/.local/share/keyrings/default.keyring

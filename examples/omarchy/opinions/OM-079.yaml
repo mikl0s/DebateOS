@@ -1,0 +1,20 @@
+schema: 1
+id: OM-079
+status: required
+name: ASUS B9406 Panel Replay Disable
+category: kernel-boot-param
+intent: Disable Panel Replay on ASUS ExpertBook B9406 to fix a display wake/update issue where the GPU's new Panel Replay
+  feature has a broken wake path on this specific panel.
+install_phase: config
+ordering:
+  before:
+  - id: OM-099
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-product-name
+  match: ExpertBook B9406
+translator_capabilities:
+- write-bootloader-entry-tool-drop-in
+kernel_params:
+- key: xe.enable_panel_replay
+  value: '0'

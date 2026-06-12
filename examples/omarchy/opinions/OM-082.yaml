@@ -1,0 +1,25 @@
+schema: 1
+id: OM-082
+status: required
+name: ASUS ROG Microphone Gain Fix
+category: hardware-conditional
+intent: Fix internal microphone gain on ASUS ROG laptops with ALC285 codec by setting the mic boost to zero and capture level
+  to 70%, then storing the ALSA state persistently.
+install_phase: config
+depends_on:
+- id: OM-081
+ordering:
+  after:
+  - id: OM-081
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-chassis-vendor
+  match: ASUS
+translator_capabilities:
+- invoke-alsa-mixer-controls
+- store-alsa-state
+script_payload:
+  script: fix-asus-rog-mic-gain
+  capabilities:
+  - invoke-alsa-mixer-controls
+  - store-alsa-state

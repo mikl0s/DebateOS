@@ -1,0 +1,22 @@
+schema: 1
+id: OM-106
+status: required
+name: Battery Monitor or Performance Mode
+category: service-enable
+intent: Enable the battery monitoring timer service on systems with a battery to provide low-battery desktop notifications.
+  On systems without a battery, set the power profile to performance mode as the permanent default.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-016
+- id: OM-058
+hardware_condition:
+  type: leaf
+  predicate: hw-battery-present
+translator_capabilities:
+- enable-systemd-user-timer-unit
+- invoke-powerprofilesctl
+services:
+- name: omarchy-battery-monitor.timer
+  enable: true
+  deferred: true

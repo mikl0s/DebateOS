@@ -1,0 +1,17 @@
+schema: 1
+id: omarchy/asus-hardware-support
+name: ASUS Hardware Support
+intent: Install ASUS-specific hardware control daemons and fix device-specific hardware issues for ASUS ROG and ExpertBook/Zenbook
+  variants.
+curator: omarchy@basecamp.com
+members:
+- id: OM-024
+  status: required
+- id: OM-078
+  status: required
+- id: OM-079
+  status: required
+- id: OM-080
+  status: required
+- id: OM-083
+  status: required

@@ -1,0 +1,24 @@
+schema: 1
+id: OM-062
+status: required
+name: Wireless Regulatory Domain
+category: hardware-conditional
+intent: Detect the system's wireless regulatory domain from the timezone configuration and set it in the wireless-regdom configuration
+  file so WiFi operates at the correct power levels and channel set for the user's country.
+install_phase: config
+depends_on:
+- id: OM-061
+- id: OM-033
+ordering:
+  after:
+  - id: OM-061
+translator_capabilities:
+- read-system-timezone
+- derive-wireless-regulatory-domain
+- write-regulatory-domain-config
+script_payload:
+  script: set-wireless-regdom
+  capabilities:
+  - read-system-timezone
+  - derive-wireless-regulatory-domain
+  - write-regulatory-domain-config

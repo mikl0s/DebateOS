@@ -1,0 +1,18 @@
+schema: 1
+id: omarchy/boot-login-and-snapshot-configuration
+name: Boot, Login, and Snapshot Configuration
+intent: 'Configure the complete boot and login stack: Plymouth boot splash, GNOME keyring for auto-login, SDDM display manager
+  with auto-login, hibernation support, and the Limine bootloader with initramfs hooks, unified kernel image generation, btrfs
+  snapshot menu, and EFI entry registration.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-095
+  status: required
+- id: OM-096
+  status: required
+- id: OM-097
+  status: required
+- id: OM-098
+  status: required
+- id: OM-099
+  status: required

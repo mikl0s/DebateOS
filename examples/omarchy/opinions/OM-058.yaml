@@ -1,0 +1,22 @@
+schema: 1
+id: OM-058
+status: required
+name: Automatic Power Profile Switching
+category: config-dotfile
+intent: Configure automatic power profile switching via rules on AC adapter plug/unplug events. Enable the power profiles
+  daemon service. Only applied on systems with a battery.
+install_phase: config
+depends_on:
+- id: OM-016
+hardware_condition:
+  type: leaf
+  predicate: hw-battery-present
+translator_capabilities:
+- write-udev-rules
+- enable-systemd-service
+services:
+- name: power-profiles-daemon.service
+  enable: true
+file_assets:
+- src: udev/power-profiles.rules
+  dst: /etc/udev/rules.d/80-power-profiles.rules

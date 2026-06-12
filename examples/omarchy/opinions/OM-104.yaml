@@ -1,0 +1,15 @@
+schema: 1
+id: OM-104
+status: required
+name: Systemd-Resolved DNS Stub
+category: dns-config
+intent: Configure the system DNS resolver to use systemd-resolved's stub listener, enabling DNSSEC validation and the resolved
+  stub resolver for all DNS queries.
+install_phase: first-run
+execution_phase: first-run
+translator_capabilities:
+- create-symlink-from-resolv-conf-to-systemd-resolved-stub
+script_payload:
+  script: setup-dns-stub-resolver
+  capabilities:
+  - create-symlink-from-resolv-conf-to-systemd-resolved-stub

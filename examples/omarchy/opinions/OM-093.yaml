@@ -1,0 +1,19 @@
+schema: 1
+id: OM-093
+status: required
+name: Synaptics InterTouch Touchpad
+category: hardware-conditional
+intent: Enable Synaptics InterTouch for touchpad devices that present as Synaptics in the input device list but whose driver
+  is not yet loaded, providing improved touchpad responsiveness.
+install_phase: config
+hardware_condition:
+  type: leaf
+  predicate: hw-input-device-name
+  match: synaptics
+translator_capabilities:
+- detect-touchpad-type-from-kernel-input-devices
+- conditionally-load-kernel-module-with-options
+script_payload:
+  script: enable-synaptics-intertouch
+  capabilities:
+  - conditionally-load-kernel-module-with-options

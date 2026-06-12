@@ -1,0 +1,12 @@
+schema: 1
+id: OM-053
+status: required
+name: Input Group Membership
+category: user-group
+intent: Add the current user to the input group so that dictation tools and game controller applications can access input
+  devices without requiring root.
+install_phase: config
+translator_capabilities:
+- add-user-to-system-group
+group_memberships:
+- group: input

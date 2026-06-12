@@ -1,0 +1,24 @@
+schema: 1
+id: OM-009
+status: required
+name: Developer Toolchain
+category: package-install
+intent: 'Install developer tooling: version manager, language runtimes (Ruby, Rust, Lua, Python), build tools, and database
+  libraries.'
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- mise
+- ruby
+- rust
+- lua
+- python
+- clang
+- llvm
+- luarocks
+- python-poetry-core
+- mariadb-libs
+- postgresql-libs

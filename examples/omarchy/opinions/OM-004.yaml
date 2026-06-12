@@ -1,0 +1,16 @@
+schema: 1
+id: OM-004
+status: required
+name: First-Run Marker and Scoped Sudo
+category: arbitrary-script
+intent: Set a marker that tells deferred first-run scripts that they should execute after the user's first login session.
+  Configure passwordless sudo access scoped to the exact set of commands those first-run scripts will need.
+install_phase: preflight
+translator_capabilities:
+- write-persistent-state-marker
+- configure-scoped-sudoers
+script_payload:
+  script: set-first-run-marker-and-sudoers
+  capabilities:
+  - write-persistent-state-marker
+  - configure-scoped-sudoers

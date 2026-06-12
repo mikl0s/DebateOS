@@ -1,0 +1,33 @@
+schema: 1
+id: OM-014
+status: required
+name: System Utilities and Hardware Tools
+category: package-install
+intent: Install system utilities covering Bluetooth management, disk tools, file manager and extensions, display brightness
+  control, system monitoring, file search, and network tools.
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- bluetui
+- bolt
+- gnome-disk-utility
+- dosfstools
+- exfatprogs
+- nautilus
+- nautilus-python
+- sushi
+- brightnessctl
+- asdcontrol
+- btop
+- inxi
+- impala
+- usage
+- dua-cli
+- plocate
+- iwd
+- inetutils
+- wireless-regdb
+- whois

@@ -1,0 +1,13 @@
+schema: 1
+id: omarchy/system-utilities-and-hardware-tools
+name: System Utilities and Hardware Tools
+intent: Install system utilities covering Bluetooth management, disk tools, file manager and extensions, display brightness
+  control, system monitoring, file search, and network tools.
+curator: omarchy@basecamp.com
+members:
+- id: OM-014
+  status: required
+- id: OM-047
+  status: required
+- id: OM-053
+  status: required

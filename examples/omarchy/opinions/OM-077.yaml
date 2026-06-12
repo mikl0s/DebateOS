@@ -1,0 +1,26 @@
+schema: 1
+id: OM-077
+status: required
+name: Intel PTL Sound Open Firmware
+category: hardware-conditional
+intent: Install Sound Open Firmware for the audio DSP on Intel Panther Lake systems that are not Dell XPS. Without this firmware,
+  the DSP fails to initialize and only a null audio device appears.
+install_phase: config
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: and
+  operands:
+  - type: leaf
+    predicate: hw-cpu-vendor
+    values:
+    - GenuineIntel
+  - type: not
+    operands:
+    - type: leaf
+      predicate: hw-dmi-product-name
+      match: XPS
+translator_capabilities:
+- install-firmware-packages
+packages:
+- sof-firmware

@@ -1,0 +1,20 @@
+schema: 1
+id: OM-085
+status: required
+name: Framework 16 Keyboard HID udev Rule
+category: hardware-conditional
+intent: Install a rule that grants unprivileged access to the Framework 16 keyboard HID device for RGB control. Without this
+  rule, RGB control requires root.
+install_phase: config
+depends_on:
+- id: OM-025
+- id: OM-001
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-product-name
+  match: Framework 16
+translator_capabilities:
+- deploy-udev-rules-file
+file_assets:
+- src: udev/framework16-qmk-hid.rules
+  dst: /etc/udev/rules.d/70-framework16-qmk-hid.rules

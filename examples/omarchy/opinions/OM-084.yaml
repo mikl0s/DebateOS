@@ -1,0 +1,18 @@
+schema: 1
+id: OM-084
+status: required
+name: Framework 13 AMD Audio Profile
+category: hardware-conditional
+intent: Set the audio card profile on Framework 13 AMD laptops to a specific profile that enables both microphone inputs and
+  the speaker.
+install_phase: config
+hardware_condition:
+  type: leaf
+  predicate: hw-audio-card-name
+  match: Family 17h/19h
+translator_capabilities:
+- invoke-pipewire-card-profile-selection
+script_payload:
+  script: set-framework-13-amd-audio-profile
+  capabilities:
+  - invoke-pipewire-card-profile-selection

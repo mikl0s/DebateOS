@@ -1,0 +1,14 @@
+schema: 1
+id: OM-057
+status: required
+name: Kernel Modules Cleanup Service
+category: service-enable
+intent: Enable the kernel modules cleanup service, which removes orphaned kernel module files after kernel upgrades.
+install_phase: config
+depends_on:
+- id: OM-001
+translator_capabilities:
+- enable-systemd-service-unit
+services:
+- name: kernel-modules-hook.service
+  enable: true

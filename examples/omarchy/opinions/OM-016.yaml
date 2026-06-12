@@ -1,0 +1,26 @@
+schema: 1
+id: OM-016
+status: required
+name: Security and Network Services
+category: package-install
+intent: 'Install system security and administration tools: firewall, printer support, network service discovery, cryptographic
+  keyring, and power management daemon.'
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- ufw
+- ufw-docker
+- cups
+- cups-browsed
+- cups-filters
+- cups-pdf
+- avahi
+- nss-mdns
+- gnome-keyring
+- libsecret
+- gnome-calculator
+- power-profiles-daemon
+- plymouth

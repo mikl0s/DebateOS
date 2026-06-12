@@ -1,0 +1,14 @@
+schema: 1
+id: omarchy/networking-and-connectivity-configuration
+name: Networking and Connectivity Configuration
+intent: Enable and configure network management, wireless regulatory domain, Bluetooth, printing services, and DNS resolution.
+curator: omarchy@basecamp.com
+members:
+- id: OM-061
+  status: required
+- id: OM-062
+  status: required
+- id: OM-064
+  status: required
+- id: OM-065
+  status: required

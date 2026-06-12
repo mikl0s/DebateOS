@@ -1,0 +1,18 @@
+schema: 1
+id: OM-087
+status: required
+name: MacBook NVMe Suspend Fix
+category: hardware-conditional
+intent: Fix NVMe drive wake-from-suspend failures on affected MacBook models by installing a service that disables D3cold
+  power state for the NVMe controller.
+install_phase: config
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-product-name
+  match: MacBook
+translator_capabilities:
+- read-dmi-product-name
+- write-and-enable-systemd-service-unit
+services:
+- name: fix-macbook-nvme-d3cold.service
+  enable: true

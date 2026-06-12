@@ -1,0 +1,18 @@
+schema: 1
+id: OM-091
+status: required
+name: Microsoft Surface Keyboard Modules
+category: hardware-conditional
+intent: Configure the initramfs to include the Surface-specific kernel modules required for keyboard input on Microsoft Surface
+  devices.
+install_phase: config
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-sys-vendor
+  match: Microsoft
+translator_capabilities:
+- detect-loaded-kernel-modules
+- write-mkinitcpio-module-list-configuration
+file_assets:
+- src: mkinitcpio/surface-keyboard.conf
+  dst: /etc/mkinitcpio.conf.d/surface-keyboard.conf

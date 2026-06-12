@@ -1,0 +1,21 @@
+schema: 1
+id: OM-103
+status: required
+name: Firewall Configuration
+category: firewall-rule
+intent: Configure the system firewall with a default deny-inbound policy, allow all outbound traffic, allow local file sharing
+  peer-to-peer port, allow container DNS, and enable the firewall service on boot.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-016
+translator_capabilities:
+- invoke-ufw-to-configure-firewall-rules
+- invoke-ufw-docker-for-container-rules
+- enable-ufw-systemd-service
+script_payload:
+  script: configure-firewall
+  capabilities:
+  - invoke-ufw-to-configure-firewall-rules
+  - invoke-ufw-docker-for-container-rules
+  - enable-ufw-systemd-service

@@ -1,0 +1,15 @@
+schema: 1
+id: OM-052
+status: required
+name: Brightness Control Sudo Access
+category: config-dotfile
+intent: Grant passwordless sudo access specifically for the display brightness-control tool, allowing the current user to
+  control brightness without a password.
+install_phase: config
+depends_on:
+- id: OM-014
+translator_capabilities:
+- write-sudoers-nopasswd-drop-in
+file_assets:
+- src: sudoers-asdcontrol
+  dst: /etc/sudoers.d/asdcontrol

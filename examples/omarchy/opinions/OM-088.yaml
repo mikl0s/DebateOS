@@ -1,0 +1,44 @@
+schema: 1
+id: OM-088
+status: required
+name: Apple T2 Full Support Stack
+category: hardware-conditional
+intent: Install full Apple T2 chip support including T2-compatible kernel, audio firmware, WiFi/Bluetooth firmware, fan control
+  daemon, and Touch Bar driver. Add user to video group for Touch Bar access. Enable T2 services. Configure kernel modules
+  and parameters for T2 compatibility.
+install_phase: config
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: leaf
+  predicate: hw-pci-id
+  values:
+  - 106b:1801
+  - 106b:1802
+translator_capabilities:
+- detect-t2-chip-by-pci-id
+- install-t2-specific-kernel-and-hardware-packages
+- enable-multiple-systemd-services
+- write-module-load-configurations
+- write-mkinitcpio-module-list
+- write-bootloader-kernel-parameters
+packages:
+- linux-t2
+- apple-t2-audio-config
+- apple-bcm-firmware
+- t2fanrd
+- tiny-dfr
+services:
+- name: t2fanrd.service
+  enable: true
+- name: tiny-dfr.service
+  enable: true
+group_memberships:
+- group: video
+kernel_params:
+- key: intel_iommu
+  value: 'on'
+- key: iommu
+  value: pt
+- key: pcie_ports
+  value: compat

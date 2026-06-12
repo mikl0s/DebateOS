@@ -1,0 +1,18 @@
+schema: 1
+id: OM-061
+status: required
+name: Wireless Networking Daemon
+category: hardware-conditional
+intent: Enable the wireless networking daemon and disable the systemd-networkd-wait-online service to prevent boot timeout
+  on systems where network is managed by the wireless daemon rather than networkd.
+install_phase: config
+depends_on:
+- id: OM-014
+translator_capabilities:
+- enable-systemd-service-unit
+- disable-and-mask-systemd-service-unit
+services:
+- name: iwd.service
+  enable: true
+- name: systemd-networkd-wait-online.service
+  enable: false

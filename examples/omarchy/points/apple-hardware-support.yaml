@@ -1,0 +1,13 @@
+schema: 1
+id: omarchy/apple-hardware-support
+name: Apple Hardware Support
+intent: 'Install and configure Apple-specific hardware support: SPI keyboard driver, NVMe suspend fix, and full T2 chip support
+  stack.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-086
+  status: required
+- id: OM-087
+  status: required
+- id: OM-088
+  status: required

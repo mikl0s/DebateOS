@@ -1,0 +1,13 @@
+schema: 1
+id: OM-063
+status: required
+name: Apple-Style Function Key Mode
+category: config-dotfile
+intent: Configure Apple-style keyboards to treat the top-row function keys as standard F-keys by default rather than media
+  keys.
+install_phase: config
+translator_capabilities:
+- write-kernel-module-option-config
+file_assets:
+- src: modprobe/hid_apple.conf
+  dst: /etc/modprobe.d/hid_apple.conf

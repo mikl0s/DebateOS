@@ -1,0 +1,36 @@
+schema: 1
+id: OM-099
+status: required
+name: Limine Bootloader Configuration
+category: bootloader-config
+intent: Configure the Limine bootloader with mkinitcpio hooks including Plymouth and btrfs-overlayfs. Set up unified kernel
+  image generation. Configure the btrfs snapshot boot menu. Set up the Thunderbolt module. Create a root snapper configuration
+  and disable btrfs quotas for performance. Enable the snapshot sync service. Restore initramfs hooks disabled earlier. Trigger
+  a full unified kernel image rebuild. Register the Limine EFI boot entry.
+install_phase: login
+depends_on:
+- id: OM-002
+- id: OM-095
+- id: OM-098
+ordering:
+  after:
+  - id: OM-095
+  - id: OM-098
+translator_capabilities:
+- configure-mkinitcpio-hooks-and-modules
+- manage-limine-bootloader-installation
+- create-snapper-configuration
+- disable-btrfs-quota-accounting
+- enable-systemd-service
+- manage-efi-boot-entries
+bootloader:
+  name: limine
+  snapshot: true
+packages:
+- limine
+- limine-mkinitcpio-hook
+- limine-snapper-sync
+- snapper
+services:
+- name: limine-snapper-sync.service
+  enable: true

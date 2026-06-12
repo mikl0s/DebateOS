@@ -1,0 +1,13 @@
+schema: 1
+id: OM-051
+status: required
+name: FUSE Unmount on Suspend Hook
+category: arbitrary-script
+intent: Install a system-sleep hook that unmounts FUSE filesystems before suspend, preventing filesystem corruption on systems
+  with active FUSE mounts.
+install_phase: config
+translator_capabilities:
+- install-executable-sleep-hook-script
+file_assets:
+- src: sleep-hooks/unmount-fuse.sh
+  dst: /usr/lib/systemd/system-sleep/unmount-fuse

@@ -1,0 +1,19 @@
+schema: 1
+id: OM-020
+status: nice-to-have
+name: Application Icon Assets
+category: arbitrary-script
+intent: Deploy application icon assets to the user's local application icons directory so that custom launcher entries have
+  the correct visual icons.
+install_phase: packaging
+depends_on:
+- id: OM-015
+ordering:
+  after:
+  - id: OM-015
+translator_capabilities:
+- copy-icon-files-to-app-icon-directory
+script_payload:
+  script: deploy-app-icons
+  capabilities:
+  - copy-icon-files-to-app-icon-directory

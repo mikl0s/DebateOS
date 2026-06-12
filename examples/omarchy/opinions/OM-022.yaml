@@ -1,0 +1,16 @@
+schema: 1
+id: OM-022
+status: nice-to-have
+name: TUI Application Launcher Entries
+category: arbitrary-script
+intent: Install terminal UI applications as windowed launcher entries with custom icons and compositor layout mode hints.
+install_phase: packaging
+depends_on:
+- id: OM-020
+- id: OM-015
+translator_capabilities:
+- create-desktop-launcher-entries-with-compositor-hints
+script_payload:
+  script: install-tui-launchers
+  capabilities:
+  - create-desktop-launcher-entries-with-compositor-hints

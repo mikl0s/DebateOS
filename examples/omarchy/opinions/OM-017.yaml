@@ -1,0 +1,23 @@
+schema: 1
+id: OM-017
+status: required
+name: Development Support Packages
+category: package-install
+intent: 'Install development support packages: version control tools, data processing utilities, session tools, Wayland clipboard,
+  image processing, OCR, and system bindings.'
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- github-cli
+- jq
+- xmlstarlet
+- wl-clipboard
+- imagemagick
+- ffmpegthumbnailer
+- tesseract
+- tesseract-data-eng
+- python-gobject
+- python-yaml

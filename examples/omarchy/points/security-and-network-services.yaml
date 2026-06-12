@@ -1,0 +1,9 @@
+schema: 1
+id: omarchy/security-and-network-services
+name: Security and Network Services
+intent: Install and configure system security tools including firewall, printing support, network service discovery, cryptographic
+  keyring, and power management daemon.
+curator: omarchy@basecamp.com
+members:
+- id: OM-016
+  status: required

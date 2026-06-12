@@ -1,0 +1,19 @@
+schema: 1
+id: OM-042
+status: required
+name: Fix Powerprofilesctl Python Shebang
+category: arbitrary-script
+intent: Fix the powerprofilesctl script to use the system Python interpreter instead of the version-manager-managed Python,
+  preventing version conflicts.
+install_phase: config
+depends_on:
+- id: OM-041
+ordering:
+  after:
+  - id: OM-041
+translator_capabilities:
+- rewrite-shebang-line
+script_payload:
+  script: fix-powerprofilesctl-shebang
+  capabilities:
+  - rewrite-shebang-line

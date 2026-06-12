@@ -1,0 +1,14 @@
+schema: 1
+id: OM-032
+status: required
+name: GPG Daemon Keyserver Configuration
+category: config-dotfile
+intent: Configure the GPG daemon to use multiple keyservers for improved reliability. Deploy the configuration to the system-wide
+  GnuPG config directory and restart the daemon.
+install_phase: config
+translator_capabilities:
+- deploy-gpg-daemon-config
+- restart-gpg-daemon
+file_assets:
+- src: gnupg/gpg-agent.conf
+  dst: /etc/gnupg/gpg-agent.conf

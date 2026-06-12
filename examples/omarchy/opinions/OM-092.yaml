@@ -1,0 +1,19 @@
+schema: 1
+id: OM-092
+status: required
+name: Motorcomm YT6801 Ethernet Driver
+category: hardware-conditional
+intent: Install DKMS driver for the Motorcomm YT6801 Ethernet adapter used in the Slimbook Executive laptop.
+install_phase: config
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: leaf
+  predicate: hw-pci-vendor
+  values:
+  - '0x1d17'
+translator_capabilities:
+- detect-pci-device-by-name-pattern
+- install-dkms-driver-packages
+packages:
+- yt6801-dkms

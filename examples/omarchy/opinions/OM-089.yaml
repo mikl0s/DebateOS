@@ -1,0 +1,17 @@
+schema: 1
+id: OM-089
+status: required
+name: Lenovo Yoga Pro 7 Bass Speaker Fix
+category: hardware-conditional
+intent: Fix the bass speaker output on Lenovo Yoga Pro 7 14IAH10 by writing a kernel module option that applies a pin quirk
+  to route audio to both amplifier channels on the ALC287 codec.
+install_phase: config
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-product-name
+  match: Yoga Pro 7 14IAH10
+translator_capabilities:
+- write-kernel-module-option-config-for-sound-driver-pin-quirk
+file_assets:
+- src: modprobe/yoga-pro7-bass.conf
+  dst: /etc/modprobe.d/yoga-pro7-bass.conf

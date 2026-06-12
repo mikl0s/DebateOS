@@ -1,0 +1,18 @@
+schema: 1
+id: OM-111
+status: required
+name: SwayOSD On-Screen Display Service
+category: service-enable
+intent: Start and enable the SwayOSD on-screen display server service, which provides visual feedback overlays for volume,
+  brightness, and caps-lock changes.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-015
+translator_capabilities:
+- reload-systemd-user-daemon
+- enable-and-start-user-scoped-systemd-service
+services:
+- name: swayosd-server.service
+  enable: true
+  deferred: true

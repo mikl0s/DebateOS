@@ -1,0 +1,17 @@
+schema: 1
+id: OM-011
+status: required
+name: Containerization Tools
+category: package-install
+intent: 'Install containerization and virtualization tools: container engine, compose, build plugin, and cross-architecture
+  emulation.'
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- docker
+- docker-compose
+- docker-buildx
+- qemu-user-static-binfmt

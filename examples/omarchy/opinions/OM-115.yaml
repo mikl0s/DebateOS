@@ -1,0 +1,14 @@
+schema: 1
+id: OM-115
+status: nice-to-have
+name: Catppuccin Latte Theme
+category: theming
+intent: Provide the Catppuccin Latte (light variant) visual theme bundle with a light color palette and the same structure
+  as the Catppuccin dark bundle.
+install_phase: first-run
+depends_on:
+- id: OM-029
+translator_capabilities:
+- deploy-file-asset-payloads-to-theme-directories
+theme:
+  bundle_dir: themes/catppuccin-latte

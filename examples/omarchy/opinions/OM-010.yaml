@@ -1,0 +1,13 @@
+schema: 1
+id: OM-010
+status: required
+name: AI Assistant Native Packages
+category: package-install
+intent: Install AI assistant tools that run as native applications or integration layers.
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- claude-code

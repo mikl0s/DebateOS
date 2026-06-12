@@ -1,0 +1,21 @@
+schema: 1
+id: OM-029
+status: required
+name: Desktop Theme System Configuration
+category: theming
+intent: 'Configure the desktop theme system: create the user theme directory, set up browser policy for theme integration,
+  activate the default theme (Tokyo Night), create per-application theme asset symlinks, and set the browser to follow system
+  color scheme.'
+install_phase: config
+depends_on:
+- id: OM-028
+ordering:
+  after:
+  - id: OM-028
+translator_capabilities:
+- manage-multi-app-theme-system
+- write-browser-policy-files
+- create-config-symlinks
+theme:
+  bundle_dir: themes/tokyo-night
+  is_default: true

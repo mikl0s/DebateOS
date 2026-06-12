@@ -1,0 +1,14 @@
+schema: 1
+id: OM-132
+status: nice-to-have
+name: Tokyo Night Theme
+category: theming
+intent: Provide the Tokyo Night visual theme bundle. This is the default theme activated during install.
+install_phase: first-run
+depends_on:
+- id: OM-029
+translator_capabilities:
+- deploy-file-asset-payloads-to-theme-directories
+theme:
+  bundle_dir: themes/tokyo-night
+  is_default: true

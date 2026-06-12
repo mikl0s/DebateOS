@@ -1,0 +1,15 @@
+schema: 1
+id: omarchy/first-run-gtk-and-user-preferences
+name: First-Run GTK and User Preferences
+intent: Apply GTK/GNOME theme settings, enable primary paste, and deliver onboarding notifications — all of which require
+  a running display session and settings backend.
+curator: omarchy@basecamp.com
+members:
+- id: OM-102
+  status: nice-to-have
+- id: OM-109
+  status: nice-to-have
+- id: OM-112
+  status: nice-to-have
+- id: OM-113
+  status: nice-to-have

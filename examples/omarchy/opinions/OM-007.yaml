@@ -1,0 +1,25 @@
+schema: 1
+id: OM-007
+status: required
+name: Terminal and Shell Toolchain
+category: package-install
+intent: 'Install the primary terminal emulator (foot) and terminal-multiplexer (tmux) with supporting tools: shell completion,
+  modern shell enhancements, navigation, file browsing, and search utilities.'
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- foot
+- tmux
+- starship
+- zoxide
+- bat
+- eza
+- fd
+- ripgrep
+- fzf
+- tldr
+- tree-sitter-cli
+- fastfetch

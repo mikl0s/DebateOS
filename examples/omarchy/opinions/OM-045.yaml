@@ -1,0 +1,16 @@
+schema: 1
+id: OM-045
+status: required
+name: XDG User Directories
+category: config-dotfile
+intent: Configure XDG user directories to point standard directories to home subdirectories, and remap unused directories
+  to home itself to prevent them from appearing in the file manager sidebar.
+install_phase: config
+depends_on:
+- id: OM-015
+translator_capabilities:
+- invoke-xdg-user-dirs-update
+- write-gtk-bookmarks-file
+file_assets:
+- src: user-dirs.dirs
+  dst: ~/.config/user-dirs.dirs

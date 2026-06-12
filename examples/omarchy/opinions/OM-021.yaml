@@ -1,0 +1,22 @@
+schema: 1
+id: OM-021
+status: nice-to-have
+name: Web Applications as Chromium PWAs
+category: arbitrary-script
+intent: Install a curated set of web applications as Chromium Progressive Web Apps with desktop launcher entries, custom icons,
+  and URL-scheme handler registrations.
+install_phase: packaging
+depends_on:
+- id: OM-008
+- id: OM-020
+ordering:
+  after:
+  - id: OM-020
+translator_capabilities:
+- create-desktop-launcher-entries
+- register-url-scheme-handlers
+script_payload:
+  script: install-chromium-pwas
+  capabilities:
+  - create-desktop-launcher-entries
+  - register-url-scheme-handlers

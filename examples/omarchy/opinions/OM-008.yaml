@@ -1,0 +1,13 @@
+schema: 1
+id: OM-008
+status: required
+name: Web Browser
+category: package-install
+intent: Install the primary web browser (Chromium) and supporting libraries for web content rendering and network stack.
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- chromium

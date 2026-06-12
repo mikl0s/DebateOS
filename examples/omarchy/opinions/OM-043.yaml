@@ -1,0 +1,25 @@
+schema: 1
+id: OM-043
+status: required
+name: Docker Daemon Configuration
+category: service-enable
+intent: Configure the container daemon with log size limits, a fixed bridge IP, and DNS pointing to the host resolver. Expose
+  the stub resolver to the container bridge network. Enable socket activation. Add the current user to the container access
+  group. Prevent the daemon from blocking system boot.
+install_phase: config
+depends_on:
+- id: OM-011
+ordering:
+  after:
+  - id: OM-011
+translator_capabilities:
+- write-docker-daemon-config
+- configure-systemd-resolved-drop-in
+- enable-systemd-socket
+- add-user-to-group
+- write-systemd-service-drop-in
+services:
+- name: docker.socket
+  enable: true
+group_memberships:
+- group: docker

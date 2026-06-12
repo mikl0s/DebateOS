@@ -1,0 +1,13 @@
+schema: 1
+id: omarchy/battery-and-power-management
+name: Battery and Power Management
+intent: Configure power profile switching and WiFi power-save mode based on AC adapter state, restrict the locate database
+  update to AC power, and manage battery monitoring.
+curator: omarchy@basecamp.com
+members:
+- id: OM-058
+  status: required
+- id: OM-059
+  status: required
+- id: OM-060
+  status: required

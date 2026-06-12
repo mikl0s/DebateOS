@@ -1,0 +1,27 @@
+schema: 1
+id: OM-068
+status: required
+name: NVIDIA GPU Drivers
+category: hardware-conditional
+intent: 'Detect NVIDIA GPUs and install the appropriate driver stack: open DKMS drivers with video acceleration support for
+  newer GPUs, or legacy DKMS drivers for older GPU generations. Configure early kernel module loading and set compositor environment
+  variables appropriate to the GPU generation.'
+install_phase: config
+depends_on:
+- id: OM-001
+- id: OM-028
+hardware_condition:
+  type: leaf
+  predicate: hw-pci-vendor
+  values:
+  - 10de
+translator_capabilities:
+- detect-gpu-model
+- install-dkms-driver-packages
+- write-modprobe-kernel-module-options
+- write-mkinitcpio-config-drop-in
+- append-compositor-environment-variable-declarations
+packages:
+- nvidia-open-dkms
+- nvidia-utils
+- libva-nvidia-driver

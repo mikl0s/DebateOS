@@ -1,0 +1,18 @@
+schema: 1
+id: OM-026
+status: required
+name: Dell XPS Haptic Touchpad Driver
+category: hardware-conditional
+intent: Install haptic touchpad driver for Dell XPS laptops with haptic touchpad hardware.
+install_phase: packaging
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-product-name
+  match: XPS
+translator_capabilities:
+- install-packages
+- eval-dmi-hardware-condition
+packages:
+- libpinch

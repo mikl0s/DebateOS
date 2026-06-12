@@ -1,0 +1,13 @@
+schema: 1
+id: OM-120
+status: nice-to-have
+name: Hackerman Theme
+category: theming
+intent: Provide the Hackerman dark green terminal-aesthetic visual theme bundle.
+install_phase: first-run
+depends_on:
+- id: OM-029
+translator_capabilities:
+- deploy-file-asset-payloads-to-theme-directories
+theme:
+  bundle_dir: themes/hackerman

@@ -1,0 +1,9 @@
+schema: 1
+id: omarchy/terminal-and-shell-toolchain
+name: Terminal and Shell Toolchain
+intent: Install and configure the primary terminal emulator, multiplexer, and shell enhancement tools that provide the daily
+  command-line working environment.
+curator: omarchy@basecamp.com
+members:
+- id: OM-007
+  status: required

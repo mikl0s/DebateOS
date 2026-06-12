@@ -1,0 +1,18 @@
+schema: 1
+id: OM-073
+status: required
+name: Intel IPU7 MIPI Camera Support
+category: hardware-conditional
+intent: Install MIPI camera support for Intel IPU7 hardware found in recent Intel Panther Lake laptops.
+install_phase: config
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: leaf
+  predicate: hw-acpi-hid
+  match: OVTI08F4
+translator_capabilities:
+- probe-acpi-device-ids
+- install-camera-firmware-driver-packages
+packages:
+- ipu7-camera-firmware

@@ -1,0 +1,19 @@
+schema: 1
+id: OM-056
+status: nice-to-have
+name: Hyprland Feature Toggle Flags
+category: config-dotfile
+intent: Initialize the Hyprland feature toggle flags file, which controls which optional compositor features are enabled or
+  disabled at runtime.
+install_phase: config
+depends_on:
+- id: OM-028
+- id: OM-046
+ordering:
+  after:
+  - id: OM-046
+translator_capabilities:
+- copy-lua-config-file-to-user-state-directory
+file_assets:
+- src: omarchy-toggles.lua
+  dst: ~/.local/state/omarchy/toggles.lua

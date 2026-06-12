@@ -1,0 +1,38 @@
+schema: 1
+id: OM-044
+status: required
+name: System Default MIME Associations
+category: mime-type
+intent: 'Configure the system default applications for all major MIME types: file manager for directories, image viewer for
+  images, document viewer for PDF, browser for web URLs, video player for all video formats, email client for mailto links,
+  and editor for text and source files.'
+install_phase: config
+depends_on:
+- id: OM-008
+- id: OM-012
+- id: OM-015
+ordering:
+  after:
+  - id: OM-021
+translator_capabilities:
+- register-mime-type-associations
+- rebuild-desktop-application-database
+mime_associations:
+- mime_pattern: inode/directory
+  app_id: org.gnome.Nautilus.desktop
+- mime_pattern: image/*
+  app_id: imv.desktop
+- mime_pattern: application/pdf
+  app_id: org.gnome.Evince.desktop
+- mime_pattern: text/html
+  app_id: chromium.desktop
+- mime_pattern: x-scheme-handler/http
+  app_id: chromium.desktop
+- mime_pattern: x-scheme-handler/https
+  app_id: chromium.desktop
+- mime_pattern: video/*
+  app_id: mpv.desktop
+- mime_pattern: x-scheme-handler/mailto
+  app_id: hey.desktop
+- mime_pattern: text/plain
+  app_id: nvim.desktop

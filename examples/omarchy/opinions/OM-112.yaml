@@ -1,0 +1,17 @@
+schema: 1
+id: OM-112
+status: nice-to-have
+name: Welcome Notification
+category: arbitrary-script
+intent: Send a desktop notification welcoming the user and explaining the key keyboard shortcuts for the keybinding cheatsheet,
+  application launcher, and system menu.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-015
+translator_capabilities:
+- send-desktop-notifications-with-structured-text
+script_payload:
+  script: send-welcome-notification
+  capabilities:
+  - send-desktop-notifications-with-structured-text

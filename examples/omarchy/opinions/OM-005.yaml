@@ -1,0 +1,14 @@
+schema: 1
+id: OM-005
+status: required
+name: Log Installation Environment
+category: arbitrary-script
+intent: Log the installation environment variables to aid debugging and provide a reproducible record of the install-time
+  inputs.
+install_phase: preflight
+translator_capabilities:
+- log-structured-key-value-data
+script_payload:
+  script: log-install-env
+  capabilities:
+  - log-structured-key-value-data

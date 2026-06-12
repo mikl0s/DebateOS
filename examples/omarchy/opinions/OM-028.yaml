@@ -1,0 +1,19 @@
+schema: 1
+id: OM-028
+status: required
+name: Application Configuration Tree
+category: config-dotfile
+intent: Deploy the complete set of application configuration files to the user's config directory, establishing the baseline
+  Omarchy configuration for all desktop applications. Also deploy the Omarchy default shell startup file.
+install_phase: config
+depends_on:
+- id: OM-006
+ordering:
+  after:
+  - id: OM-017
+translator_capabilities:
+- deploy-config-file-tree
+- deploy-shell-startup-file
+file_assets:
+- src: omarchy-config/
+  dst: ~/.config/

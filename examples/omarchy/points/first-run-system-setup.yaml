@@ -1,0 +1,19 @@
+schema: 1
+id: omarchy/first-run-system-setup
+name: First-Run System Setup
+intent: 'Perform one-time setup steps that require a live display session after the user''s first login: network connectivity
+  check, firewall configuration, DNS resolver symlink, battery monitor setup, and post-first-run sudoers cleanup.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-101
+  status: required
+- id: OM-103
+  status: required
+- id: OM-104
+  status: required
+- id: OM-105
+  status: nice-to-have
+- id: OM-106
+  status: required
+- id: OM-107
+  status: required

@@ -1,0 +1,9 @@
+schema: 1
+id: omarchy/productivity-and-communication
+name: Productivity and Communication Applications
+intent: 'Install personal productivity and communication applications: note-taking, secure messaging, office suite, markdown
+  editor, audio streaming, and local file sharing.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-013
+  status: required

@@ -1,0 +1,12 @@
+schema: 1
+id: OM-066
+status: required
+name: Disable USB Autosuspend
+category: config-dotfile
+intent: Disable USB autosuspend globally to prevent peripherals from disconnecting when the system suspends their USB port.
+install_phase: config
+translator_capabilities:
+- write-kernel-module-option-config-to-disable-usb-autosuspend
+file_assets:
+- src: modprobe/usbcore-autosuspend.conf
+  dst: /etc/modprobe.d/usbcore-autosuspend.conf

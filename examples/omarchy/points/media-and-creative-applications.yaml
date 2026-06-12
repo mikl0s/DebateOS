@@ -1,0 +1,9 @@
+schema: 1
+id: omarchy/media-and-creative-applications
+name: Media and Creative Applications
+intent: 'Install the full suite of media consumption and creation tools: video player, audio tools, screen recorder, image
+  viewer, image editor, PDF viewer, screenshot tools, and screen annotation.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-012
+  status: required

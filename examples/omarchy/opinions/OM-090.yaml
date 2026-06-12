@@ -1,0 +1,25 @@
+schema: 1
+id: OM-090
+status: required
+name: Broadcom WiFi DKMS Drivers
+category: hardware-conditional
+intent: Install Broadcom WiFi DKMS drivers for MacBook and other systems with BCM4360 or BCM4331 chipsets.
+install_phase: config
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: or
+  operands:
+  - type: leaf
+    predicate: hw-pci-id
+    values:
+    - 14e4:43a0
+  - type: leaf
+    predicate: hw-pci-id
+    values:
+    - 14e4:4331
+translator_capabilities:
+- read-pci-device-ids
+- install-dkms-wifi-driver-packages
+packages:
+- broadcom-wl-dkms

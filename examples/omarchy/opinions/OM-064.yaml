@@ -1,0 +1,18 @@
+schema: 1
+id: OM-064
+status: required
+name: Bluetooth Service and Audio Profile
+category: service-enable
+intent: Enable the Bluetooth service so that Bluetooth devices can be paired and connected. Configure Bluetooth to remember
+  the last power state across reboots. Configure audio for automatic Bluetooth audio profile connection.
+install_phase: config
+depends_on:
+- id: OM-014
+- id: OM-028
+translator_capabilities:
+- enable-systemd-service-unit
+- modify-config-file-entry
+- deploy-wireplumber-config-drop-in
+services:
+- name: bluetooth.service
+  enable: true

@@ -1,0 +1,19 @@
+schema: 1
+id: OM-013
+status: required
+name: Productivity and Communication Applications
+category: package-install
+intent: 'Install personal productivity and communication applications: note-taking, secure messaging, office suite, markdown
+  editor, audio streaming, and local file sharing.'
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- obsidian
+- signal-desktop
+- libreoffice-fresh
+- spotify
+- typora
+- localsend

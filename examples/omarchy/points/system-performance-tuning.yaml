@@ -1,0 +1,15 @@
+schema: 1
+id: omarchy/system-performance-tuning
+name: System Performance Tuning
+intent: 'Tune system kernel and resource parameters for a developer-oriented desktop: inotify watchers, file descriptor limits,
+  TCP MTU probing, and fast shutdown timeouts.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-036
+  status: required
+- id: OM-037
+  status: required
+- id: OM-038
+  status: required
+- id: OM-050
+  status: required

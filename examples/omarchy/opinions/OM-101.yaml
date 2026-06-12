@@ -1,0 +1,20 @@
+schema: 1
+id: OM-101
+status: required
+name: First-Run Network Check and Update Prompt
+category: service-enable
+intent: Check for network connectivity on first login. If offline, send a desktop notification prompting the user to set up
+  wireless networking. Whether online or offline, send a notification prompting the user to run a system update.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-061
+- id: OM-015
+translator_capabilities:
+- send-desktop-notifications
+- detect-network-connectivity
+script_payload:
+  script: first-run-network-check
+  capabilities:
+  - send-desktop-notifications
+  - detect-network-connectivity

@@ -1,0 +1,17 @@
+schema: 1
+id: OM-108
+status: required
+name: Elephant Application Launcher Service
+category: service-enable
+intent: Enable and start the Elephant application launcher as a user service so it is available immediately after first login
+  and on all subsequent logins.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-049
+translator_capabilities:
+- enable-user-scoped-systemd-service-and-start-immediately
+services:
+- name: walker.service
+  enable: true
+  deferred: true

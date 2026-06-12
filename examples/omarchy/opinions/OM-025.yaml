@@ -1,0 +1,18 @@
+schema: 1
+id: OM-025
+status: required
+name: Framework 16 Keyboard RGB Tool
+category: hardware-conditional
+intent: Install QMK HID tool for Framework 16 keyboard RGB and key configuration.
+install_phase: packaging
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-product-name
+  match: Framework 16
+translator_capabilities:
+- install-packages
+- eval-dmi-hardware-condition
+packages:
+- qmk-hid

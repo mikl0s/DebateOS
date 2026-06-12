@@ -1,0 +1,17 @@
+schema: 1
+id: omarchy/hardware-peripheral-configuration
+name: Hardware Peripheral Configuration
+intent: 'Configure input and peripheral hardware behavior applicable to many systems: Apple-style function key mode, USB autosuspend
+  policy, power button behavior, and ASUS ROG laptop audio fixes.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-063
+  status: required
+- id: OM-066
+  status: required
+- id: OM-067
+  status: required
+- id: OM-081
+  status: required
+- id: OM-082
+  status: required

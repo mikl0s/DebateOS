@@ -1,0 +1,21 @@
+schema: 1
+id: omarchy/intel-hardware-optimizations
+name: Intel Hardware Optimizations
+intent: Configure Intel-specific power management, thermal control, camera support, kernel selection, and hardware workarounds
+  for supported Intel CPU and chipset generations.
+curator: omarchy@basecamp.com
+members:
+- id: OM-071
+  status: required
+- id: OM-072
+  status: required
+- id: OM-073
+  status: required
+- id: OM-074
+  status: required
+- id: OM-075
+  status: required
+- id: OM-076
+  status: required
+- id: OM-077
+  status: required

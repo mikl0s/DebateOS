@@ -1,0 +1,25 @@
+schema: 1
+id: OM-078
+status: required
+name: ASUS PTL Display Backlight Fix
+category: kernel-boot-param
+intent: Fix the display backlight on specific ASUS Panther Lake laptops by enabling DPCD AUX backlight mode in the kernel
+  command line.
+install_phase: config
+ordering:
+  before:
+  - id: OM-099
+hardware_condition:
+  type: or
+  operands:
+  - type: leaf
+    predicate: hw-dmi-product-name
+    match: ExpertBook B9406
+  - type: leaf
+    predicate: hw-dmi-product-name
+    match: Zenbook UX5406
+translator_capabilities:
+- write-bootloader-entry-tool-drop-in
+kernel_params:
+- key: xe.enable_dpcd_backlight
+  value: '1'

@@ -1,0 +1,17 @@
+schema: 1
+id: OM-110
+status: required
+name: Internal Monitor Recovery Service
+category: service-enable
+intent: Enable the internal monitor recovery user service which automatically recovers the internal monitor if it becomes
+  unavailable after an external display is disconnected.
+install_phase: first-run
+execution_phase: first-run
+depends_on:
+- id: OM-006
+translator_capabilities:
+- enable-user-scoped-systemd-service-unit
+services:
+- name: omarchy-recover-internal-monitor.service
+  enable: true
+  deferred: true

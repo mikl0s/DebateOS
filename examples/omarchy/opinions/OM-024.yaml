@@ -1,0 +1,19 @@
+schema: 1
+id: OM-024
+status: required
+name: ASUS ROG Control Daemon
+category: hardware-conditional
+intent: Install ASUS ROG laptop control daemon for fan curve management, performance mode switching, and keyboard RGB control.
+install_phase: packaging
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-chassis-vendor
+  match: ASUS
+translator_capabilities:
+- install-packages
+- eval-dmi-hardware-condition
+packages:
+- asusctl
+- supergfxctl

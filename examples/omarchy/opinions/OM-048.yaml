@@ -1,0 +1,19 @@
+schema: 1
+id: OM-048
+status: required
+name: System File Locate Database Update
+category: arbitrary-script
+intent: Update the system file-locate database so that the locate command can find all files installed during the packaging
+  phase.
+install_phase: config
+depends_on:
+- id: OM-014
+ordering:
+  after:
+  - id: OM-017
+translator_capabilities:
+- run-updatedb
+script_payload:
+  script: updatedb
+  capabilities:
+  - run-updatedb

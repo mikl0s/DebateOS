@@ -1,0 +1,22 @@
+schema: 1
+id: omarchy/hyprland-desktop-stack
+name: Hyprland Desktop Stack
+intent: Install and configure the complete Wayland compositor session stack including the compositor, session launcher, display
+  portal, idle daemon, screen lock, color temperature control, status bar, notification daemon, application launcher, background
+  setter, on-screen display, polkit agent, and the display manager with auto-login.
+curator: omarchy@basecamp.com
+members:
+- id: OM-006
+  status: required
+- id: OM-015
+  status: required
+- id: OM-039
+  status: required
+- id: OM-040
+  status: required
+- id: OM-046
+  status: required
+- id: OM-049
+  status: required
+- id: OM-056
+  status: nice-to-have

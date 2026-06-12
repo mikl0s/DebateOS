@@ -1,0 +1,18 @@
+schema: 1
+id: OM-100
+status: required
+name: Final Package Manager Configuration
+category: custom-repo
+intent: Restore the final package manager configuration for the target mirror channel after the install is complete. For Apple
+  T2 systems, also append the arch-mact2 repository to the package manager configuration, enabling kernel updates.
+install_phase: post-install
+depends_on:
+- id: OM-001
+- id: OM-088
+translator_capabilities:
+- deploy-final-package-manager-config
+- conditionally-append-unsigned-repository-for-t2-hardware
+custom_repos:
+- name: arch-mact2
+  url: https://pkgs.t2linux.org/archlinux/x86_64/
+  sig_level: Never

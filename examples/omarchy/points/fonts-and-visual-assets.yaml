@@ -1,0 +1,8 @@
+schema: 1
+id: omarchy/fonts-and-visual-assets
+name: Fonts and Visual Assets
+intent: Install and register fonts used by the Omarchy desktop environment.
+curator: omarchy@basecamp.com
+members:
+- id: OM-018
+  status: required

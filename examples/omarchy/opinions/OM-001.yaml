@@ -1,0 +1,18 @@
+schema: 1
+id: OM-001
+status: required
+name: Omarchy Package Repository
+category: custom-repo
+intent: 'Register the Omarchy package repository with the system package manager, import its GPG signing key (ID 40DFB630FF42BCFFB047046CF0134EE680CAC571),
+  and set the preferred mirror channel. This makes Omarchy-curated packages available before any other install step. Trust
+  level: OptionalTrustAll.'
+install_phase: preflight
+translator_capabilities:
+- add-custom-package-repo
+- import-gpg-key
+custom_repos:
+- name: omarchy
+  url: https://packages.omarchy.org/stable
+  sig_level: OptionalTrustAll
+  priority: 10
+  keyring: 40DFB630FF42BCFFB047046CF0134EE680CAC571

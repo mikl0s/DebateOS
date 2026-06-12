@@ -1,0 +1,15 @@
+schema: 1
+id: OM-047
+status: required
+name: Nautilus Python Extensions
+category: arbitrary-script
+intent: Install Nautilus file manager Python extensions for local file sharing integration and video transcoding right-click
+  action.
+install_phase: config
+depends_on:
+- id: OM-015
+translator_capabilities:
+- deploy-plugin-files-to-application-extension-directory
+file_assets:
+- src: nautilus-extensions/
+  dst: ~/.local/share/nautilus/extensions/

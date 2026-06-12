@@ -1,0 +1,19 @@
+schema: 1
+id: OM-006
+status: required
+name: Wayland Compositor Stack
+category: package-install
+intent: 'Install the compositor and Wayland session management stack: tiling compositor (Hyprland), session launcher (UWSM),
+  display portal, idle daemon, screen lock, and color temperature tool.'
+install_phase: packaging
+depends_on:
+- id: OM-001
+translator_capabilities:
+- install-packages
+packages:
+- hyprland
+- uwsm
+- hyprland-portal
+- hypridle
+- hyprlock
+- hyprsunset

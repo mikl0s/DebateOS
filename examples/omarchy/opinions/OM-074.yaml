@@ -1,0 +1,30 @@
+schema: 1
+id: OM-074
+status: required
+name: Panther Lake Kernel Installation
+category: hardware-conditional
+intent: Install the Panther Lake-specific kernel on Dell XPS Panther Lake systems, which includes audio driver patches not
+  yet in mainline. Remove the standard kernel to avoid dual-kernel confusion.
+install_phase: config
+depends_on:
+- id: OM-001
+ordering:
+  before:
+  - id: OM-099
+hardware_condition:
+  type: and
+  operands:
+  - type: leaf
+    predicate: hw-dmi-product-name
+    match: XPS
+  - type: leaf
+    predicate: hw-cpu-vendor
+    values:
+    - GenuineIntel
+translator_capabilities:
+- install-alternative-kernel-package
+- remove-default-kernel-package
+packages:
+- linux-ptl
+remove_packages:
+- linux

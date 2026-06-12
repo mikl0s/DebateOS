@@ -1,0 +1,9 @@
+schema: 1
+id: omarchy/package-manager-finalization
+name: Package Manager Finalization and Post-Install Repositories
+intent: Write the final package manager configuration for the installed system, including the conditional addition of the
+  arch-mact2 unsigned repository for Apple T2 hardware post-install updates.
+curator: omarchy@basecamp.com
+members:
+- id: OM-100
+  status: required

@@ -1,0 +1,21 @@
+schema: 1
+id: OM-065
+status: required
+name: Printing Services and mDNS
+category: service-enable
+intent: Enable printing service, mDNS daemon for network printer discovery, and automatic remote printer detection. Configure
+  DNS to not handle multicast DNS. Configure name resolution for .local domains via mDNS.
+install_phase: config
+depends_on:
+- id: OM-016
+translator_capabilities:
+- enable-multiple-systemd-service-units
+- write-resolved-drop-in
+- modify-nsswitch-conf
+services:
+- name: cups.service
+  enable: true
+- name: avahi-daemon.service
+  enable: true
+- name: cups-browsed.service
+  enable: true

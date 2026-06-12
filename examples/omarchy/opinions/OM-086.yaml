@@ -1,0 +1,20 @@
+schema: 1
+id: OM-086
+status: required
+name: MacBook SPI Keyboard Driver
+category: hardware-conditional
+intent: Install the SPI keyboard driver for MacBook models that use SPI instead of USB for keyboard communication. Configure
+  the initramfs to load the required modules early.
+install_phase: config
+depends_on:
+- id: OM-001
+hardware_condition:
+  type: leaf
+  predicate: hw-dmi-product-name
+  match: MacBook
+translator_capabilities:
+- read-dmi-product-name
+- install-dkms-kernel-module-packages
+- write-mkinitcpio-module-configuration
+packages:
+- macbook12-spi-driver-dkms

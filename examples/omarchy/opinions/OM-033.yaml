@@ -1,0 +1,13 @@
+schema: 1
+id: OM-033
+status: required
+name: Timezone Management Sudo Access
+category: arbitrary-script
+intent: Grant passwordless sudo access to the timezone management commands for all members of the wheel group, so users can
+  update their timezone without a password prompt.
+install_phase: config
+translator_capabilities:
+- write-sudoers-drop-in
+file_assets:
+- src: sudoers-timezone
+  dst: /etc/sudoers.d/timezone

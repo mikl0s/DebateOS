@@ -1,0 +1,13 @@
+schema: 1
+id: omarchy/framework-hardware-support
+name: Framework Hardware Support
+intent: 'Install and configure Framework-specific hardware: QMK HID tool for Framework 16 RGB control, audio profile correction
+  for Framework 13 AMD, and udev access rules.'
+curator: omarchy@basecamp.com
+members:
+- id: OM-025
+  status: required
+- id: OM-084
+  status: required
+- id: OM-085
+  status: required

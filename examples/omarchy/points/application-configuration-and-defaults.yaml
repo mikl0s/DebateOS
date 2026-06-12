@@ -1,0 +1,27 @@
+schema: 1
+id: omarchy/application-configuration-and-defaults
+name: Application Configuration and Defaults
+intent: Deploy the baseline configuration file tree, configure MIME type associations, set XDG user directories, configure
+  GPG, write sudoers rules, initialize locate database, and establish default user preferences.
+curator: omarchy@basecamp.com
+members:
+- id: OM-028
+  status: required
+- id: OM-030
+  status: nice-to-have
+- id: OM-031
+  status: required
+- id: OM-032
+  status: required
+- id: OM-033
+  status: required
+- id: OM-034
+  status: required
+- id: OM-035
+  status: required
+- id: OM-044
+  status: required
+- id: OM-045
+  status: required
+- id: OM-048
+  status: required

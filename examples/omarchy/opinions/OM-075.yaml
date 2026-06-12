@@ -1,0 +1,21 @@
+schema: 1
+id: OM-075
+status: required
+name: Intel PTL FRED Kernel Parameter
+category: kernel-boot-param
+intent: Enable the FRED kernel feature on Intel Panther Lake systems by adding a kernel command-line parameter. FRED is a
+  new interrupt-delivery mechanism that improves performance on Panther Lake.
+install_phase: config
+ordering:
+  before:
+  - id: OM-099
+hardware_condition:
+  type: leaf
+  predicate: hw-cpu-vendor
+  values:
+  - GenuineIntel
+translator_capabilities:
+- write-bootloader-entry-tool-drop-in
+kernel_params:
+- key: fred
+  value: 'on'

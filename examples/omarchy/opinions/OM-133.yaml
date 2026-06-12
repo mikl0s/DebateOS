@@ -1,0 +1,13 @@
+schema: 1
+id: OM-133
+status: nice-to-have
+name: Vantablack Theme
+category: theming
+intent: Provide the Vantablack maximum contrast dark visual theme bundle.
+install_phase: first-run
+depends_on:
+- id: OM-029
+translator_capabilities:
+- deploy-file-asset-payloads-to-theme-directories
+theme:
+  bundle_dir: themes/vantablack

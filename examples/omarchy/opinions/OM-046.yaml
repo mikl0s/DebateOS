@@ -1,0 +1,15 @@
+schema: 1
+id: OM-046
+status: required
+name: Feature Toggle State Directory
+category: config-dotfile
+intent: 'Initialize the feature toggle state directory and create empty toggle configuration files for the three toggleable
+  subsystems: screen lock, notification daemon, and application launcher styling.'
+install_phase: config
+depends_on:
+- id: OM-028
+translator_capabilities:
+- create-state-files-for-feature-toggle-system
+file_assets:
+- src: toggles/
+  dst: ~/.config/omarchy/toggles/

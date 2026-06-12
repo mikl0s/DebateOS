@@ -1,0 +1,11 @@
+schema: 1
+id: omarchy/containerization-and-virtualization
+name: Containerization and Virtualization
+intent: Install container and virtualization tooling and configure the container daemon with production-ready settings including
+  log limits, DNS, network configuration, and service activation.
+curator: omarchy@basecamp.com
+members:
+- id: OM-011
+  status: required
+- id: OM-043
+  status: required

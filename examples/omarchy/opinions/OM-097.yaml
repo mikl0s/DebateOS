@@ -1,0 +1,27 @@
+schema: 1
+id: OM-097
+status: required
+name: SDDM Display Manager
+category: display-manager
+intent: Install the Omarchy SDDM display manager theme, configure SDDM for Wayland operation with a custom compositor command,
+  enable auto-login for the current user into the Omarchy session. Disable password-based SDDM logins from creating an encrypted
+  login keyring. Enable the SDDM service.
+install_phase: login
+depends_on:
+- id: OM-015
+- id: OM-096
+ordering:
+  after:
+  - id: OM-096
+translator_capabilities:
+- deploy-sddm-theme
+- write-sddm-config-drop-ins
+- modify-pam-sddm-config
+- enable-display-manager-systemd-service
+display_manager:
+  name: sddm
+  greeter: omarchy
+  auto_login: true
+services:
+- name: sddm.service
+  enable: true
