@@ -13,7 +13,7 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 
 - [x] **RSCH-01**: Omarchy deep-dive complete from cloned source (not summaries): every post-base-Arch decision recorded as a candidate atomic opinion with category, OS-agnostic intent, dependencies/ordering, and translator-capability fallout — delivered as `research/omarchy-opinion-inventory.md`, `research/omarchy-points.md`, `research/schema-requirements.md`, `research/open-questions.md`
 - [x] **RSCH-02**: CachyOS/Garuda variant substitution study delivered as `research/arch-variants-delta.md`: deltas from vanilla Arch cataloged (repos incl. Chaotic-AUR, repo priority/mirrors, keyrings, kernel variants, default fs/bootloader, pre-seeded configs) with a proposed declarative variant-profile shape (repo list + keyring + kernel + defaults — not a fork per variant)
-- [ ] **RSCH-03**: Resolver edge-case corpus delivered as `research/resolver-edge-cases.md`: every case where the same opinion effectuates differently across vanilla Arch/CachyOS/Garuda, foundation-default-vs-opinion collisions, and repo-priority conflicts — each expressed as a Phase 1 test scenario
+- [x] **RSCH-03**: Resolver edge-case corpus delivered as `research/resolver-edge-cases.md`: every case where the same opinion effectuates differently across vanilla Arch/CachyOS/Garuda, foundation-default-vs-opinion collisions, and repo-priority conflicts — each expressed as a Phase 1 test scenario
 
 ### Schema
 
@@ -136,7 +136,7 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 |-------------|-------|--------|
 | RSCH-01 | Phase 0 | Complete |
 | RSCH-02 | Phase 0 | Complete |
-| RSCH-03 | Phase 0 | Pending |
+| RSCH-03 | Phase 0 | Complete |
 | SCHM-01 | Phase 1 | Pending |
 | SCHM-02 | Phase 1 | Pending |
 | RSLV-01 | Phase 1 | Pending |
