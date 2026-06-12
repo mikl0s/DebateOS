@@ -639,6 +639,141 @@ func TestResolvePatchablePair(t *testing.T) {
 	}
 }
 
+// ─── Canonical golden-file parity ─────────────────────────────────────────
+
+// TestCanonicalGolden verifies that Resolve + CanonicalJSON over each named
+// example fixture produces output byte-identical to a committed golden file
+// in testdata/golden/.  With -update the test writes the goldens instead of
+// comparing (used by scripts/wasm-parity-test.sh to regenerate the native
+// baseline).
+//
+// The goldens are the source of truth for the parity script (01-05, RSLV-05).
+// This test is the mechanism that both generates and verifies them.
+func TestCanonicalGolden(t *testing.T) {
+	t.Parallel()
+
+	update := os.Getenv("GOLDEN_UPDATE") == "1"
+
+	cases := []struct {
+		name    string // golden file stem (testdata/golden/<name>.json)
+		fixture string // relative path under examples/ dir (speech.yaml + opinions.yaml)
+	}{
+		{name: "omarchy-mini", fixture: "omarchy-mini"},
+		{name: "two-point-clean", fixture: "two-point-clean"},
+		{name: "conflicting", fixture: "conflicting"},
+		{name: "hardware-conditional", fixture: "hardware-conditional"},
+	}
+
+	for _, tc := range cases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// Load example from examples/ directory (relative to module root).
+			opinions, speech, hw := loadExample(t, tc.fixture)
+
+			// Resolve — conflicting returns error but we still golden the partial RS.
+			rs, _ := resolve.Resolve(&speech, opinions, hw)
+			if rs == nil {
+				t.Fatalf("Resolve returned nil *ResolvedSpeech for %s", tc.name)
+			}
+
+			got, err := resolve.CanonicalJSON(rs)
+			if err != nil {
+				t.Fatalf("CanonicalJSON error for %s: %v", tc.name, err)
+			}
+
+			goldenPath := filepath.Join("testdata", "golden", tc.name+".json")
+
+			if update {
+				// Write mode: create/overwrite the golden.
+				if err := os.MkdirAll(filepath.Dir(goldenPath), 0o755); err != nil {
+					t.Fatalf("mkdir golden dir: %v", err)
+				}
+				if err := os.WriteFile(goldenPath, got, 0o644); err != nil {
+					t.Fatalf("write golden %s: %v", goldenPath, err)
+				}
+				t.Logf("updated golden: %s (%d bytes)", goldenPath, len(got))
+				return
+			}
+
+			// Compare mode: golden must already exist.
+			want, err := os.ReadFile(goldenPath)
+			if err != nil {
+				t.Fatalf("golden file missing for %s (run with GOLDEN_UPDATE=1 to generate): %v", tc.name, err)
+			}
+			if !bytes.Equal(want, got) {
+				t.Errorf("canonical JSON mismatch for %s:\n  golden: %s\n  got:    %s", tc.name, want, got)
+			}
+		})
+	}
+}
+
+// loadExample loads speech.yaml + opinions.yaml from the examples/<name>/ directory
+// (relative to the module root, two directories above this package).
+// It re-uses the same fixture-loading logic as loadFixture but reads raw YAML
+// that is already shaped as resolver.Opinion and resolver.Speech slices.
+func loadExample(t *testing.T, name string) ([]resolver.Opinion, resolver.Speech, hardware.HardwareProfile) {
+	t.Helper()
+
+	// Locate the module root (two levels up from resolver/resolve/).
+	// This relies on the standard Go module layout.
+	root := findModuleRoot(t)
+
+	speechPath := filepath.Join(root, "examples", name, "speech.yaml")
+	opPath := filepath.Join(root, "examples", name, "opinions.yaml")
+
+	speechRaw, err := os.ReadFile(speechPath)
+	if err != nil {
+		t.Fatalf("loadExample: cannot read %s: %v", speechPath, err)
+	}
+	opRaw, err := os.ReadFile(opPath)
+	if err != nil {
+		t.Fatalf("loadExample: cannot read %s: %v", opPath, err)
+	}
+
+	var speech resolver.Speech
+	if err := yaml.Unmarshal(speechRaw, &speech); err != nil {
+		t.Fatalf("loadExample: speech YAML parse error in %s: %v", speechPath, err)
+	}
+
+	// opinions.yaml contains a top-level list
+	var opinions []resolver.Opinion
+	if err := yaml.Unmarshal(opRaw, &opinions); err != nil {
+		t.Fatalf("loadExample: opinions YAML parse error in %s: %v", opPath, err)
+	}
+
+	// Build hardware.HardwareProfile from speech.Hardware
+	hw := hardware.HardwareProfile{}
+	if speech.Hardware != nil {
+		hw.Predicates = speech.Hardware.Predicates
+		hw.Facts = speech.Hardware.Facts
+	}
+	return opinions, speech, hw
+}
+
+// findModuleRoot locates the directory containing go.mod by walking up from this
+// file's package directory.
+func findModuleRoot(t *testing.T) string {
+	t.Helper()
+	// Start from the current working directory (which is the package dir when
+	// running `go test ./resolver/resolve/`).
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("findModuleRoot: getwd: %v", err)
+	}
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			t.Fatal("findModuleRoot: could not locate go.mod")
+		}
+		dir = parent
+	}
+}
+
 // ─── helpers ──────────────────────────────────────────────────────────────
 
 func makeSet(ids []resolver.OpinionID) map[resolver.OpinionID]bool {
