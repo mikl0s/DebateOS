@@ -1,0 +1,19 @@
+# EC-023: Bluetooth service enable idempotent across variants — no conflict
+# Neither Garuda nor CachyOS pre-seeds bluetooth enable. Opinion applied cleanly.
+opinions:
+  - schema: 1
+    id: "service-enable/bluetooth"
+    name: "Enable Bluetooth Service"
+    category: "service-enable"
+    status: "required"
+    services:
+      - name: "bluetooth.service"
+        enable: true
+
+speech:
+  schema: 1
+  id: "test-ec023"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "service-enable/bluetooth"

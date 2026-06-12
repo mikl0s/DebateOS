@@ -1,0 +1,33 @@
+# EC-001: Garuda pre-seeded snapper root config vs Omarchy snapper root config
+# Two required opinions both claim /etc/snapper/configs/root — hard conflict.
+opinions:
+  - schema: 1
+    id: "foundation/garuda-snapper-root"
+    name: "Garuda Snapper Root Config"
+    category: "snapshot-policy"
+    status: "required"
+    conflicts:
+      - id: "snapshot-policy/omarchy-snapper-root"
+    file_assets:
+      - src: "snapper/garuda-root-config"
+        dst: "/etc/snapper/configs/root"
+
+  - schema: 1
+    id: "snapshot-policy/omarchy-snapper-root"
+    name: "Omarchy Snapper Root Config"
+    category: "snapshot-policy"
+    status: "required"
+    conflicts:
+      - id: "foundation/garuda-snapper-root"
+    file_assets:
+      - src: "snapper/omarchy-root-config"
+        dst: "/etc/snapper/configs/root"
+
+speech:
+  schema: 1
+  id: "test-ec001"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "foundation/garuda-snapper-root"
+    - id: "snapshot-policy/omarchy-snapper-root"

@@ -1,0 +1,37 @@
+# EC-010: CachyOS repo priority order requires custom-repo opinions to declare ordering
+# Both custom-repo opinions present; ordering decision needed.
+opinions:
+  - schema: 1
+    id: "foundation/cachyos-repos"
+    name: "CachyOS Custom Repos"
+    category: "custom-repo"
+    status: "required"
+    custom_repos:
+      - name: "cachyos-v3"
+        url: "https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3"
+        sig_level: "Required"
+        priority: 1
+      - name: "cachyos"
+        url: "https://mirror.cachyos.org/repo/x86_64/cachyos"
+        sig_level: "Required"
+        priority: 2
+
+  - schema: 1
+    id: "custom-repo/omarchy-repo"
+    name: "Omarchy Custom Repo"
+    category: "custom-repo"
+    status: "nice-to-have"
+    custom_repos:
+      - name: "omarchy"
+        url: "https://packages.omarchy.org"
+        sig_level: "Required"
+        priority: 10
+
+speech:
+  schema: 1
+  id: "test-ec010"
+  foundation: "cachyos"
+  points: []
+  opinions:
+    - id: "foundation/cachyos-repos"
+    - id: "custom-repo/omarchy-repo"

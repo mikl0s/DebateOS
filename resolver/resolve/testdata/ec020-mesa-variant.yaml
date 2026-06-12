@@ -1,0 +1,18 @@
+# EC-020: Same mesa package opinion effectuated differently on CachyOS vs vanilla Arch
+# No conflict — CachyOS optimized build satisfies the mesa intent. Applied with note.
+opinions:
+  - schema: 1
+    id: "package-install/graphics-stack"
+    name: "Graphics Stack (mesa)"
+    category: "package-install"
+    status: "required"
+    packages:
+      - "mesa"
+
+speech:
+  schema: 1
+  id: "test-ec020"
+  foundation: "cachyos"
+  points: []
+  opinions:
+    - id: "package-install/graphics-stack"

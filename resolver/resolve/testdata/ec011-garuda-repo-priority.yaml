@@ -1,0 +1,37 @@
+# EC-011: Garuda Chaotic-AUR repo vs Omarchy repo — relative priority undeclared
+# Nice-to-have default applied for omarchy repo ordering relative to garuda repos.
+opinions:
+  - schema: 1
+    id: "foundation/garuda-repos"
+    name: "Garuda Foundation Repos"
+    category: "custom-repo"
+    status: "required"
+    custom_repos:
+      - name: "garuda"
+        url: "https://repo.garuda.systems/garuda"
+        sig_level: "Required"
+        priority: 1
+      - name: "chaotic-aur"
+        url: "https://cdn-mirror.chaotic.cx/chaotic-aur"
+        sig_level: "Required"
+        priority: 2
+
+  - schema: 1
+    id: "custom-repo/omarchy-repo"
+    name: "Omarchy Custom Repo"
+    category: "custom-repo"
+    status: "nice-to-have"
+    custom_repos:
+      - name: "omarchy"
+        url: "https://packages.omarchy.org"
+        sig_level: "Required"
+        priority: 10
+
+speech:
+  schema: 1
+  id: "test-ec011"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "foundation/garuda-repos"
+    - id: "custom-repo/omarchy-repo"

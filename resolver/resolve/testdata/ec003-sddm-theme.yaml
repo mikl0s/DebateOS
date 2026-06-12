@@ -1,0 +1,34 @@
+# EC-003: Garuda Dr460nized SDDM theme vs Omarchy SDDM theme
+# Both required, both set the SDDM active theme — hard conflict.
+opinions:
+  - schema: 1
+    id: "foundation/garuda-sddm-theme"
+    name: "Garuda Dr460nized SDDM Theme"
+    category: "theming"
+    status: "required"
+    conflicts:
+      - id: "theming/sddm-omarchy"
+    display_manager:
+      name: "sddm"
+      greeter: "garuda-dr460nized"
+
+  - schema: 1
+    id: "theming/sddm-omarchy"
+    name: "Omarchy SDDM Theme"
+    category: "theming"
+    status: "required"
+    conflicts:
+      - id: "foundation/garuda-sddm-theme"
+    display_manager:
+      name: "sddm"
+      greeter: "omarchy"
+      auto_login: true
+
+speech:
+  schema: 1
+  id: "test-ec003"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "foundation/garuda-sddm-theme"
+    - id: "theming/sddm-omarchy"

@@ -1,0 +1,31 @@
+# EC-033: Two nice-to-have terminal emulator opinions — resolver picks sensible default
+# foot and ghostty both nice-to-have and conflicting; foot (first-listed) is the default.
+opinions:
+  - schema: 1
+    id: "package-install/terminal-foot"
+    name: "Foot Terminal Emulator"
+    category: "package-install"
+    status: "nice-to-have"
+    conflicts:
+      - id: "package-install/terminal-ghostty"
+    packages:
+      - "foot"
+
+  - schema: 1
+    id: "package-install/terminal-ghostty"
+    name: "Ghostty Terminal Emulator"
+    category: "package-install"
+    status: "nice-to-have"
+    conflicts:
+      - id: "package-install/terminal-foot"
+    packages:
+      - "ghostty"
+
+speech:
+  schema: 1
+  id: "test-ec033"
+  foundation: "arch"
+  points: []
+  opinions:
+    - id: "package-install/terminal-foot"
+    - id: "package-install/terminal-ghostty"

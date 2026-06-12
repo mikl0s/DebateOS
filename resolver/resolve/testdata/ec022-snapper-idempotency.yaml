@@ -1,0 +1,20 @@
+# EC-022: Snapper configuration idempotency on Garuda (pre-seeded vs speech opinion)
+# Not a resolver conflict; translator-time idempotency warning emitted.
+opinions:
+  - schema: 1
+    id: "snapshot-policy/snapper-root"
+    name: "Snapper Root Config"
+    category: "snapshot-policy"
+    status: "required"
+    script_payload:
+      script: "snapper -c root create-config /"
+      capabilities:
+        - "run-script"
+
+speech:
+  schema: 1
+  id: "test-ec022"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "snapshot-policy/snapper-root"

@@ -1,0 +1,52 @@
+# EC-034: Patch opinion overrides required-vs-required conflict hierarchy
+# Two required custom-repo opinions; patch/merged-pacman-conf resolves them.
+opinions:
+  - schema: 1
+    id: "custom-repo/omarchy-repo"
+    name: "Omarchy Repo"
+    category: "custom-repo"
+    status: "required"
+    conflicts:
+      - id: "custom-repo/cachyos-repo"
+    known_patches:
+      - id: "patch/merged-pacman-conf"
+        resolves: "custom-repo/cachyos-repo"
+        rationale: "Merges both repos in correct priority order"
+    custom_repos:
+      - name: "omarchy"
+        url: "https://packages.omarchy.org"
+        sig_level: "Required"
+        priority: 10
+
+  - schema: 1
+    id: "custom-repo/cachyos-repo"
+    name: "CachyOS Repo"
+    category: "custom-repo"
+    status: "required"
+    conflicts:
+      - id: "custom-repo/omarchy-repo"
+    custom_repos:
+      - name: "cachyos"
+        url: "https://mirror.cachyos.org/repo/x86_64/cachyos"
+        sig_level: "Required"
+        priority: 1
+
+  - schema: 1
+    id: "patch/merged-pacman-conf"
+    name: "Merged pacman.conf Patch"
+    category: "patch"
+    status: "required"
+    intent: "Combines cachyos and omarchy repos into a single consistent pacman.conf"
+    file_assets:
+      - src: "patches/merged-pacman.conf"
+        dst: "/etc/pacman.conf.d/00-merged-repos.conf"
+
+speech:
+  schema: 1
+  id: "test-ec034"
+  foundation: "cachyos"
+  points: []
+  opinions:
+    - id: "custom-repo/omarchy-repo"
+    - id: "custom-repo/cachyos-repo"
+    - id: "patch/merged-pacman-conf"

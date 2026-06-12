@@ -1,0 +1,46 @@
+# EC-032: Required initramfs conflict resolved by patch opinion (dracut-omarchy-bridge)
+# mkinitcpio vs dracut — hard conflict resolved by patch/dracut-omarchy-bridge.
+opinions:
+  - schema: 1
+    id: "initramfs-method/mkinitcpio"
+    name: "Omarchy mkinitcpio"
+    category: "initramfs-method"
+    status: "required"
+    conflicts:
+      - id: "initramfs-method/dracut"
+    known_patches:
+      - id: "patch/dracut-omarchy-bridge"
+        resolves: "initramfs-method/dracut"
+        rationale: "Rewrites Omarchy UKI generation steps to use dracut hooks"
+    packages:
+      - "mkinitcpio"
+
+  - schema: 1
+    id: "initramfs-method/dracut"
+    name: "Garuda dracut"
+    category: "initramfs-method"
+    status: "required"
+    conflicts:
+      - id: "initramfs-method/mkinitcpio"
+    packages:
+      - "dracut"
+      - "garuda-dracut-support"
+
+  - schema: 1
+    id: "patch/dracut-omarchy-bridge"
+    name: "Dracut-Omarchy Bridge Patch"
+    category: "patch"
+    status: "required"
+    intent: "Rewrites Omarchy UKI generation steps to use dracut hooks, removing mkinitcpio dependency"
+    packages:
+      - "dracut"
+
+speech:
+  schema: 1
+  id: "test-ec032"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "initramfs-method/mkinitcpio"
+    - id: "initramfs-method/dracut"
+    - id: "patch/dracut-omarchy-bridge"

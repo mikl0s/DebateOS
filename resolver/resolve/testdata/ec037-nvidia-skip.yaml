@@ -1,0 +1,26 @@
+# EC-037: NVIDIA driver opinion silently skipped — hardware condition false (no NVIDIA GPU)
+# Hardware profile declares AMD Radeon; NVIDIA condition is false → skipped with explanation.
+opinions:
+  - schema: 1
+    id: "hardware-conditional/nvidia-driver"
+    name: "NVIDIA Driver"
+    category: "hardware-conditional"
+    status: "required"
+    hardware_condition:
+      type: "leaf"
+      predicate: "hw-nvidia-gpu"
+    packages:
+      - "nvidia"
+      - "nvidia-utils"
+
+speech:
+  schema: 1
+  id: "test-ec037"
+  foundation: "arch"
+  points: []
+  opinions:
+    - id: "hardware-conditional/nvidia-driver"
+  hardware:
+    predicates: []
+    facts:
+      gpu: "amd-radeon-rx-7600"

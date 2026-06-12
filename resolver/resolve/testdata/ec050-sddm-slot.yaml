@@ -1,0 +1,34 @@
+# EC-050: Omarchy SDDM theme vs Garuda Dr460nized SDDM theme — active theme slot collision
+# Both required, both write SDDM active theme (single-value config key) — hard conflict.
+opinions:
+  - schema: 1
+    id: "foundation/garuda-sddm-dr460nized"
+    name: "Garuda Dr460nized SDDM Theme"
+    category: "theming"
+    status: "required"
+    conflicts:
+      - id: "theming/sddm-omarchy"
+    display_manager:
+      name: "sddm"
+      greeter: "garuda-dr460nized"
+
+  - schema: 1
+    id: "theming/sddm-omarchy"
+    name: "Omarchy SDDM Theme (OM-097)"
+    category: "theming"
+    status: "required"
+    conflicts:
+      - id: "foundation/garuda-sddm-dr460nized"
+    display_manager:
+      name: "sddm"
+      greeter: "omarchy"
+      auto_login: true
+
+speech:
+  schema: 1
+  id: "test-ec050"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "foundation/garuda-sddm-dr460nized"
+    - id: "theming/sddm-omarchy"

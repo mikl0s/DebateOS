@@ -1,0 +1,36 @@
+# EC-030: Required kernel opinion drops nice-to-have DKMS that depends on linux-headers
+# linux-ptl required removes linux; broadcom-wl-dkms nice-to-have dropped (Rule 1).
+opinions:
+  - schema: 1
+    id: "kernel-install/linux-ptl"
+    name: "Intel PTL Kernel"
+    category: "kernel-install"
+    status: "required"
+    packages:
+      - "linux-ptl"
+      - "linux-ptl-headers"
+    remove_packages:
+      - "linux"
+      - "linux-headers"
+    conflicts:
+      - id: "package-install/broadcom-wl-dkms"
+
+  - schema: 1
+    id: "package-install/broadcom-wl-dkms"
+    name: "Broadcom WiFi DKMS Driver"
+    category: "package-install"
+    status: "nice-to-have"
+    depends_on:
+      - id: "kernel-install/linux-ptl"
+    packages:
+      - "broadcom-wl-dkms"
+      - "linux-headers"
+
+speech:
+  schema: 1
+  id: "test-ec030"
+  foundation: "arch"
+  points: []
+  opinions:
+    - id: "kernel-install/linux-ptl"
+    - id: "package-install/broadcom-wl-dkms"

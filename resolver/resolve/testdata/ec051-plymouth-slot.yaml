@@ -1,0 +1,35 @@
+# EC-051: Omarchy Plymouth theme vs Garuda Dr460nized Plymouth theme — same theme path
+# Both required, both call plymouth-set-default-theme — hard conflict on active theme slot.
+opinions:
+  - schema: 1
+    id: "foundation/garuda-plymouth-dr460nized"
+    name: "Garuda Dr460nized Plymouth Theme"
+    category: "theming"
+    status: "required"
+    conflicts:
+      - id: "theming/plymouth-omarchy"
+    script_payload:
+      script: "plymouth-set-default-theme dr460nized && mkinitcpio -p linux"
+      capabilities:
+        - "run-script"
+
+  - schema: 1
+    id: "theming/plymouth-omarchy"
+    name: "Omarchy Plymouth Theme (OM-095)"
+    category: "theming"
+    status: "required"
+    conflicts:
+      - id: "foundation/garuda-plymouth-dr460nized"
+    script_payload:
+      script: "plymouth-set-default-theme omarchy && mkinitcpio -p linux"
+      capabilities:
+        - "run-script"
+
+speech:
+  schema: 1
+  id: "test-ec051"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "foundation/garuda-plymouth-dr460nized"
+    - id: "theming/plymouth-omarchy"

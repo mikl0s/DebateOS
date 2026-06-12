@@ -1,0 +1,33 @@
+# EC-002: Garuda pre-seeded GRUB bootloader vs Omarchy Limine bootloader
+# Two required bootloader opinions — hard conflict on bootloader slot.
+opinions:
+  - schema: 1
+    id: "foundation/garuda-grub"
+    name: "Garuda GRUB Bootloader"
+    category: "bootloader-config"
+    status: "required"
+    conflicts:
+      - id: "bootloader-config/limine"
+    bootloader:
+      name: "grub"
+      timeout: 5
+
+  - schema: 1
+    id: "bootloader-config/limine"
+    name: "Omarchy Limine Bootloader"
+    category: "bootloader-config"
+    status: "required"
+    conflicts:
+      - id: "foundation/garuda-grub"
+    bootloader:
+      name: "limine"
+      timeout: 0
+
+speech:
+  schema: 1
+  id: "test-ec002"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "foundation/garuda-grub"
+    - id: "bootloader-config/limine"

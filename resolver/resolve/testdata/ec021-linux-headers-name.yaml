@@ -1,0 +1,31 @@
+# EC-021: Omarchy linux-headers opinion requires variant-aware package name resolution
+# On CachyOS, linux-headers must map to linux-cachyos-headers. No conflict — translator note.
+opinions:
+  - schema: 1
+    id: "hardware-conditional/intel-ptl-kernel"
+    name: "Intel PTL Kernel"
+    category: "kernel-install"
+    status: "required"
+    packages:
+      - "linux-ptl"
+      - "linux-ptl-headers"
+
+  - schema: 1
+    id: "package-install/hyprland"
+    name: "Hyprland Wayland Compositor"
+    category: "package-install"
+    status: "required"
+    depends_on:
+      - id: "hardware-conditional/intel-ptl-kernel"
+    packages:
+      - "hyprland"
+      - "linux-headers"
+
+speech:
+  schema: 1
+  id: "test-ec021"
+  foundation: "cachyos"
+  points: []
+  opinions:
+    - id: "hardware-conditional/intel-ptl-kernel"
+    - id: "package-install/hyprland"

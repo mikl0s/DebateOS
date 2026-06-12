@@ -1,0 +1,33 @@
+# EC-004: CachyOS pre-seeded linux-cachyos kernel vs Omarchy vanilla linux kernel
+# Two required kernel opinions claiming primary boot kernel — hard conflict.
+opinions:
+  - schema: 1
+    id: "foundation/cachyos-kernel"
+    name: "CachyOS linux-cachyos Kernel"
+    category: "kernel-install"
+    status: "required"
+    conflicts:
+      - id: "package-install/linux-kernel"
+    packages:
+      - "linux-cachyos"
+      - "linux-cachyos-headers"
+
+  - schema: 1
+    id: "package-install/linux-kernel"
+    name: "Omarchy Vanilla Linux Kernel"
+    category: "kernel-install"
+    status: "required"
+    conflicts:
+      - id: "foundation/cachyos-kernel"
+    packages:
+      - "linux"
+      - "linux-headers"
+
+speech:
+  schema: 1
+  id: "test-ec004"
+  foundation: "cachyos"
+  points: []
+  opinions:
+    - id: "foundation/cachyos-kernel"
+    - id: "package-install/linux-kernel"

@@ -1,0 +1,31 @@
+# EC-005: Sysctl key collision between two opinions writing the same kernel parameter
+# Both opinions write fs.inotify.max_user_watches — collision on same sysctl key (SR-016).
+opinions:
+  - schema: 1
+    id: "sysctl-param/increase-file-watchers"
+    name: "Increase inotify File Watchers"
+    category: "sysctl-param"
+    status: "required"
+    sysctl_params:
+      - key: "fs.inotify.max_user_watches"
+        value: "524288"
+        drop_in_file: "/etc/sysctl.d/99-omarchy-watchers.conf"
+
+  - schema: 1
+    id: "sysctl-param/extra-inotify-tuning"
+    name: "Extra inotify Tuning"
+    category: "sysctl-param"
+    status: "required"
+    sysctl_params:
+      - key: "fs.inotify.max_user_watches"
+        value: "1048576"
+        drop_in_file: "/etc/sysctl.d/90-extra-tuning.conf"
+
+speech:
+  schema: 1
+  id: "test-ec005"
+  foundation: "arch"
+  points: []
+  opinions:
+    - id: "sysctl-param/increase-file-watchers"
+    - id: "sysctl-param/extra-inotify-tuning"

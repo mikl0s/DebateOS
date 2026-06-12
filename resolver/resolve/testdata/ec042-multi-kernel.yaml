@@ -1,0 +1,39 @@
+# EC-042: CachyOS kernel + Omarchy Intel PTL kernel — multi-kernel, no hard conflict
+# linux-cachyos (required) + linux-ptl (hardware-conditional applied) — both installed.
+opinions:
+  - schema: 1
+    id: "foundation/cachyos-kernel-base"
+    name: "CachyOS Default Kernel"
+    category: "kernel-install"
+    status: "required"
+    packages:
+      - "linux-cachyos"
+      - "linux-cachyos-headers"
+
+  - schema: 1
+    id: "hardware-conditional/linux-ptl"
+    name: "Intel PTL Kernel (OM-074)"
+    category: "kernel-install"
+    status: "required"
+    hardware_condition:
+      type: "leaf"
+      predicate: "omarchy-hw-intel-ptl"
+    packages:
+      - "linux-ptl"
+      - "linux-ptl-headers"
+    remove_packages:
+      - "linux"
+
+speech:
+  schema: 1
+  id: "test-ec042"
+  foundation: "cachyos"
+  points: []
+  opinions:
+    - id: "foundation/cachyos-kernel-base"
+    - id: "hardware-conditional/linux-ptl"
+  hardware:
+    predicates:
+      - "omarchy-hw-intel-ptl"
+    facts:
+      dmi_product_name: "Dell XPS 15 9530"

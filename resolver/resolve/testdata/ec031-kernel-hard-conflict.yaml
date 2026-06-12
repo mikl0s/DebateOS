@@ -1,0 +1,33 @@
+# EC-031: Required vanilla kernel vs required CachyOS kernel — hard conflict, no patch
+# Two required kernel opinions, no patch opinion available — hard conflict must be raised.
+opinions:
+  - schema: 1
+    id: "kernel-install/linux-vanilla"
+    name: "Vanilla Linux Kernel"
+    category: "kernel-install"
+    status: "required"
+    conflicts:
+      - id: "kernel-install/linux-cachyos"
+    packages:
+      - "linux"
+      - "linux-headers"
+
+  - schema: 1
+    id: "kernel-install/linux-cachyos"
+    name: "CachyOS Linux Kernel"
+    category: "kernel-install"
+    status: "required"
+    conflicts:
+      - id: "kernel-install/linux-vanilla"
+    packages:
+      - "linux-cachyos"
+      - "linux-cachyos-headers"
+
+speech:
+  schema: 1
+  id: "test-ec031"
+  foundation: "cachyos"
+  points: []
+  opinions:
+    - id: "kernel-install/linux-vanilla"
+    - id: "kernel-install/linux-cachyos"

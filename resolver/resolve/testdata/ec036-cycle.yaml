@@ -1,0 +1,32 @@
+# EC-036: Circular ordering constraint — hard cycle error naming both opinions
+# docker-service after docker-dns-config AND docker-dns-config after docker-service = cycle.
+opinions:
+  - schema: 1
+    id: "service-enable/docker"
+    name: "Docker Service"
+    category: "service-enable"
+    status: "required"
+    ordering:
+      after:
+        - id: "config-dotfile/docker-dns"
+    services:
+      - name: "docker.service"
+        enable: true
+
+  - schema: 1
+    id: "config-dotfile/docker-dns"
+    name: "Docker DNS Config"
+    category: "config-dotfile"
+    status: "required"
+    ordering:
+      after:
+        - id: "service-enable/docker"
+
+speech:
+  schema: 1
+  id: "test-ec036"
+  foundation: "arch"
+  points: []
+  opinions:
+    - id: "service-enable/docker"
+    - id: "config-dotfile/docker-dns"

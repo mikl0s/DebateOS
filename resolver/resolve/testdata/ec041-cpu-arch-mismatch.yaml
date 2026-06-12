@@ -1,0 +1,32 @@
+# EC-041: CachyOS CPU arch level mismatch — speech targets v3, hardware declares v4 capable
+# Hardware supports v4 (AVX-512) but speech targets v3. Not a conflict — suggestion emitted.
+opinions:
+  - schema: 1
+    id: "foundation/cachyos-v3-profile"
+    name: "CachyOS x86-64-v3 Variant Profile"
+    category: "custom-repo"
+    status: "required"
+    hardware_condition:
+      type: "leaf"
+      predicate: "cpu-model-in-set"
+      values:
+        - "v3"
+        - "v4"
+    custom_repos:
+      - name: "cachyos-v3"
+        url: "https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3"
+        sig_level: "Required"
+        priority: 1
+
+speech:
+  schema: 1
+  id: "test-ec041"
+  foundation: "cachyos-v3"
+  points: []
+  opinions:
+    - id: "foundation/cachyos-v3-profile"
+  hardware:
+    predicates: []
+    facts:
+      cpu_model: "v4"
+      cpu_features: "avx512f avx512bw avx512vl"

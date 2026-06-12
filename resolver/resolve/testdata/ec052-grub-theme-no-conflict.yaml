@@ -1,0 +1,29 @@
+# EC-052: Garuda GRUB theme vs Omarchy (no GRUB opinion) — no collision
+# Omarchy has no GRUB theme opinion; Garuda GRUB theme has no competing opinion. Applied.
+opinions:
+  - schema: 1
+    id: "foundation/garuda-grub-theme"
+    name: "Garuda GRUB Theme (grub-theme-garuda-dr460nized)"
+    category: "theming"
+    status: "required"
+    packages:
+      - "grub-theme-garuda-dr460nized"
+
+  - schema: 1
+    id: "package-install/omarchy-base"
+    name: "Omarchy Base Packages"
+    category: "package-install"
+    status: "required"
+    packages:
+      - "omarchy"
+      - "foot"
+      - "hyprland"
+
+speech:
+  schema: 1
+  id: "test-ec052"
+  foundation: "garuda"
+  points: []
+  opinions:
+    - id: "foundation/garuda-grub-theme"
+    - id: "package-install/omarchy-base"

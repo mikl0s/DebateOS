@@ -1,0 +1,33 @@
+# EC-040: User speech specifies vanilla linux kernel; CachyOS variant pre-seeds linux-cachyos
+# Required-vs-required: CachyOS pre-seeded kernel vs user's vanilla kernel.
+opinions:
+  - schema: 1
+    id: "foundation/cachyos-kernel-variant"
+    name: "CachyOS linux-cachyos (variant pre-seed)"
+    category: "kernel-install"
+    status: "required"
+    conflicts:
+      - id: "package-install/linux-vanilla"
+    packages:
+      - "linux-cachyos"
+      - "linux-cachyos-headers"
+
+  - schema: 1
+    id: "package-install/linux-vanilla"
+    name: "Vanilla Linux Kernel"
+    category: "kernel-install"
+    status: "required"
+    conflicts:
+      - id: "foundation/cachyos-kernel-variant"
+    packages:
+      - "linux"
+      - "linux-headers"
+
+speech:
+  schema: 1
+  id: "test-ec040"
+  foundation: "cachyos"
+  points: []
+  opinions:
+    - id: "foundation/cachyos-kernel-variant"
+    - id: "package-install/linux-vanilla"

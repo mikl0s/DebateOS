@@ -1,0 +1,37 @@
+# EC-012: Nice-to-have custom repo opinion dropped in favour of required repo
+# Required omarchy-repo wins; nice-to-have extra-gaming-repo is dropped visibly.
+opinions:
+  - schema: 1
+    id: "custom-repo/omarchy-repo"
+    name: "Omarchy Required Repo"
+    category: "custom-repo"
+    status: "required"
+    conflicts:
+      - id: "custom-repo/extra-gaming-repo"
+    custom_repos:
+      - name: "omarchy"
+        url: "https://packages.omarchy.org"
+        sig_level: "Required"
+        priority: 10
+
+  - schema: 1
+    id: "custom-repo/extra-gaming-repo"
+    name: "Extra Gaming Repo"
+    category: "custom-repo"
+    status: "nice-to-have"
+    conflicts:
+      - id: "custom-repo/omarchy-repo"
+    custom_repos:
+      - name: "extra-gaming"
+        url: "https://gaming.example.org"
+        sig_level: "OptionalTrustAll"
+        priority: 10
+
+speech:
+  schema: 1
+  id: "test-ec012"
+  foundation: "arch"
+  points: []
+  opinions:
+    - id: "custom-repo/omarchy-repo"
+    - id: "custom-repo/extra-gaming-repo"

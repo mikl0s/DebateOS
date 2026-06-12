@@ -1,0 +1,39 @@
+# EC-038: Apple T2 opinion block applied — hardware condition matches declared hardware
+# Hardware profile declares PCI 106b:1801 (Apple T2 chip); T2 condition is true → applied.
+# Also tests sig_level=Never trust warning (T-01-10).
+opinions:
+  - schema: 1
+    id: "hardware-conditional/apple-t2"
+    name: "Apple T2 Support"
+    category: "hardware-conditional"
+    status: "required"
+    hardware_condition:
+      type: "leaf"
+      predicate: "pci-id"
+      values:
+        - "106b:1801"
+        - "106b:1802"
+    packages:
+      - "linux-t2"
+      - "apple-t2-audio-config"
+      - "apple-bcm-firmware"
+      - "t2fanrd"
+      - "tiny-dfr"
+    custom_repos:
+      - name: "arch-mact2"
+        url: "https://mirror.cyberd.us/arch-mact2"
+        sig_level: "Never"
+
+speech:
+  schema: 1
+  id: "test-ec038"
+  foundation: "arch"
+  points: []
+  opinions:
+    - id: "hardware-conditional/apple-t2"
+  hardware:
+    predicates: []
+    facts:
+      dmi_product_name: "MacBookPro16,1"
+    pci_ids:
+      - "106b:1801"
