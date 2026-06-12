@@ -1,0 +1,192 @@
+---
+# variant-profile: cachyos
+# CachyOS — Arch-based distribution with CPU-architecture-optimised package binaries
+# (x86-64-v3 and x86-64-v4 ISA levels) and a performance-tuned custom kernel family.
+#
+# ARCH-04 invariant: one generator, no per-variant code forks — differences are data only.
+#
+# Sources (VERIFIED unless noted [UNVERIFIED]):
+#   github.com/CachyOS/docker         commit 2f032fd  — pacman.conf, pacman-v3.conf, pacman-v4.conf
+#   github.com/CachyOS/CachyOS-PKGBUILDS commit 860f228 — cachyos-keyring/PKGBUILD, cachyos-mirrorlist
+#   github.com/CachyOS/linux-cachyos  commit 39d9d12  — kernel family PKGBUILD
+#   github.com/CachyOS/CachyOS-Settings commit b1aedc7 — 70-cachyos-settings.conf, .install
+#
+# Omarchy-on-CachyOS is a stretch criterion (SC-5, post-v1.0 full ISO validation).
+# This profile and its data are Phase 2 deliverables.
+
+variant: cachyos
+description: "CachyOS — Arch-based with CPU-architecture-optimised packages and custom kernel family (EEVDF scheduler)"
+version_at_research: "2026-06-12 (commits: docker/2f032fd, PKGBUILDS/860f228, linux-cachyos/39d9d12, Settings/b1aedc7)"
+
+# cpu_arch_level: declare the ISA level the target hardware supports.
+# Values: x86_64 (standard), v3 (x86-64-v3), v4 (x86-64-v4).
+# The generator selects the appropriate repo set from repos_by_arch_level below.
+# [UNVERIFIED] exact detection/declaration mechanism at ISO build time.
+cpu_arch_level: x86_64  # default; override to v3 or v4 for optimised binaries
+
+# Standard x86_64 repo set (VERIFIED from docker/pacman.conf).
+# The [cachyos] repo sits ABOVE [core]/[extra]/[multilib] to allow CachyOS-optimised
+# package overrides. v3/v4 repos (repos_by_arch_level) additionally precede [cachyos].
+#
+# above_core: true means this repo must appear before [core] in pacman.conf.
+# sig_level: Required DatabaseOptional — standard GPG signing (VERIFIED from PKGBUILD).
+repos:
+  - name: cachyos
+    url: "https://cdn77.cachyos.org/repo/$arch/$repo"
+    # CDN77 worldwide tier-1 (VERIFIED from CachyOS-PKGBUILDS/cachyos-mirrorlist/cachyos-mirrorlist)
+    # US tier-2: https://us.cachyos.org/repo/$arch/$repo
+    sig_level: Required DatabaseOptional
+    above_core: true
+
+# Optional ISA-optimised repo tiers (VERIFIED from docker/pacman-v3.conf, pacman-v4.conf).
+# Enabled when cpu_arch_level == "v3" or "v4". These sit ABOVE [cachyos].
+# The generator appends these repos before [cachyos] when the arch level is set.
+repos_by_arch_level:
+  v3:
+    - name: cachyos-v3
+      # mirrorlist uses $arch_v3 substitution at build time (VERIFIED from CachyOS-PKGBUILDS)
+      url: "https://cdn77.cachyos.org/repo/$arch_v3/$repo"
+      sig_level: Required DatabaseOptional
+      above_core: true
+    - name: cachyos-core-v3
+      url: "https://cdn77.cachyos.org/repo/$arch_v3/$repo"
+      sig_level: Required DatabaseOptional
+      above_core: true
+    - name: cachyos-extra-v3
+      url: "https://cdn77.cachyos.org/repo/$arch_v3/$repo"
+      sig_level: Required DatabaseOptional
+      above_core: true
+  v4:
+    - name: cachyos-v4
+      url: "https://cdn77.cachyos.org/repo/$arch_v4/$repo"
+      sig_level: Required DatabaseOptional
+      above_core: true
+    - name: cachyos-core-v4
+      url: "https://cdn77.cachyos.org/repo/$arch_v4/$repo"
+      sig_level: Required DatabaseOptional
+      above_core: true
+    - name: cachyos-extra-v4
+      url: "https://cdn77.cachyos.org/repo/$arch_v4/$repo"
+      sig_level: Required DatabaseOptional
+      above_core: true
+
+# cachyos-keyring must be installed BEFORE first use of any CachyOS repo (Pitfall 4).
+# VERIFIED: cachyos-keyring PKGBUILD installs keyring to /usr/share/pacman/keyrings/cachyos.*
+# The generator must install these packages using only the standard Arch repos before
+# adding CachyOS repos to pacman.conf.
+keyring_install_before_repos:
+  - cachyos-keyring  # pkgver 20240331 (VERIFIED from PKGBUILD)
+
+kernel:
+  package: linux-cachyos           # EEVDF scheduler (VERIFIED from linux-cachyos PKGBUILD: _cpusched:=cachyos)
+  headers: linux-cachyos-headers   # parallel headers package (VERIFIED)
+  version_at_research: "7.0.12"   # kernel version at clone time (VERIFIED from linux-cachyos commit 39d9d12)
+  scheduler: cachyos-eevdf         # custom EEVDF tuning (VERIFIED)
+  # Additional kernel variants available (all VERIFIED from linux-cachyos PKGBUILD family):
+  # linux-cachyos-bore, linux-cachyos-bmq, linux-cachyos-eevdf, linux-cachyos-lts,
+  # linux-cachyos-hardened, linux-cachyos-rt-bore, linux-cachyos-deckify, linux-cachyos-server, linux-cachyos-rc
+  notes: "linux-cachyos is the default; v3/v4 optimised builds available in cachyos-v3/cachyos-v4 repos"
+
+defaults:
+  # CachyOS installer presents a choice of FS and bootloader — no hard default enforced at PKGBUILD level.
+  # [UNVERIFIED]: exact default FS and bootloader presented by calamares installer.
+  initramfs: mkinitcpio            # VERIFIED: cachyos-hooks installs a mkinitcpio-style Plymouth hook; standard default
+  filesystem: null                 # [UNVERIFIED] installer choice: btrfs, ext4, or f2fs available
+  bootloader: null                 # [UNVERIFIED] installer choice: systemd-boot, grub, or limine supported
+  snapper: optional                # cachyos-snapper-support package available but not mandatory by default
+  # [UNVERIFIED]: whether cachyos-snapper-support is pre-installed by default depends on edition
+
+# Pre-seeded opinions: capabilities/configurations already expressed by CachyOS's base packages.
+# The generator uses these to detect potential conflicts with Omarchy opinions at composition time.
+pre_seeded_opinions:
+
+  - category: sysctl-param
+    id: cachyos/sysctl-performance
+    description: "12 sysctl tuning parameters pre-seeded by cachyos-settings package (VERIFIED)"
+    source_file: "usr/lib/sysctl.d/70-cachyos-settings.conf"
+    source_commit: "CachyOS-Settings/b1aedc7"
+    # All 12 keys VERIFIED from direct file inspection:
+    keys:
+      - vm.swappiness = 100
+      - vm.vfs_cache_pressure = 50
+      - vm.dirty_bytes = 268435456
+      - vm.page-cluster = 0
+      - vm.dirty_background_bytes = 67108864
+      - vm.dirty_writeback_centisecs = 1500
+      - kernel.nmi_watchdog = 0
+      - kernel.unprivileged_userns_clone = 1
+      - "kernel.printk = 3 3 3 3"
+      - kernel.kptr_restrict = 2
+      - net.core.netdev_max_backlog = 4096
+      - fs.file-max = 2097152
+    conflict_with_omarchy: >
+      None identified. OM-038 (increase-fd-limit) sets DefaultLimitNOFILE via systemd
+      system.conf.d/ and user.conf.d/ drop-ins — that is a per-process RLIMIT_NOFILE
+      (not a sysctl key); fs.file-max is the global kernel fd ceiling — different
+      mechanism, different namespace, additive not conflicting.
+      OM-036/OM-037 use tcp_mtu_probing and inotify.max_user_watches — different keys.
+
+  - category: zram-config
+    id: cachyos/zram-defaults
+    description: "zram0 with zstd compression, size=RAM, swap-priority=100 (VERIFIED from zram-generator.conf)"
+    source_commit: "CachyOS-Settings/b1aedc7"
+    conflict_with_omarchy: "None identified — Omarchy does not configure zram"
+
+  - category: service-enable
+    id: cachyos/ananicy-cpp
+    description: "ananicy-cpp CPU priority management daemon enabled by cachyos-settings.install (VERIFIED)"
+    conflict_with_omarchy: "None — Omarchy does not configure ananicy-cpp"
+
+  - category: service-enable
+    id: cachyos/systemd-resolved
+    description: "systemd-resolved enabled by cachyos-settings.install (VERIFIED)"
+    conflict_with_omarchy: "Omarchy also enables systemd-resolved — same intent, idempotent"
+
+  - category: service-enable
+    id: cachyos/cachyos-iw-set-regdomain
+    description: "cachyos-iw-set-regdomain.path enabled for wireless regulatory domain (VERIFIED)"
+    conflict_with_omarchy: "None identified"
+
+  - category: kernel-module
+    id: cachyos/ntsync
+    description: "ntsync kernel module loaded via /usr/lib/modules-load.d/ntsync.conf (VERIFIED)"
+    conflict_with_omarchy: "None identified"
+
+  - category: modprobe-config
+    id: cachyos/watchdog-blacklist
+    description: "iTCO_wdt and sp5100_tco watchdog timers blacklisted (VERIFIED from blacklist.conf)"
+    conflict_with_omarchy: "None identified"
+
+  - category: modprobe-config
+    id: cachyos/nvidia-powermanagement
+    description: "NVIDIA power management tuning via NVreg_InitializeSystemMemoryAllocations=0, DynamicPowerManagement=0x02 (VERIFIED)"
+    conflict_with_omarchy: "Low — Omarchy may configure NVIDIA; check for key collision"
+
+  - category: modprobe-config
+    id: cachyos/amdgpu-si-cik
+    description: "amdgpu forced for SI/CIK GPU generations via amdgpu.conf (VERIFIED)"
+    conflict_with_omarchy: "None identified — OM-066 Vulkan/AMDVLK uses modprobe.d but different scope"
+
+  # Pre-seeded kernel conflict note:
+  - category: kernel-install
+    id: cachyos/linux-cachyos-preinstalled
+    description: >
+      CachyOS pre-installs linux-cachyos. An Omarchy speech targeting linux (vanilla Arch
+      kernel, OM-073 linux-ptl for Intel) would create a required-vs-pre-seeded conflict.
+      The translator must surface this conflict via the explanation/trust_warning mechanism.
+    conflict_with_omarchy: >
+      REQUIRED-VS-PRE-SEEDED: Omarchy OM-073 installs linux-ptl (Intel Performance-
+      Hybrid Linux kernel) alongside linux. CachyOS pre-seeds linux-cachyos. The generator
+      must detect this conflict and surface it via Explanation (SC-3 / ARCH-04 data).
+
+  # [UNVERIFIED] additional settings:
+  - category: dns-config
+    id: cachyos/networkmanager-dns
+    description: "[UNVERIFIED] NetworkManager dns.conf in /usr/lib/NetworkManager/conf.d/ — file content not inspected in cloned source"
+    conflict_with_omarchy: "[UNVERIFIED] unknown"
+
+open_questions:
+  - "[UNVERIFIED] CachyOS default FS and bootloader: installer presents a choice; exact default not determinable from PKGBUILD inspection alone (Open Question 1 from delta study)"
+  - "[UNVERIFIED] cachyos-snapper-support pre-installed by default: depends on the CachyOS edition being installed"
+  - "[UNVERIFIED] NetworkManager dns.conf content: file exists but was not inspected in cloned CachyOS-Settings source"
+  - "[UNVERIFIED] cpu_arch_level detection mechanism at ISO build time: declare at speech time or detect at install time"

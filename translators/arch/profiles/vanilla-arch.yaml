@@ -1,0 +1,32 @@
+---
+# variant-profile: vanilla-arch
+# ARCH-04 baseline profile — no custom repos, no custom kernel.
+# This is the north-star target: Omarchy speech on standard Arch Linux.
+# One generator, no per-variant code forks — differences are data only.
+#
+# Source: research/arch-variants-delta.md §Cross-Variant Comparison (vanilla column)
+#         .planning/phases/02-arch-translator/02-RESEARCH.md §Variant Profiles
+
+variant: vanilla-arch
+description: "Standard Arch Linux — no custom repos, no custom kernel variants. Baseline profile for Omarchy north-star target."
+version_at_research: "2026-06-12"
+
+# No third-party repos; uses standard Arch mirrors only.
+repos: []
+
+# No external keyring needed beyond archlinux-keyring (pre-installed on all Arch systems).
+keyring_install_before_repos: []
+
+kernel:
+  package: linux
+  headers: linux-headers
+
+defaults:
+  # Omarchy's login phase (OM-099) configures limine; the translator chooses based
+  # on the speech opinions. null = translator/speech choice, not forced by this profile.
+  initramfs: mkinitcpio
+  bootloader: null  # translator/speech choice (Omarchy: limine via OM-099)
+  filesystem: null  # translator/speech choice
+
+# No pre-seeded opinions: vanilla Arch installs nothing beyond the base system.
+pre_seeded_opinions: []
