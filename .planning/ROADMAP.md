@@ -56,7 +56,14 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
   4. WASM and native builds produce identical results, proven by automated parity tests; resolver coverage is near-total per D19, with the Phase 0 edge-case corpus encoded as tests before implementation
   5. 3–4 example files exist (including one deliberately conflicting) that exercise the harness end-to-end
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Module bootstrap + shared types + JSON Schema 2020-12 + SR traceability + parse layer + licenses (SCHM-01, SCHM-02)
+- [ ] 01-02-PLAN.md — Dependency/ordering graph + deterministic Kahn toposort with cycle detection (RSLV-03)
+- [ ] 01-03-PLAN.md — Compound hardware predicate evaluation + first-class patch discovery (RSLV-02, RSLV-04)
+- [ ] 01-04-PLAN.md — Resolve engine: docs/04 hierarchy + Explanation + canonical JSON + 27 EC corpus (RSLV-01, RSLV-06)
+- [ ] 01-05-PLAN.md — WASM entrypoint + native/WASM parity + coverage gate + 4 example compositions (RSLV-05, RSLV-06)
 
 ### Phase 2: Arch Translator
 
@@ -125,7 +132,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Omarchy Research & Arch-Variant Study | 4/4 | Complete   | 2026-06-12 |
-| 1. Schema & Resolver Core | 0/TBD | Not started | - |
+| 1. Schema & Resolver Core | 0/5 | Not started | - |
 | 2. Arch Translator | 0/TBD | Not started | - |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |
 | 4. Debian Translator | 0/TBD | Not started | - |
