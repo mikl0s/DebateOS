@@ -1,0 +1,1 @@
+{"schema":1,"foundation":"arch","install_order":["OM-007","OM-064"],"applied":["OM-007","OM-064"],"explanations":[{"text":"No conflict: OM-007 applied.","rule":"no-conflict","opinions_involved":["OM-007"],"kept":["OM-007"]},{"text":"No conflict: OM-064 applied.","rule":"no-conflict","opinions_involved":["OM-064"],"kept":["OM-064"]}]}

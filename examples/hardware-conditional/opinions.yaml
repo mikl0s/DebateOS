@@ -1,0 +1,31 @@
+- schema: 1
+  id: "OM-006"
+  name: "Wayland Compositor Stack"
+  category: "package-install"
+  intent: "Install the compositor and Wayland session management stack: tiling compositor (Hyprland), session launcher (UWSM), display portal, idle daemon, screen lock."
+  status: "required"
+  packages:
+    - "hyprland"
+    - "uwsm"
+    - "hypridle"
+    - "hyprlock"
+
+- schema: 1
+  id: "OM-068"
+  name: "NVIDIA Driver Stack"
+  category: "hardware-conditional"
+  intent: "Detect NVIDIA GPUs and install the appropriate driver stack: for Turing+ GPUs (RTX 20xx and newer) install open DKMS drivers with VAAPI support. Configure modprobe for early KMS loading and set Hyprland environment variables appropriate to the GPU generation."
+  status: "nice-to-have"
+  hardware_condition:
+    type: "leaf"
+    predicate: "pci-id"
+    values:
+      - "10de:2204"
+      - "10de:2206"
+      - "10de:2208"
+      - "10de:1f04"
+      - "10de:1f08"
+  packages:
+    - "nvidia-open-dkms"
+    - "nvidia-utils"
+    - "libva-nvidia-driver"

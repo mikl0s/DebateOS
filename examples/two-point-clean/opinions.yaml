@@ -1,0 +1,20 @@
+- schema: 1
+  id: "OM-007"
+  name: "Terminal and Shell Tools"
+  category: "package-install"
+  intent: "Install the primary terminal emulator (foot) and terminal-multiplexer (tmux) with supporting tools: shell completion, modern shell enhancements via starship, zoxide navigation, bat, eza, fd, ripgrep, fzf."
+  status: "required"
+  packages:
+    - "foot"
+    - "tmux"
+    - "starship"
+    - "zoxide"
+
+- schema: 1
+  id: "OM-064"
+  name: "Bluetooth Service"
+  category: "service-enable"
+  intent: "Enable the Bluetooth service so that Bluetooth devices can be paired and connected. Configure Bluetooth to remember the last power state across reboots."
+  status: "nice-to-have"
+  packages:
+    - "bluetui"

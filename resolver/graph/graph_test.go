@@ -173,6 +173,141 @@ func TestTopoSortDeterministic(t *testing.T) {
 	}
 }
 
+// ─── Gap-closure tests (01-05 supplemental) ───────────────────────────────
+
+// TestBuildGraphOrderingBefore exercises the ordering.before edge path in
+// BuildGraph (previously uncovered — before edges were only exercised via the
+// TopoSort integration path, not BuildGraph directly).
+func TestBuildGraphOrderingBefore(t *testing.T) {
+	// A declares ordering.before B → edge A→B
+	opA := resolver.Opinion{
+		Schema:   1,
+		ID:       "op-a",
+		Name:     "A",
+		Category: "test",
+		Status:   resolver.StatusRequired,
+		Ordering: &resolver.Ordering{
+			Before: []resolver.OpinionRef{{ID: "op-b"}},
+		},
+	}
+	opB := resolver.Opinion{
+		Schema:   1,
+		ID:       "op-b",
+		Name:     "B",
+		Category: "test",
+		Status:   resolver.StatusRequired,
+	}
+	g, err := graph.BuildGraph([]resolver.Opinion{opA, opB})
+	if err != nil {
+		t.Fatalf("BuildGraph ordering.before: unexpected error: %v", err)
+	}
+	order, _, err := graph.TopoSort(g)
+	if err != nil {
+		t.Fatalf("TopoSort after ordering.before graph: %v", err)
+	}
+	// A must come before B.
+	idxA, idxB := -1, -1
+	for i, id := range order {
+		if id == "op-a" {
+			idxA = i
+		}
+		if id == "op-b" {
+			idxB = i
+		}
+	}
+	if idxA < 0 || idxB < 0 {
+		t.Fatalf("ordering.before: expected both op-a and op-b in order; got %v", order)
+	}
+	if idxA >= idxB {
+		t.Errorf("ordering.before: op-a (idx %d) should come before op-b (idx %d); order=%v", idxA, idxB, order)
+	}
+}
+
+// TestBuildGraphDependsOn exercises the depends_on edge path in BuildGraph.
+func TestBuildGraphDependsOn(t *testing.T) {
+	// C depends_on D → edge D→C (D must be installed before C)
+	opD := resolver.Opinion{
+		Schema:   1,
+		ID:       "op-d",
+		Name:     "D",
+		Category: "test",
+		Status:   resolver.StatusRequired,
+	}
+	opC := resolver.Opinion{
+		Schema:   1,
+		ID:       "op-c",
+		Name:     "C",
+		Category: "test",
+		Status:   resolver.StatusRequired,
+		DependsOn: []resolver.OpinionRef{{ID: "op-d"}},
+	}
+	g, err := graph.BuildGraph([]resolver.Opinion{opC, opD})
+	if err != nil {
+		t.Fatalf("BuildGraph depends_on: unexpected error: %v", err)
+	}
+	order, _, err := graph.TopoSort(g)
+	if err != nil {
+		t.Fatalf("TopoSort after depends_on graph: %v", err)
+	}
+	idxC, idxD := -1, -1
+	for i, id := range order {
+		if id == "op-c" {
+			idxC = i
+		}
+		if id == "op-d" {
+			idxD = i
+		}
+	}
+	if idxC < 0 || idxD < 0 {
+		t.Fatalf("depends_on: expected both op-c and op-d in order; got %v", order)
+	}
+	if idxD >= idxC {
+		t.Errorf("depends_on: op-d (idx %d) should come before op-c (idx %d); order=%v", idxD, idxC, order)
+	}
+}
+
+// TestBuildGraphPhantomNode exercises ensureNode's phantom-node path: when an
+// ordering.after references an ID not in the opinion slice, it is added as a
+// phantom node so the graph remains consistent.
+func TestBuildGraphPhantomNode(t *testing.T) {
+	// op-e declares after phantom-op (which is NOT in the opinion slice).
+	opE := resolver.Opinion{
+		Schema:   1,
+		ID:       "op-e",
+		Name:     "E",
+		Category: "test",
+		Status:   resolver.StatusRequired,
+		Ordering: &resolver.Ordering{
+			After: []resolver.OpinionRef{{ID: "phantom-op"}},
+		},
+	}
+	// BuildGraph must succeed (no error) and phantom-op is added as a node.
+	g, err := graph.BuildGraph([]resolver.Opinion{opE})
+	if err != nil {
+		t.Fatalf("BuildGraph phantom node: unexpected error: %v", err)
+	}
+	// TopoSort should succeed and include both op-e and phantom-op.
+	order, _, err := graph.TopoSort(g)
+	if err != nil {
+		t.Fatalf("TopoSort phantom node: unexpected error: %v", err)
+	}
+	hasPhantom, hasE := false, false
+	for _, id := range order {
+		if id == "phantom-op" {
+			hasPhantom = true
+		}
+		if id == "op-e" {
+			hasE = true
+		}
+	}
+	if !hasPhantom {
+		t.Errorf("BuildGraph phantom node: expected phantom-op in order; got %v", order)
+	}
+	if !hasE {
+		t.Errorf("BuildGraph phantom node: expected op-e in order; got %v", order)
+	}
+}
+
 // equalIDSlice checks two OpinionID slices for equality.
 func equalIDSlice(a, b []resolver.OpinionID) bool {
 	if len(a) != len(b) {

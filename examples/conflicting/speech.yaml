@@ -1,0 +1,7 @@
+schema: 1
+id: "conflicting-speech"
+name: "Conflicting — SDDM vs greetd Display Manager Hard Conflict"
+foundation: "arch"
+opinions:
+  - id: "OM-015"
+  - id: "OM-015-greetd"

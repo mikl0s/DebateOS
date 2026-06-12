@@ -152,3 +152,100 @@ func TestPatchDiscoverySymmetric(t *testing.T) {
 		t.Errorf("symmetric: Pair mismatch: ab=%v ba=%v", offerAB.Pair, offerBA.Pair)
 	}
 }
+
+// ─── Gap-closure tests (01-05 supplemental) ───────────────────────────────
+
+// TestFindPatchMissingPatchOpinion verifies that FindPatch returns nil when the
+// known_patches list references a patch ID that is not present in the opinions
+// slice (the ID is missing from the index).
+func TestFindPatchMissingPatchOpinion(t *testing.T) {
+	opinions := []resolver.Opinion{
+		{
+			Schema:   1,
+			ID:       "package-install/foo",
+			Name:     "Foo",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+			Conflicts: []resolver.OpinionRef{
+				{ID: "package-install/bar"},
+			},
+			KnownPatches: []resolver.PatchRef{
+				{ID: "patch/nonexistent", Resolves: "package-install/bar"},
+			},
+		},
+		{
+			Schema:   1,
+			ID:       "package-install/bar",
+			Name:     "Bar",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+		},
+		// "patch/nonexistent" is NOT in the slice — FindPatch should return nil.
+	}
+
+	offer := patch.FindPatch("package-install/foo", "package-install/bar", opinions)
+	if offer != nil {
+		t.Errorf("expected nil when referenced patch opinion is missing; got %+v", offer)
+	}
+}
+
+// TestFindPatchWrongCategory verifies that FindPatch returns nil when the
+// referenced patch opinion exists but has a non-patch category (guard against
+// a non-patch opinion being referenced in known_patches by mistake).
+func TestFindPatchWrongCategory(t *testing.T) {
+	opinions := []resolver.Opinion{
+		{
+			Schema:   1,
+			ID:       "package-install/foo",
+			Name:     "Foo",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+			Conflicts: []resolver.OpinionRef{
+				{ID: "package-install/bar"},
+			},
+			KnownPatches: []resolver.PatchRef{
+				{ID: "package-install/not-a-patch", Resolves: "package-install/bar"},
+			},
+		},
+		{
+			Schema:   1,
+			ID:       "package-install/bar",
+			Name:     "Bar",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+		},
+		{
+			Schema:   1,
+			ID:       "package-install/not-a-patch",
+			Name:     "Not a patch — wrong category",
+			Category: "package-install", // NOT "patch"
+			Status:   resolver.StatusNiceToHave,
+		},
+	}
+
+	offer := patch.FindPatch("package-install/foo", "package-install/bar", opinions)
+	if offer != nil {
+		t.Errorf("expected nil when referenced opinion has wrong category; got %+v", offer)
+	}
+}
+
+// TestFindPatchUnknownConflictingID verifies that FindPatch handles the case
+// where one of the conflicting opinion IDs is not in the index (the unknown-ID
+// branch in FindPatch that skips over missing opinions).
+func TestFindPatchUnknownConflictingID(t *testing.T) {
+	opinions := []resolver.Opinion{
+		{
+			Schema:   1,
+			ID:       "package-install/foo",
+			Name:     "Foo",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+		},
+		// "package-install/bar" is NOT in the slice
+	}
+
+	offer := patch.FindPatch("package-install/foo", "package-install/bar", opinions)
+	if offer != nil {
+		t.Errorf("expected nil when one conflicting ID is missing from the index; got %+v", offer)
+	}
+}

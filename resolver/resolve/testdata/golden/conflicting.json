@@ -1,0 +1,1 @@
+{"schema":1,"foundation":"arch","explanations":[{"text":"Hard conflict: OM-015 (required) and OM-015-greetd (required) cannot coexist. You must drop one or provide a patch opinion.","rule":"rule2","opinions_involved":["OM-015","OM-015-greetd"]}]}

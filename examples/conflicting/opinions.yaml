@@ -1,0 +1,28 @@
+- schema: 1
+  id: "OM-015"
+  name: "Desktop Shell Components (SDDM display manager)"
+  category: "package-install"
+  intent: "Install graphical desktop shell components including the SDDM display manager, status bar (waybar), notification daemon (mako), and polkit agent. SDDM manages the X11/Wayland login session."
+  status: "required"
+  conflicts:
+    - id: "OM-015-greetd"
+  packages:
+    - "sddm"
+    - "waybar"
+    - "mako"
+    - "polkit-gnome"
+
+- schema: 1
+  id: "OM-015-greetd"
+  name: "Desktop Shell Components (greetd display manager)"
+  category: "package-install"
+  intent: "Alternative desktop shell stack using greetd + tuigreet as the display manager instead of SDDM. Incompatible with OM-015 (only one display manager may be active per installation)."
+  status: "required"
+  conflicts:
+    - id: "OM-015"
+  packages:
+    - "greetd"
+    - "greetd-tuigreet"
+    - "waybar"
+    - "mako"
+    - "polkit-gnome"

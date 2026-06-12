@@ -192,3 +192,170 @@ func TestHardwareEvalErrors(t *testing.T) {
 		t.Error("expected error for unknown HardwareExprType, got nil")
 	}
 }
+
+// ─── Gap-closure tests (01-05 supplemental) ───────────────────────────────
+
+// TestHardwareEvalOR exercises the OR branch in EvalCondition.
+func TestHardwareEvalOR(t *testing.T) {
+	// OR(hw-intel-cpu, hw-amd-cpu): true when either predicate is present.
+	expr := resolver.HardwareExpr{
+		Type: resolver.HardwareExprOr,
+		Operands: []resolver.HardwareExpr{
+			{Type: resolver.HardwareExprLeaf, Predicate: "hw-intel-cpu"},
+			{Type: resolver.HardwareExprLeaf, Predicate: "hw-amd-cpu"},
+		},
+	}
+
+	t.Run("first_operand_matches", func(t *testing.T) {
+		profile := hardware.HardwareProfile{Predicates: []string{"hw-intel-cpu"}}
+		got, err := hardware.EvalCondition(expr, profile)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if !got {
+			t.Error("expected true: hw-intel-cpu matches first OR operand")
+		}
+	})
+
+	t.Run("second_operand_matches", func(t *testing.T) {
+		profile := hardware.HardwareProfile{Predicates: []string{"hw-amd-cpu"}}
+		got, err := hardware.EvalCondition(expr, profile)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if !got {
+			t.Error("expected true: hw-amd-cpu matches second OR operand")
+		}
+	})
+
+	t.Run("no_operand_matches", func(t *testing.T) {
+		profile := hardware.HardwareProfile{Predicates: []string{"battery-present"}}
+		got, err := hardware.EvalCondition(expr, profile)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if got {
+			t.Error("expected false: neither hw-intel-cpu nor hw-amd-cpu is in profile")
+		}
+	})
+}
+
+// TestHardwareEvalNOTErrorPath exercises the NOT-with-wrong-operand-count error path.
+func TestHardwareEvalNOTErrorPath(t *testing.T) {
+	// NOT with 0 operands → error
+	expr := resolver.HardwareExpr{
+		Type:     resolver.HardwareExprNot,
+		Operands: []resolver.HardwareExpr{}, // 0 operands — invalid
+	}
+	profile := hardware.HardwareProfile{}
+	_, err := hardware.EvalCondition(expr, profile)
+	if err == nil {
+		t.Error("expected error for NOT with 0 operands, got nil")
+	}
+}
+
+// TestHardwareEvalGenericFactValues exercises the generic fact-set-membership
+// evalLeaf path (Values non-empty, predicate is not pci-id or cpu-model-in-set).
+func TestHardwareEvalGenericFactValues(t *testing.T) {
+	expr := resolver.HardwareExpr{
+		Type:      resolver.HardwareExprLeaf,
+		Predicate: "gpu",
+		Values:    []string{"amd-radeon-rx-7600", "amd-radeon-rx-7700"},
+	}
+
+	t.Run("fact_in_values", func(t *testing.T) {
+		profile := hardware.HardwareProfile{
+			Facts: map[string]string{"gpu": "amd-radeon-rx-7600"},
+		}
+		got, err := hardware.EvalCondition(expr, profile)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if !got {
+			t.Error("expected true: gpu fact is in values set")
+		}
+	})
+
+	t.Run("fact_not_in_values", func(t *testing.T) {
+		profile := hardware.HardwareProfile{
+			Facts: map[string]string{"gpu": "nvidia-rtx-3090"},
+		}
+		got, err := hardware.EvalCondition(expr, profile)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if got {
+			t.Error("expected false: nvidia-rtx-3090 is not in amd values set")
+		}
+	})
+
+	t.Run("fact_key_missing", func(t *testing.T) {
+		// If the fact key is absent, should return false (not error).
+		profile := hardware.HardwareProfile{
+			Facts: map[string]string{},
+		}
+		got, err := hardware.EvalCondition(expr, profile)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if got {
+			t.Error("expected false when fact key is missing from profile")
+		}
+	})
+}
+
+// TestHardwareEvalGenericMatch exercises the generic fact-string-match
+// evalLeaf path (Match non-empty, predicate is not dmi-product-match).
+func TestHardwareEvalGenericMatch(t *testing.T) {
+	expr := resolver.HardwareExpr{
+		Type:      resolver.HardwareExprLeaf,
+		Predicate: "cpu_model_name",
+		Match:     "Intel",
+	}
+
+	t.Run("fact_contains_match", func(t *testing.T) {
+		profile := hardware.HardwareProfile{
+			Facts: map[string]string{"cpu_model_name": "Intel Core i7-12700H"},
+		}
+		got, err := hardware.EvalCondition(expr, profile)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if !got {
+			t.Error("expected true: cpu_model_name contains 'Intel'")
+		}
+	})
+
+	t.Run("fact_does_not_contain_match", func(t *testing.T) {
+		profile := hardware.HardwareProfile{
+			Facts: map[string]string{"cpu_model_name": "AMD Ryzen 7 7840U"},
+		}
+		got, err := hardware.EvalCondition(expr, profile)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if got {
+			t.Error("expected false: AMD cpu_model_name does not contain 'Intel'")
+		}
+	})
+}
+
+// TestHardwareEvalCPUModelMissing exercises the cpu-model-in-set path when the
+// fact key is absent from the profile.
+func TestHardwareEvalCPUModelMissing(t *testing.T) {
+	expr := resolver.HardwareExpr{
+		Type:      resolver.HardwareExprLeaf,
+		Predicate: "cpu-model-in-set",
+		Values:    []string{"151", "154"},
+	}
+	profile := hardware.HardwareProfile{
+		Facts: map[string]string{}, // no cpu_model key
+	}
+	got, err := hardware.EvalCondition(expr, profile)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got {
+		t.Error("expected false when cpu_model fact is absent")
+	}
+}

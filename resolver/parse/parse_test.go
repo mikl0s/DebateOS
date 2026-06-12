@@ -151,6 +151,53 @@ func TestParseSchemaViolationRejected(t *testing.T) {
 	}
 }
 
+// ─── Gap-closure tests (01-05 supplemental) ───────────────────────────────
+
+// TestParsePointYAMLError verifies that ParsePoint returns an error on
+// malformed YAML input (exercising the decode error path).
+func TestParsePointYAMLError(t *testing.T) {
+	// Tab characters in YAML are not valid indentation.
+	bad := "schema: 1\nid: \t invalid_tab"
+	_, err := ParsePoint(strings.NewReader(bad))
+	if err == nil {
+		t.Fatal("ParsePoint: expected error for malformed YAML, got nil")
+	}
+}
+
+// TestParseSpeechYAMLError verifies that ParseSpeech returns an error on
+// malformed YAML input.
+func TestParseSpeechYAMLError(t *testing.T) {
+	bad := "schema: 1\nid: \t bad"
+	_, err := ParseSpeech(strings.NewReader(bad))
+	if err == nil {
+		t.Fatal("ParseSpeech: expected error for malformed YAML, got nil")
+	}
+}
+
+// TestParseSpeechSchemaViolation verifies that ParseSpeech returns an error
+// when the document fails JSON Schema validation (exercising validateAgainst
+// for the speech schema).
+func TestParseSpeechSchemaViolation(t *testing.T) {
+	// A speech with no `foundation` field should fail JSON Schema validation.
+	doc := "schema: 1\nid: example/missing-foundation\nname: No Foundation\nopinions: []\n"
+	_, err := ParseSpeech(strings.NewReader(doc))
+	if err == nil {
+		t.Fatal("ParseSpeech: expected schema validation error for missing foundation, got nil")
+	}
+}
+
+// TestParsePointSchemaViolation verifies that ParsePoint returns an error
+// when the document fails JSON Schema validation (exercising validateAgainst
+// for the point schema).
+func TestParsePointSchemaViolation(t *testing.T) {
+	// A point with no `name` field should fail JSON Schema validation.
+	doc := "schema: 1\nid: example/no-name\nintent: Some intent\nmembers: []\n"
+	_, err := ParsePoint(strings.NewReader(doc))
+	if err == nil {
+		t.Fatal("ParsePoint: expected schema validation error for missing name, got nil")
+	}
+}
+
 // TestSchemaOSAgnostic enforces invariant 1 / SCHM-02 on the schema files.
 func TestSchemaOSAgnostic(t *testing.T) {
 	forbidden := regexp.MustCompile(`(?i)pacman|mkarchiso|\baur\b|dpkg|\bapt\b|debian|\barch \b`)

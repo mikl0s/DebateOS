@@ -639,6 +639,253 @@ func TestResolvePatchablePair(t *testing.T) {
 	}
 }
 
+// ─── Gap-closure tests (01-05 supplemental) ───────────────────────────────
+
+// TestCanonicalJSONNilInput verifies that CanonicalJSON returns an error when
+// called with nil (covers the nil-guard branch in canonical.go).
+func TestCanonicalJSONNilInput(t *testing.T) {
+	t.Parallel()
+	_, err := resolve.CanonicalJSON(nil)
+	if err == nil {
+		t.Fatal("CanonicalJSON(nil): expected error, got nil")
+	}
+	if !strings.Contains(err.Error(), "nil") {
+		t.Errorf("CanonicalJSON(nil): error %q should mention nil", err.Error())
+	}
+}
+
+// TestResolveHardwareErrorPath verifies that a malformed hardware condition
+// (unknown HardwareExprType) in an opinion produces a hardware-skip explanation
+// rather than panicking or returning a nil ResolvedSpeech (covers the
+// hardware.EvalCondition error branch in resolve.go).
+func TestResolveHardwareErrorPath(t *testing.T) {
+	t.Parallel()
+	badType := resolver.HardwareExprType("bad-type-for-coverage")
+	opinions := []resolver.Opinion{
+		{
+			Schema:   1,
+			ID:       "op-malformed-hw",
+			Name:     "Malformed HW Condition",
+			Category: "hardware-conditional",
+			Status:   resolver.StatusNiceToHave,
+			HardwareCondition: &resolver.HardwareExpr{
+				Type: badType,
+			},
+		},
+	}
+	speech := resolver.Speech{
+		Schema:     1,
+		ID:         "test-malformed-hw",
+		Foundation: "arch",
+		Opinions:   []resolver.OpinionRef{{ID: "op-malformed-hw"}},
+	}
+	hw := hardware.HardwareProfile{}
+
+	rs, _ := resolve.Resolve(&speech, opinions, hw)
+	if rs == nil {
+		t.Fatal("Resolve: expected non-nil ResolvedSpeech on malformed hardware condition")
+	}
+	// The opinion should appear in Skipped (hardware-skip rule fires on eval error).
+	found := false
+	for _, id := range rs.Skipped {
+		if id == "op-malformed-hw" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("Resolve: expected op-malformed-hw in Skipped; got skipped=%v applied=%v", rs.Skipped, rs.Applied)
+	}
+}
+
+// TestResolveNiceVsNiceRule3 verifies Rule 3: when two nice-to-have opinions
+// conflict, the first-listed (lower canonical ID) wins and the second is dropped.
+func TestResolveNiceVsNiceRule3(t *testing.T) {
+	t.Parallel()
+
+	// nice/alpha < nice/beta lexicographically → alpha wins, beta dropped.
+	opinions := []resolver.Opinion{
+		{
+			Schema:   1,
+			ID:       "nice/alpha",
+			Name:     "Alpha nice",
+			Category: "config-dotfile",
+			Status:   resolver.StatusNiceToHave,
+			Conflicts: []resolver.OpinionRef{{ID: "nice/beta"}},
+		},
+		{
+			Schema:   1,
+			ID:       "nice/beta",
+			Name:     "Beta nice",
+			Category: "config-dotfile",
+			Status:   resolver.StatusNiceToHave,
+			Conflicts: []resolver.OpinionRef{{ID: "nice/alpha"}},
+		},
+	}
+	speech := resolver.Speech{
+		Schema:     1,
+		ID:         "test-nice-vs-nice",
+		Foundation: "arch",
+		Opinions: []resolver.OpinionRef{
+			{ID: "nice/alpha"},
+			{ID: "nice/beta"},
+		},
+	}
+
+	rs, err := resolve.Resolve(&speech, opinions, hardware.HardwareProfile{})
+	if err != nil {
+		t.Fatalf("nice-vs-nice: unexpected error: %v", err)
+	}
+	if rs == nil {
+		t.Fatal("nice-vs-nice: nil ResolvedSpeech")
+	}
+	// nice/beta should be dropped (higher canonical ID loses)
+	foundDropped := false
+	for _, id := range rs.Dropped {
+		if id == "nice/beta" {
+			foundDropped = true
+			break
+		}
+	}
+	if !foundDropped {
+		t.Errorf("nice-vs-nice: expected nice/beta in Dropped; dropped=%v applied=%v", rs.Dropped, rs.Applied)
+	}
+	// Rule 3 explanation should be present.
+	foundRule3 := false
+	for _, ex := range rs.Explanations {
+		if ex.Rule == "rule3" {
+			foundRule3 = true
+			break
+		}
+	}
+	if !foundRule3 {
+		t.Error("nice-vs-nice: expected Rule 3 explanation in Explanations")
+	}
+}
+
+// TestResolveRule1BDropsA verifies the Rule 1 branch where opB is required
+// and opA is nice-to-have: opA should be dropped and opB kept.
+func TestResolveRule1BDropsA(t *testing.T) {
+	t.Parallel()
+
+	// Canonical pair: A < B lexicographically, but B is required and A is nice-to-have.
+	// Rule 1 second branch fires: bReq && !aReq → drop A.
+	opinions := []resolver.Opinion{
+		{
+			Schema:   1,
+			ID:       "pkg/aaa-nice",
+			Name:     "AAA nice-to-have",
+			Category: "package-install",
+			Status:   resolver.StatusNiceToHave,
+			Conflicts: []resolver.OpinionRef{{ID: "pkg/bbb-required"}},
+		},
+		{
+			Schema:   1,
+			ID:       "pkg/bbb-required",
+			Name:     "BBB required",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+			Conflicts: []resolver.OpinionRef{{ID: "pkg/aaa-nice"}},
+		},
+	}
+	speech := resolver.Speech{
+		Schema:     1,
+		ID:         "test-rule1-b-drops-a",
+		Foundation: "arch",
+		Opinions: []resolver.OpinionRef{
+			{ID: "pkg/aaa-nice"},
+			{ID: "pkg/bbb-required"},
+		},
+	}
+
+	rs, err := resolve.Resolve(&speech, opinions, hardware.HardwareProfile{})
+	if err != nil {
+		t.Fatalf("rule1-b-drops-a: unexpected error: %v", err)
+	}
+	if rs == nil {
+		t.Fatal("rule1-b-drops-a: nil ResolvedSpeech")
+	}
+	// aaa-nice should be dropped.
+	foundDropped := false
+	for _, id := range rs.Dropped {
+		if id == "pkg/aaa-nice" {
+			foundDropped = true
+			break
+		}
+	}
+	if !foundDropped {
+		t.Errorf("rule1-b-drops-a: expected pkg/aaa-nice in Dropped; dropped=%v applied=%v", rs.Dropped, rs.Applied)
+	}
+	// Rule 1 explanation must be present.
+	foundRule1 := false
+	for _, ex := range rs.Explanations {
+		if ex.Rule == "rule1" {
+			foundRule1 = true
+			break
+		}
+	}
+	if !foundRule1 {
+		t.Error("rule1-b-drops-a: expected Rule 1 explanation")
+	}
+}
+
+// TestResolveInstallOrderExplanation verifies that an install-order Explanation
+// with Rule="ordering" is emitted when opinions have ordering constraints
+// (covers the hasOrdering branch in resolve.go).
+func TestResolveInstallOrderExplanation(t *testing.T) {
+	t.Parallel()
+
+	opinions := []resolver.Opinion{
+		{
+			Schema:   1,
+			ID:       "ord/first",
+			Name:     "First",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+		},
+		{
+			Schema:   1,
+			ID:       "ord/second",
+			Name:     "Second",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+			DependsOn: []resolver.OpinionRef{{ID: "ord/first"}},
+		},
+	}
+	speech := resolver.Speech{
+		Schema:     1,
+		ID:         "test-ordering-explanation",
+		Foundation: "arch",
+		Opinions: []resolver.OpinionRef{
+			{ID: "ord/first"},
+			{ID: "ord/second"},
+		},
+	}
+
+	rs, err := resolve.Resolve(&speech, opinions, hardware.HardwareProfile{})
+	if err != nil {
+		t.Fatalf("ordering explanation: unexpected error: %v", err)
+	}
+	if rs == nil {
+		t.Fatal("ordering explanation: nil ResolvedSpeech")
+	}
+
+	foundOrdering := false
+	for _, ex := range rs.Explanations {
+		if ex.Rule == "ordering" {
+			foundOrdering = true
+			break
+		}
+	}
+	if !foundOrdering {
+		var rules []string
+		for _, ex := range rs.Explanations {
+			rules = append(rules, ex.Rule)
+		}
+		t.Errorf("ordering explanation: expected Rule='ordering'; got rules: %v", rules)
+	}
+}
+
 // ─── Canonical golden-file parity ─────────────────────────────────────────
 
 // TestCanonicalGolden verifies that Resolve + CanonicalJSON over each named
@@ -653,9 +900,15 @@ func TestCanonicalGolden(t *testing.T) {
 	t.Parallel()
 
 	update := os.Getenv("GOLDEN_UPDATE") == "1"
+	// GOLDEN_DIR may be overridden by the parity script to write goldens to a
+	// temp directory for comparison.  Default is the committed testdata/golden/.
+	goldenDir := os.Getenv("GOLDEN_DIR")
+	if goldenDir == "" {
+		goldenDir = filepath.Join("testdata", "golden")
+	}
 
 	cases := []struct {
-		name    string // golden file stem (testdata/golden/<name>.json)
+		name    string // golden file stem (<goldenDir>/<name>.json)
 		fixture string // relative path under examples/ dir (speech.yaml + opinions.yaml)
 	}{
 		{name: "omarchy-mini", fixture: "omarchy-mini"},
@@ -683,7 +936,7 @@ func TestCanonicalGolden(t *testing.T) {
 				t.Fatalf("CanonicalJSON error for %s: %v", tc.name, err)
 			}
 
-			goldenPath := filepath.Join("testdata", "golden", tc.name+".json")
+			goldenPath := filepath.Join(goldenDir, tc.name+".json")
 
 			if update {
 				// Write mode: create/overwrite the golden.

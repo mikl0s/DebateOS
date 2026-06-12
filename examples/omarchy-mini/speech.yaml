@@ -1,0 +1,9 @@
+schema: 1
+id: "omarchy-mini-speech"
+name: "Omarchy Mini — Hyprland Desktop Subset"
+foundation: "arch"
+opinions:
+  - id: "OM-001"
+  - id: "OM-006"
+  - id: "OM-007"
+  - id: "OM-015"

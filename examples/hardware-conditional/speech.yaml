@@ -1,0 +1,10 @@
+schema: 1
+id: "hardware-conditional-speech"
+name: "Hardware-Conditional — NVIDIA Driver with PCI-ID Gate (OM-068)"
+foundation: "arch"
+opinions:
+  - id: "OM-006"
+  - id: "OM-068"
+hardware:
+  predicates: []
+  facts: {}

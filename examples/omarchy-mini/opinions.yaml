@@ -1,0 +1,61 @@
+- schema: 1
+  id: "OM-001"
+  name: "Omarchy Package Repository"
+  category: "custom-repo"
+  intent: "Register the Omarchy package repository with the system package manager, import its GPG signing key, and set the preferred mirror channel."
+  status: "required"
+  custom_repos:
+    - name: "omarchy"
+      url: "https://packages.omarchy.org/stable"
+      sig_level: "Optional TrustAll"
+      priority: 10
+
+- schema: 1
+  id: "OM-006"
+  name: "Wayland Compositor Stack"
+  category: "package-install"
+  intent: "Install the compositor and Wayland session management stack: tiling compositor (Hyprland), session launcher (UWSM), display portal, idle daemon, screen lock, color temperature tool."
+  status: "required"
+  depends_on:
+    - id: "OM-001"
+  packages:
+    - "hyprland"
+    - "uwsm"
+    - "hyprland-portal"
+    - "hypridle"
+    - "hyprlock"
+    - "hyprsunset"
+
+- schema: 1
+  id: "OM-007"
+  name: "Terminal and Shell Tools"
+  category: "package-install"
+  intent: "Install the primary terminal emulator (foot) and terminal-multiplexer (tmux) with supporting tools: shell completion, shell enhancements via starship, zoxide navigation, bat, eza, fd, ripgrep, fzf."
+  status: "required"
+  depends_on:
+    - id: "OM-001"
+  packages:
+    - "foot"
+    - "tmux"
+    - "starship"
+    - "zoxide"
+    - "bat"
+    - "eza"
+    - "fd"
+    - "ripgrep"
+    - "fzf"
+
+- schema: 1
+  id: "OM-015"
+  name: "Desktop Shell Components"
+  category: "package-install"
+  intent: "Install graphical desktop shell components: status bar (waybar), notification daemon (mako), application launcher, background setter (swaybg), display manager (sddm), polkit agent."
+  status: "required"
+  depends_on:
+    - id: "OM-006"
+  packages:
+    - "waybar"
+    - "mako"
+    - "swaybg"
+    - "sddm"
+    - "polkit-gnome"

@@ -13,6 +13,7 @@ OldDocs/
 /bin/
 /dist/
 *.wasm
+/wasm
 
 # --- Node / SvelteKit (web/) ---
 node_modules/
