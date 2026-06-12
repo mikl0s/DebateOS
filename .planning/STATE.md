@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 Plan 04 complete — Resolve engine + 27 EC corpus GREEN, RSLV-01/RSLV-06 satisfied
-last_updated: "2026-06-12T22:27:13.979Z"
-last_activity: 2026-06-12 -- Phase 1 Plan 04 complete
+stopped_at: Phase 2 Plan 01 complete — Arch translator data layer (capabilities gate + BuildManifest), 43 pytest GREEN, ARCH-01 foundation + ARCH-03 satisfied
+last_updated: "2026-06-12T22:34:00.000Z"
+last_activity: 2026-06-12 -- Phase 2 Plan 01 complete
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 9
-  completed_plans: 9
-  percent: 33
+  total_plans: 14
+  completed_plans: 10
+  percent: 36
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-12)
 
 **Core value:** Compose a speech from curators' points, resolve conflicts explainably, and build a bootable unattended installer — zero cost, no central service in the critical path.
-**Current focus:** Phase 1 — Schema & Resolver Core
+**Current focus:** Phase 2 — Arch Translator
 
 ## Current Position
 
-Phase: 1 (Schema & Resolver Core) — EXECUTING
-Plan: 5 of 5 complete; next: 01-05 (WASM parity + examples)
-Status: Ready to execute 01-05
-Last activity: 2026-06-12 -- Phase 1 Plan 04 complete
+Phase: 2 (Arch Translator) — EXECUTING
+Plan: 2 of 5
+Status: Executing Phase 2
+Last activity: 2026-06-12 -- Phase 2 Plan 01 complete (capability gate + BuildManifest)
 
-Progress: [██░░░░░░░░] 19%
+Progress: [███░░░░░░░] 36%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [██░░░░░░░░] 19%
 | Phase 01-schema-resolver-core P03 | 5 min | 2 tasks | 7 files |
 | Phase 01-schema-resolver-core P04 | 12 min | 3 tasks | 31 files |
 | Phase 01-schema-resolver-core P05 | 11 | 3 tasks | 19 files |
+| Phase 02-arch-translator P01 | 6 min | 2 tasks (4 commits) | 14 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,10 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [01-04]: EC-038 PCIIDs via hardware_override fixture block — resolver.HardwareProfile lacks PCIIDs; hardware.HardwareProfile has it
 - [01-04]: Rule4 fires when patch opinion is already active in speech; Rule2+PatchOffered fires when patch exists but not in speech
 - [01-04]: sig_level=Never repos surface TrustWarning in Explanation (T-01-10); sysctl collision detection runs before conflict resolution (SR-016)
+- [02-01]: pytest installed via pip --break-system-packages (Debian host restriction); version 9.0.3 matches Arch official python-pytest 1:9.0.3-1
+- [02-01]: install-npm-global-packages intentionally absent from capabilities.json — leave undeclared until npm handler is implemented; gate correctly drops nice-to-haves with this token
+- [02-01]: first_run opinions (execution_phase=="first-run") excluded from install-time package/service aggregation; collected as {id, script_payload} for Plan 02 systemd oneshot unit generation
+- [02-01]: check_capabilities returns list[(id, reason)] for dropped nice-to-haves (empty list on clean pass); CapabilityError message always contains opinion ID + token + "composition time" (SC-3)
 
 ### Decisions from Plan 00-01
 
@@ -109,7 +114,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12T21:19:11.337Z
-Stopped at: Phase 1 Plan 04 complete — Resolve engine + 27 EC corpus GREEN, RSLV-01/RSLV-06 satisfied
+Last session: 2026-06-12T22:34:00.000Z
+Stopped at: Phase 2 Plan 01 complete — Arch translator data layer (capabilities gate + BuildManifest), 43 pytest GREEN
 Resume file: None
-Next: Phase 1 Plan 05 (01-05-PLAN.md) — WASM entrypoint + native/WASM parity + coverage gate + examples
+Next: Phase 2 Plan 02 (02-02-PLAN.md) — archiso profile emitter (packages.x86_64, airootfs tree, profiledef.sh)

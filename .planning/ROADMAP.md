@@ -92,7 +92,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Translator package + input-contract loader + capability gate (SC-3) + BuildManifest builder (ARCH-01, ARCH-03)
+- [x] 02-01-PLAN.md — Translator package + input-contract loader + capability gate (SC-3) + BuildManifest builder (ARCH-01, ARCH-03) (completed 2026-06-12)
 - [ ] 02-03-PLAN.md — Declarative variant profiles: vanilla-arch / cachyos / garuda YAML with marked Omarchy conflicts (ARCH-04)
 - [ ] 02-04-PLAN.md — examples/omarchy authoring: 134 opinions + 32 points + speech + clean-resolve Go harness (ARCH-02)
 
