@@ -851,22 +851,22 @@ if err := dec.Decode(&op); err != nil {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **`gopkg.in/yaml.v3` → `go.yaml.in/yaml/v3` import path change**
+> All three questions RESOLVED 2026-06-12 by the orchestrator under the locked autonomous-run mandate (docs/09 process notes: "choose the option most consistent with the locked decisions and invariants, record it, continue"). Each resolution adopts the recommendation verbatim; recorded in STATE.md decisions.
+
+1. **`gopkg.in/yaml.v3` → `go.yaml.in/yaml/v3` import path change — RESOLVED: use `go.yaml.in/yaml/v3` v3.0.4.**
    - What we know: The CONTEXT.md locked decision says "gopkg.in/yaml.v3 only". `gopkg.in/yaml.v3` is archived (April 2025). `go.yaml.in/yaml/v3` is the API-identical official maintained fork.
-   - What's unclear: Does the user consider this a decision change requiring explicit confirmation, or a security-obvious clarification?
-   - Recommendation: The planner should note this in the Wave 0 task ("use `go.yaml.in/yaml/v3` v3.0.4 — API-identical drop-in for archived `gopkg.in/yaml.v3`") and proceed. No scope change.
+   - Resolution: The locked decision's intent is "the yaml.v3 library, minimal deps"; the maintained fork from The YAML Project is the security-correct implementation of that intent. No scope change.
 
-2. **JSON Schema files: JSON or YAML format**
+2. **JSON Schema files: JSON or YAML format — RESOLVED: `.json` canonical validation artifacts; human-readable `.yaml` documentation alongside (not loaded by the validator).**
    - What we know: `santhosh-tekuri/jsonschema/v6` supports both JSON and YAML input. CONTEXT.md says "YAML schema documentation + JSON Schema (draft 2020-12) validation files". The "YAML schema documentation" may mean human-friendly YAML docs alongside the machine-readable JSON Schema files.
    - What's unclear: Should the `.json` files be the canonical validation artifact and `.yaml` files be documentation-only, or are the `.yaml` files both documentation and valid JSON Schema?
    - Recommendation: Use `.json` files as the canonical validation artifact (simpler loading for `santhosh-tekuri/jsonschema/v6`; no YAML pre-processing step); add a human-readable `opinion.schema.yaml` "documentation YAML" alongside that is not loaded by the validator. This satisfies both "YAML human-readable documentation" and "JSON Schema 2020-12 validation files" from SCHM-01.
 
-3. **Speech `schema: 1` version field location**
+3. **Speech `schema: 1` version field location — RESOLVED: required top-level field on all three document types (Opinion, Point, Speech).**
    - What we know: CONTEXT.md requires an explicit `schema: 1` version field on every document.
-   - What's unclear: Is `schema` at the top level of each document type (same field on Opinion, Point, and Speech), or only on Speech?
-   - Recommendation: Add `schema: 1` as a required top-level field on Opinion, Point, and Speech. This future-proofs all three document types for schema migration.
+   - Resolution: Top-level on all three; future-proofs every document type for schema migration.
 
 ---
 
