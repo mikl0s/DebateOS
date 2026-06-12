@@ -178,14 +178,27 @@ func Resolve(speech *resolver.Speech, opinions []resolver.Opinion, hw hardware.H
 		}
 	}
 	// Emit "No conflict" for any applied opinion not already explained.
+	// Also surface sig_level=Never trust warnings for all selected opinions
+	// that carry such repos (T-01-10, WR-02): previously this was only done in
+	// the hardware-apply branch, leaving non-hardware opinions silently untrusted.
 	noConflictIDs := sortedActiveIDs(opinions, active, dropped)
 	for _, id := range noConflictIDs {
 		if !explainedOps[id] {
+			op := index[id]
+			trustWarn := ""
+			if op != nil {
+				trustWarn = collectTrustWarning(*op)
+			}
+			text := fmt.Sprintf("No conflict: %s applied.", id)
+			if trustWarn != "" {
+				text += " " + trustWarn
+			}
 			rs.Explanations = append(rs.Explanations, Explanation{
-				Text:             fmt.Sprintf("No conflict: %s applied.", id),
+				Text:             text,
 				Rule:             "no-conflict",
 				OpinionsInvolved: []resolver.OpinionID{id},
 				Kept:             []resolver.OpinionID{id},
+				TrustWarning:     trustWarn,
 			})
 		}
 	}

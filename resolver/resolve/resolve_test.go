@@ -1043,6 +1043,62 @@ func makeSet(ids []resolver.OpinionID) map[resolver.OpinionID]bool {
 // Explanation literals directly (avoid importing internal type).
 type Explanation = resolve.Explanation
 
+// TestResolveTrustWarningNonHardwareOpinion verifies WR-02: a non-hardware-
+// conditional opinion with a sig_level=Never custom repo must emit a
+// TrustWarning in its Explanation — not just hardware-conditional ones.
+func TestResolveTrustWarningNonHardwareOpinion(t *testing.T) {
+	t.Parallel()
+
+	// A plain required package-install opinion with a Never-sig repo.
+	// No hardware_condition — goes through the "No conflict" path.
+	opinions := []resolver.Opinion{
+		{
+			Schema:   1,
+			ID:       "custom-repo/never-sig-plain",
+			Name:     "Plain opinion with Never sig repo",
+			Category: "custom-repo",
+			Status:   resolver.StatusRequired,
+			CustomRepos: []resolver.RepoDecl{
+				{
+					Name:     "myunsaferepo",
+					URL:      "https://example.com/repo",
+					SigLevel: resolver.SigLevelNever,
+				},
+			},
+		},
+	}
+	speech := resolver.Speech{
+		Schema:     1,
+		ID:         "test-trust-warn-non-hw",
+		Foundation: "arch",
+		Opinions:   []resolver.OpinionRef{{ID: "custom-repo/never-sig-plain"}},
+	}
+
+	rs, err := resolve.Resolve(&speech, opinions, hardware.HardwareProfile{})
+	if err != nil {
+		t.Fatalf("TrustWarningNonHW: unexpected error: %v", err)
+	}
+	if rs == nil {
+		t.Fatal("TrustWarningNonHW: nil ResolvedSpeech")
+	}
+
+	// Find the explanation for the opinion and assert TrustWarning is set.
+	found := false
+	for _, ex := range rs.Explanations {
+		for _, id := range ex.OpinionsInvolved {
+			if id == "custom-repo/never-sig-plain" {
+				found = true
+				if ex.TrustWarning == "" {
+					t.Errorf("TrustWarningNonHW: explanation for custom-repo/never-sig-plain has empty TrustWarning; want non-empty (sig_level=Never repo)")
+				}
+			}
+		}
+	}
+	if !found {
+		t.Error("TrustWarningNonHW: no explanation found for custom-repo/never-sig-plain")
+	}
+}
+
 // TestResolveMultipleHardConflictsAllReported verifies WR-01: when a speech
 // contains two distinct required-vs-required conflict pairs, both pair IDs
 // must appear in the returned error message (not just the last one).
