@@ -65,7 +65,7 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [x] 01-02-PLAN.md — Dependency/ordering graph + deterministic Kahn toposort with cycle detection (RSLV-03)
-- [ ] 01-03-PLAN.md — Compound hardware predicate evaluation + first-class patch discovery (RSLV-02, RSLV-04)
+- [x] 01-03-PLAN.md — Compound hardware predicate evaluation + first-class patch discovery (RSLV-02, RSLV-04)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -142,7 +142,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Omarchy Research & Arch-Variant Study | 4/4 | Complete   | 2026-06-12 |
-| 1. Schema & Resolver Core | 2/5 | In Progress|  |
+| 1. Schema & Resolver Core | 3/5 | In Progress|  |
 | 2. Arch Translator | 0/TBD | Not started | - |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |
 | 4. Debian Translator | 0/TBD | Not started | - |

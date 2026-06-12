@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 Plan 02 complete — resolver/graph BuildGraph+TopoSort green, EC-035/EC-036 tests passing
-last_updated: "2026-06-12T20:44:51.612Z"
+stopped_at: Phase 1 Plan 03 complete — resolver/hardware EvalCondition + resolver/patch FindPatch green, EC-037/EC-038/EC-032 tests passing
+last_updated: "2026-06-12T20:49:17Z"
 last_activity: 2026-06-12 -- Phase 1 execution started
 progress:
   total_phases: 6
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 1 (Schema & Resolver Core) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-06-12 -- Phase 1 execution started
 
@@ -52,6 +52,7 @@ Progress: [█░░░░░░░░░] 4%
 | Phase 00-omarchy-research-arch-variant-study P03 | 10 | 2 tasks | 1 files |
 | Phase 00-omarchy-research-arch-variant-study P02 | 15 | 2 tasks | 2 files |
 | Phase 01-schema-resolver-core P02 | 2 min | 2 tasks | 6 files |
+| Phase 01-schema-resolver-core P03 | 5 min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,8 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: 306 runtime bin/ helpers classified as translator infrastructure not opinions (OQ-008)
 - [Phase ?]: TopoSort is a free function (not a method on Graph) — cleaner call site for 01-04 resolver
 - [Phase ?]: Phase enum stored in Graph.phase but NOT converted to edges — tie-breaking key only per SR-006/OM-023 cross-phase override
+- [01-03]: hardware.HardwareProfile is a distinct package-local struct with PCIIDs []string — richer than resolver.HardwareProfile (which has only Predicates+Facts); 01-04 will adapt at the evaluation boundary
+- [01-03]: FindPatch scans known_patches on BOTH conflicting opinions to ensure symmetry; sorts candidates by ID for determinism
 
 ### Decisions from Plan 00-01
 
@@ -103,4 +106,4 @@ None yet.
 Last session: 2026-06-12T20:44:51.608Z
 Stopped at: Phase 1 Plan 02 complete — resolver/graph BuildGraph+TopoSort green, EC-035/EC-036 tests passing
 Resume file: None
-Next: Phase 0 Plan 02 (00-02-PLAN.md) or Plan 03 (00-03-PLAN.md) — both Wave 1 plans now complete
+Next: Phase 1 Plan 04 (01-04-PLAN.md) — resolve engine, docs/04 hierarchy, EC corpus (Wave 3)
