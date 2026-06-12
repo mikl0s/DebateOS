@@ -1,0 +1,30 @@
+# EC-035: Three-hop dependency chain produces correct toposort install order
+# Ordering constraints: OM-023 after OM-041, OM-041 after OM-009.
+# Expected order: [OM-009, OM-041, OM-023]
+opinions:
+  - schema: 1
+    id: "OM-009"
+    name: "dev-tools"
+    category: "package-install"
+    status: "required"
+    intent: "Installs dev tools including mise"
+
+  - schema: 1
+    id: "OM-041"
+    name: "mise-work"
+    category: "config-dotfile"
+    status: "required"
+    intent: "Configures mise for work; requires mise (OM-009) to be installed first"
+    ordering:
+      after:
+        - id: "OM-009"
+
+  - schema: 1
+    id: "OM-023"
+    name: "ai-tools"
+    category: "npm-global-install"
+    status: "required"
+    intent: "Installs AI tools via npm; requires mise+Node.js (OM-041) to be set up first"
+    ordering:
+      after:
+        - id: "OM-041"

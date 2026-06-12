@@ -1,0 +1,24 @@
+# SR-006 / OM-023 cross-phase ordering override test.
+# config-op is in the "config" phase, packaging-op is in the "packaging" phase.
+# Phase enum order would put packaging BEFORE config (packaging < config in enum).
+# But packaging-op has an explicit after: [config-op] ordering constraint.
+# Expected: config-op must appear BEFORE packaging-op in the toposort output.
+opinions:
+  - schema: 1
+    id: "config-op"
+    name: "config-phase-opinion"
+    category: "config-dotfile"
+    status: "required"
+    install_phase: "config"
+    intent: "A config-phase opinion that must run before packaging-op"
+
+  - schema: 1
+    id: "packaging-op"
+    name: "packaging-phase-opinion"
+    category: "npm-global-install"
+    status: "required"
+    install_phase: "packaging"
+    intent: "A packaging-phase opinion with explicit after constraint overriding phase enum order"
+    ordering:
+      after:
+        - id: "config-op"

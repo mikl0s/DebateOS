@@ -1,0 +1,23 @@
+# EC-036: Circular ordering constraint — hard cycle error naming both opinions
+# docker-service declares after docker-dns, docker-dns declares after docker-service.
+# Expected: cycle error naming both opinion IDs.
+opinions:
+  - schema: 1
+    id: "docker-service"
+    name: "service-enable-docker"
+    category: "service-enable"
+    status: "required"
+    intent: "Enables the Docker daemon service"
+    ordering:
+      after:
+        - id: "docker-dns"
+
+  - schema: 1
+    id: "docker-dns"
+    name: "config-docker-dns"
+    category: "config-dotfile"
+    status: "required"
+    intent: "Configures Docker DNS settings"
+    ordering:
+      after:
+        - id: "docker-service"
