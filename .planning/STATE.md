@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Project initialization complete — PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md written from ingest intel
-last_updated: "2026-06-12T18:43:02.278Z"
-last_activity: 2026-06-12 — Project initialized from doc ingest (PROJECT.md, REQUIREMENTS.md, ROADMAP.md created)
+stopped_at: Phase 0 Plan 01 complete — research/omarchy-opinion-inventory.md written (134 OM-NNN entries, commit 2693211)
+last_updated: "2026-06-12T18:54:58Z"
+last_activity: 2026-06-12 -- Phase 0 Plan 01 completed
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 4
+  completed_plans: 1
+  percent: 4
 ---
 
 # Project State
@@ -25,28 +25,28 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 
 ## Current Position
 
-Phase: 0 of 5 (Omarchy Research & Arch-Variant Study) — 6 phases total, numbered 0–5 per ADR
-Plan: 0 of TBD in current phase
-Status: Ready to execute
-Last activity: 2026-06-12 — Project initialized from doc ingest (PROJECT.md, REQUIREMENTS.md, ROADMAP.md created)
+Phase: 0 (Omarchy Research & Arch-Variant Study) — EXECUTING
+Plan: 2 of 4 (Plan 01 complete)
+Status: Executing Phase 0
+Last activity: 2026-06-12 -- Phase 0 Plan 01 completed
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 4%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 10 min
+- Total execution time: ~0.17 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| Phase 0 | 1/4 | ~10 min | ~10 min |
 
-**Recent Trend:** -
+**Recent Trend:** Phase 0 Plan 01 complete in ~10 min (research/document plan)
 
 *Updated after each plan completion*
 
@@ -60,6 +60,14 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - D19: TDD everywhere — every phase plan specifies test scenarios before implementation tasks; resolver near-total coverage; determinism + WASM/native parity are automated tests
 - Process: fully autonomous run to v1.0; no pausing between phases except true blockers; record new fork decisions and continue
 - Roadmapper: phases numbered 0–5 to match ADR/SPEC naming exactly; Omarchy-on-variant retarget is a non-gating Phase 2 stretch criterion
+
+### Decisions from Plan 00-01
+
+- Base package list (155 packages) split into 12 logical package-install opinions — maximizes composability
+- 21 themes cataloged as individual theming opinions (OM-114..OM-134) — independently selectable
+- 313 migrations sampled but not inventoried — pattern documented as open question for Plan 04
+- First-run scripts (13) inventoried as OM-101..OM-113 with execution-phase: first-run
+- npm-global-install is a distinct category from package-install (schema surprise SR candidate)
 
 ### Pending Todos
 
@@ -79,6 +87,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-12
-Stopped at: Project initialization complete — PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md written from ingest intel
+Stopped at: Phase 0 Plan 01 complete — research/omarchy-opinion-inventory.md (134 OM-NNN entries, commit 2693211)
 Resume file: None
-Next: `/gsd-plan-phase 0`
+Next: Phase 0 Plan 02 (00-02-PLAN.md) or Plan 03 (00-03-PLAN.md) — both Wave 1 plans now complete
