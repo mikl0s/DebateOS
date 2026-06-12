@@ -1,0 +1,104 @@
+[
+  {
+    "schema": 1,
+    "id": "OM-001",
+    "name": "Omarchy custom repo registration",
+    "category": "custom-repo",
+    "status": "required",
+    "translator_capabilities": ["add-signed-external-repo", "import-gpg-key-by-fingerprint"],
+    "custom_repos": [
+      {
+        "name": "omarchy",
+        "url": "https://packages.omarchy.org/$arch",
+        "sig_level": "Required",
+        "priority": 10,
+        "keyring": "omarchy-keyring"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "OM-006",
+    "name": "Omarchy base package install — core compositor",
+    "category": "package-install",
+    "status": "required",
+    "translator_capabilities": ["install-named-packages"],
+    "packages": ["hyprland", "hyprlock", "hypridle", "waybar"]
+  },
+  {
+    "schema": 1,
+    "id": "OM-028",
+    "name": "Omarchy config dotfiles — deploy XDG config tree",
+    "category": "config-dotfile",
+    "status": "required",
+    "translator_capabilities": ["deploy-config-file-tree"],
+    "packages": [],
+    "file_assets": [
+      {
+        "src": "config/hypr",
+        "dst": "home/user/.config/hypr",
+        "mode": "0644"
+      },
+      {
+        "src": "scripts/setup.sh",
+        "dst": "usr/local/bin/debateos-setup",
+        "mode": "0755"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "OM-036",
+    "name": "Omarchy sysctl — TCP MTU probing",
+    "category": "sysctl-param",
+    "status": "required",
+    "translator_capabilities": ["write-sysctl-drop-in"],
+    "sysctl_params": [
+      {
+        "key": "net.ipv4.tcp_mtu_probing",
+        "value": "1",
+        "drop_in_file": "99-omarchy-network.conf"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "OM-057",
+    "name": "Omarchy Docker service enablement",
+    "category": "service-enable",
+    "status": "required",
+    "translator_capabilities": ["enable-systemd-service-chroot"],
+    "services": [
+      {
+        "name": "docker.service",
+        "action": "enable",
+        "deferred": false
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "OM-102",
+    "name": "Omarchy first-run: GTK theme configuration",
+    "category": "first-run",
+    "status": "required",
+    "execution_phase": "first-run",
+    "translator_capabilities": ["systemd-user-service-firstrun"],
+    "script_payload": "#!/bin/bash\ngsettings set org.gnome.desktop.interface gtk-theme 'Omarchy'\n"
+  },
+  {
+    "schema": 1,
+    "id": "OM-114",
+    "name": "Omarchy theme bundle — default desktop theme",
+    "category": "theming",
+    "status": "nice-to-have",
+    "translator_capabilities": ["deploy-file-asset-bundle"],
+    "file_assets": [
+      {
+        "src": "themes/omarchy",
+        "dst": "usr/share/themes/omarchy",
+        "mode": "0644"
+      }
+    ]
+  }
+]

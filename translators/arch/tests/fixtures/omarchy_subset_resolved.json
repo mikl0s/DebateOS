@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "foundation": "arch",
+  "applied": ["OM-001", "OM-006", "OM-028", "OM-036", "OM-057", "OM-102", "OM-114"],
+  "skipped": [],
+  "dropped": [],
+  "install_order": ["OM-001", "OM-006", "OM-028", "OM-036", "OM-057", "OM-102", "OM-114"],
+  "explanations": [
+    {
+      "text": "OM-001 applied: required custom-repo opinion.",
+      "rule": "no-conflict",
+      "opinions_involved": ["OM-001"],
+      "dropped": [],
+      "kept": ["OM-001"]
+    }
+  ]
+}
