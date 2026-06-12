@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 0 Plan 03 complete — research/arch-variants-delta.md written (CachyOS+Garuda delta catalog, commit f61f821)
-last_updated: "2026-06-12T19:09:02.716Z"
+stopped_at: Phase 0 Plan 02 complete — research/omarchy-points.md (32 points) and research/schema-requirements.md (SR-001..SR-022) written
+last_updated: "2026-06-12T19:18:13.579Z"
 last_activity: 2026-06-12 -- Phase 0 Plan 01 completed
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 0 (Omarchy Research & Arch-Variant Study) — EXECUTING
-Plan: 3 of 4 (Plan 01 complete)
+Plan: 4 of 4 (Plan 01 complete)
 Status: Ready to execute
 Last activity: 2026-06-12 -- Phase 0 Plan 01 completed
 
@@ -50,6 +50,7 @@ Progress: [█░░░░░░░░░] 4%
 
 *Updated after each plan completion*
 | Phase 00-omarchy-research-arch-variant-study P03 | 10 | 2 tasks | 1 files |
+| Phase 00-omarchy-research-arch-variant-study P02 | 15 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,10 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - Roadmapper: phases numbered 0–5 to match ADR/SPEC naming exactly; Omarchy-on-variant retarget is a non-gating Phase 2 stretch criterion
 - [Phase ?]: CachyOS snapper assumption A2 corrected: cachyos-snapper-support exists (optional)
 - [Phase ?]: Garuda uses dracut exclusively, conflicts mkinitcpio — hard conflict with Omarchy login phase
+- [Phase ?]: 32 evidence-driven candidate points for OM-001..OM-134; single-opinion points allowed where natural
+- [Phase ?]: SR-009 enumerates repo trust levels: Required/Required DatabaseOptional/Optional TrustAll/Never — T-00-SIG2 mitigated
+- [Phase ?]: SR-005 compound hardware conditions require AND/OR/NOT combinators; simple boolean flag insufficient
+- [Phase ?]: SR-006 phase-level ordering is a discrete enum plus within-phase before/after refs; flat integer order insufficient
 
 ### Decisions from Plan 00-01
 
@@ -89,7 +94,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12T19:09:02.712Z
-Stopped at: Phase 0 Plan 03 complete — research/arch-variants-delta.md written (CachyOS+Garuda delta catalog, commit f61f821)
+Last session: 2026-06-12T19:18:13.574Z
+Stopped at: Phase 0 Plan 02 complete — research/omarchy-points.md (32 points) and research/schema-requirements.md (SR-001..SR-022) written
 Resume file: None
 Next: Phase 0 Plan 02 (00-02-PLAN.md) or Plan 03 (00-03-PLAN.md) — both Wave 1 plans now complete

@@ -40,7 +40,7 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 00-02-PLAN.md — Point groupings + evidence-backed schema-requirements floor (SR-NNN)
+- [x] 00-02-PLAN.md — Point groupings + evidence-backed schema-requirements floor (SR-NNN)
 - [ ] 00-04-PLAN.md — Resolver edge-case corpus (EC-NNN Given/When/Then) + open-questions
 
 ### Phase 1: Schema & Resolver Core
@@ -124,7 +124,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Omarchy Research & Arch-Variant Study | 2/4 | In Progress|  |
+| 0. Omarchy Research & Arch-Variant Study | 3/4 | In Progress|  |
 | 1. Schema & Resolver Core | 0/TBD | Not started | - |
 | 2. Arch Translator | 0/TBD | Not started | - |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |
