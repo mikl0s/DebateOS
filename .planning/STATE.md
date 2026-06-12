@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 Plan 04 complete — Omarchy north-star composition (134 opinions, 32 points, speech.yaml), ARCH-02 satisfied
-last_updated: "2026-06-12T23:30:00.000Z"
-last_activity: 2026-06-12 -- Phase 2 Plan 04 complete
+stopped_at: Phase 2 Plan 02 complete — profile emitter + variant application + translate entrypoint (ARCH-01, ARCH-04)
+last_updated: "2026-06-12T23:20:00.000Z"
+last_activity: 2026-06-12 -- Phase 2 Plan 02 complete (archiso profile tree emitter + argv-stable translate entrypoint)
 progress:
   total_phases: 6
   completed_phases: 2
@@ -57,6 +57,7 @@ Progress: [███░░░░░░░] 36%
 | Phase 01-schema-resolver-core P05 | 11 | 3 tasks | 19 files |
 | Phase 02-arch-translator P01 | 6 min | 2 tasks (4 commits) | 14 files |
 | Phase 02-arch-translator P03 | 4 min | 2 tasks | 4 files |
+| Phase 02-arch-translator P02 | 11 min | 3 tasks (6 commits) | 16 files |
 | Phase 02-arch-translator P04 | 25 min | 2 tasks | 170 files |
 
 ## Accumulated Context
@@ -97,6 +98,9 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [02-04]: resolve.Resolve takes flat []resolver.Opinion; test expands speech.Points through point files — resolve.go does not read point files
 - [02-04]: Status policy OQ-1: required=OM-001/006/097/099+hw-conditional; nice-to-have=themes OM-114..134+optional extras; all others required
 - [02-04]: Vanilla-arch hw profile (empty predicates/pci_ids) — 35 hw-gated opinions Skipped (expected); Applied=99 Dropped=0 Hard-conflicts=0 (ARCH-02 satisfied)
+- [02-02]: %%SENTINEL%% replace() for installer.sh.tpl — stdlib-only safe approach for shell-heavy templates with ${SHELL_VAR} syntax (avoids str.format KeyError)
+- [02-02]: translators/__init__.py added for python -m translators.arch.generator invocation; sys.path.insert in generator.py covers both pytest and -m contexts
+- [02-02]: _sanitize_dst rejects absolute and .. traversal paths (T-02-08); keyring_install_before_repos injected into build-manifest.json for Pitfall 4 ordering
 
 ### Decisions from Plan 00-01
 
@@ -123,7 +127,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12T23:30:00.000Z
-Stopped at: Phase 2 Plan 04 complete — Omarchy north-star composition (ARCH-02 satisfied)
+Last session: 2026-06-12T23:20:00.000Z
+Stopped at: Phase 2 Plan 02 complete — profile emitter + variant application + translate entrypoint (ARCH-01, ARCH-04)
 Resume file: None
 Next: Phase 2 Plan 05 (02-05-PLAN.md) — north-star integration (resolve→translate→build pipeline)
