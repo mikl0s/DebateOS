@@ -1,0 +1,44 @@
+schema: 1
+id: "omarchy-north-star"
+name: "Omarchy — North-Star Composition (vanilla Arch)"
+foundation: "arch"
+# Baseline vanilla-arch hardware profile: a generic machine with no special hardware.
+# Hardware-conditional opinions (GPU drivers, T2 support, etc.) will resolve to Skipped
+# on this profile, which is correct and expected for the north-star vanilla target.
+hardware:
+  predicates: []
+  facts: {}
+  pci_ids: []
+points:
+  - id: "omarchy/repository-bootstrap-and-preflight"
+  - id: "omarchy/hyprland-desktop-stack"
+  - id: "omarchy/terminal-and-shell-toolchain"
+  - id: "omarchy/browser-and-web-access"
+  - id: "omarchy/developer-toolchain"
+  - id: "omarchy/ai-tooling"
+  - id: "omarchy/containerization-and-virtualization"
+  - id: "omarchy/media-and-creative-applications"
+  - id: "omarchy/productivity-and-communication"
+  - id: "omarchy/system-utilities-and-hardware-tools"
+  - id: "omarchy/security-and-network-services"
+  - id: "omarchy/fonts-and-visual-assets"
+  - id: "omarchy/web-applications-and-launcher-entries"
+  - id: "omarchy/application-configuration-and-defaults"
+  - id: "omarchy/system-performance-tuning"
+  - id: "omarchy/system-infrastructure-and-hooks"
+  - id: "omarchy/networking-and-connectivity-configuration"
+  - id: "omarchy/hardware-peripheral-configuration"
+  - id: "omarchy/gpu-and-display-drivers"
+  - id: "omarchy/intel-hardware-optimizations"
+  - id: "omarchy/asus-hardware-support"
+  - id: "omarchy/framework-hardware-support"
+  - id: "omarchy/apple-hardware-support"
+  - id: "omarchy/other-vendor-hardware-support"
+  - id: "omarchy/battery-and-power-management"
+  - id: "omarchy/boot-login-and-snapshot-configuration"
+  - id: "omarchy/package-manager-finalization"
+  - id: "omarchy/first-run-system-setup"
+  - id: "omarchy/first-run-desktop-services"
+  - id: "omarchy/first-run-gtk-and-user-preferences"
+  - id: "omarchy/visual-themes"
+  - id: "omarchy/desktop-theming-configuration"
