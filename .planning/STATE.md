@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 Plan 03 complete — Declarative variant profiles (vanilla-arch, cachyos, garuda), ARCH-04 satisfied
-last_updated: "2026-06-12T22:42:35.000Z"
-last_activity: 2026-06-12 -- Phase 2 Plan 03 complete
+stopped_at: Phase 2 Plan 04 complete — Omarchy north-star composition (134 opinions, 32 points, speech.yaml), ARCH-02 satisfied
+last_updated: "2026-06-12T23:30:00.000Z"
+last_activity: 2026-06-12 -- Phase 2 Plan 04 complete
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 14
-  completed_plans: 10
-  percent: 36
+  completed_plans: 11
+  percent: 39
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 2 (Arch Translator) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Executing Phase 2
-Last activity: 2026-06-12 -- Phase 2 Plan 03 complete (declarative variant profiles)
+Last activity: 2026-06-12 -- Phase 2 Plan 04 complete (Omarchy north-star composition)
 
 Progress: [███░░░░░░░] 36%
 
@@ -57,6 +57,7 @@ Progress: [███░░░░░░░] 36%
 | Phase 01-schema-resolver-core P05 | 11 | 3 tasks | 19 files |
 | Phase 02-arch-translator P01 | 6 min | 2 tasks (4 commits) | 14 files |
 | Phase 02-arch-translator P03 | 4 min | 2 tasks | 4 files |
+| Phase 02-arch-translator P04 | 25 min | 2 tasks | 170 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,9 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [02-03]: Garuda above_core=false for custom repos — unlike CachyOS (above_core=true), Garuda adds custom repos BELOW standard Arch repos per pacman-default.conf (VERIFIED)
 - [02-03]: repos_by_arch_level extension key in cachyos.yaml allows v3/v4 ISA-optimised tiers without code fork (ARCH-04 invariant preserved)
 - [02-03]: 4 Garuda hard Omarchy conflicts captured as structured data (dracut/mkinitcpio, GRUB/limine, snapper/snapper, SDDM theme) — generator surfaces via trust_warnings
+- [02-04]: resolve.Resolve takes flat []resolver.Opinion; test expands speech.Points through point files — resolve.go does not read point files
+- [02-04]: Status policy OQ-1: required=OM-001/006/097/099+hw-conditional; nice-to-have=themes OM-114..134+optional extras; all others required
+- [02-04]: Vanilla-arch hw profile (empty predicates/pci_ids) — 35 hw-gated opinions Skipped (expected); Applied=99 Dropped=0 Hard-conflicts=0 (ARCH-02 satisfied)
 
 ### Decisions from Plan 00-01
 
@@ -119,7 +123,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12T22:42:35.000Z
-Stopped at: Phase 2 Plan 03 complete — Declarative variant profiles (vanilla-arch, cachyos, garuda), ARCH-04 satisfied
+Last session: 2026-06-12T23:30:00.000Z
+Stopped at: Phase 2 Plan 04 complete — Omarchy north-star composition (ARCH-02 satisfied)
 Resume file: None
-Next: Phase 2 Plan 02 (02-02-PLAN.md) — archiso profile emitter (packages.x86_64, airootfs tree, profiledef.sh)
+Next: Phase 2 Plan 05 (02-05-PLAN.md) — north-star integration (resolve→translate→build pipeline)

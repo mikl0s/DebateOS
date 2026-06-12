@@ -94,7 +94,7 @@ Plans:
 
 - [x] 02-01-PLAN.md — Translator package + input-contract loader + capability gate (SC-3) + BuildManifest builder (ARCH-01, ARCH-03) (completed 2026-06-12)
 - [x] 02-03-PLAN.md — Declarative variant profiles: vanilla-arch / cachyos / garuda YAML with marked Omarchy conflicts (ARCH-04) (completed 2026-06-12)
-- [ ] 02-04-PLAN.md — examples/omarchy authoring: 134 opinions + 32 points + speech + clean-resolve Go harness (ARCH-02)
+- [x] 02-04-PLAN.md — examples/omarchy authoring: 134 opinions + 32 points + speech + clean-resolve Go harness (ARCH-02) (completed 2026-06-12)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -157,7 +157,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 |-------|----------------|--------|-----------|
 | 0. Omarchy Research & Arch-Variant Study | 4/4 | Complete   | 2026-06-12 |
 | 1. Schema & Resolver Core | 5/5 | Complete   | 2026-06-12 |
-| 2. Arch Translator | 2/5 | Executing | - |
+| 2. Arch Translator | 3/5 | Executing | - |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |
 | 4. Debian Translator | 0/TBD | Not started | - |
 | 5. Registry, Forum & Debate UI | 0/TBD | Not started | - |
