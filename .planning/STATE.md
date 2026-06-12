@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 Plan 02 complete — profile emitter + variant application + translate entrypoint (ARCH-01, ARCH-04)
-last_updated: "2026-06-12T23:20:00.000Z"
-last_activity: 2026-06-12 -- Phase 2 Plan 02 complete (archiso profile tree emitter + argv-stable translate entrypoint)
+stopped_at: Completed 02-05-PLAN.md — slow gates + north-star pipeline
+last_updated: "2026-06-12T23:50:27.877Z"
+last_activity: 2026-06-12 -- Phase 2 Plan 04 complete (Omarchy north-star composition)
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 14
-  completed_plans: 11
-  percent: 39
+  completed_plans: 14
+  percent: 50
 ---
 
 # Project State
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 2 (Arch Translator) — EXECUTING
-Plan: 4 of 5
-Status: Executing Phase 2
+Plan: 5 of 5
+Status: Ready to execute
 Last activity: 2026-06-12 -- Phase 2 Plan 04 complete (Omarchy north-star composition)
 
 Progress: [███░░░░░░░] 36%
@@ -59,6 +59,7 @@ Progress: [███░░░░░░░] 36%
 | Phase 02-arch-translator P03 | 4 min | 2 tasks | 4 files |
 | Phase 02-arch-translator P02 | 11 min | 3 tasks (6 commits) | 16 files |
 | Phase 02-arch-translator P04 | 25 min | 2 tasks | 170 files |
+| Phase 02-arch-translator P05 | 18h | - tasks | - files |
 
 ## Accumulated Context
 
@@ -101,6 +102,9 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [02-02]: %%SENTINEL%% replace() for installer.sh.tpl — stdlib-only safe approach for shell-heavy templates with ${SHELL_VAR} syntax (avoids str.format KeyError)
 - [02-02]: translators/__init__.py added for python -m translators.arch.generator invocation; sys.path.insert in generator.py covers both pytest and -m contexts
 - [02-02]: _sanitize_dst rejects absolute and .. traversal paths (T-02-08); keyring_install_before_repos injected into build-manifest.json for Pitfall 4 ordering
+- [Phase ?]: releng-baseline-overlay: arch-build-iso.sh copies releng profile then overlays generator output inside Docker to provide syslinux/ and efiboot/ directories required by mkarchiso
+- [Phase ?]: capabilities.json updated to actual opinion tokens (163 tokens) extracted from examples/omarchy/opinions/*.yaml; old broad conceptual names removed
+- [Phase ?]: devtmpfs restriction on Proxmox VE documented as environment limitation; all tooling is correct; full ISO build requires standard Linux host
 
 ### Decisions from Plan 00-01
 
@@ -127,7 +131,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12T23:20:00.000Z
-Stopped at: Phase 2 Plan 02 complete — profile emitter + variant application + translate entrypoint (ARCH-01, ARCH-04)
+Last session: 2026-06-12T23:50:27.873Z
+Stopped at: Completed 02-05-PLAN.md — slow gates + north-star pipeline
 Resume file: None
 Next: Phase 2 Plan 05 (02-05-PLAN.md) — north-star integration (resolve→translate→build pipeline)
