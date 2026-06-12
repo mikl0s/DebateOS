@@ -69,7 +69,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-04-PLAN.md — Resolve engine: docs/04 hierarchy + Explanation + canonical JSON + 27 EC corpus (RSLV-01, RSLV-06)
+- [x] 01-04-PLAN.md — Resolve engine: docs/04 hierarchy + Explanation + canonical JSON + 27 EC corpus (RSLV-01, RSLV-06)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
@@ -142,7 +142,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Omarchy Research & Arch-Variant Study | 4/4 | Complete   | 2026-06-12 |
-| 1. Schema & Resolver Core | 3/5 | In Progress|  |
+| 1. Schema & Resolver Core | 4/5 | In Progress|  |
 | 2. Arch Translator | 0/TBD | Not started | - |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |
 | 4. Debian Translator | 0/TBD | Not started | - |

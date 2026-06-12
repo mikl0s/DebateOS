@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 Plan 03 complete — resolver/hardware EvalCondition + resolver/patch FindPatch green, EC-037/EC-038/EC-032 tests passing
-last_updated: "2026-06-12T20:49:17Z"
-last_activity: 2026-06-12 -- Phase 1 execution started
+stopped_at: Phase 1 Plan 04 complete — resolver/resolve Resolve engine + docs/04 hierarchy + 27 EC corpus all GREEN
+last_updated: "2026-06-12T21:02:00Z"
+last_activity: 2026-06-12 -- Phase 1 Plan 04 complete
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 9
-  completed_plans: 6
-  percent: 17
+  completed_plans: 7
+  percent: 19
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 1 (Schema & Resolver Core) — EXECUTING
-Plan: 3 of 5
-Status: Ready to execute
-Last activity: 2026-06-12 -- Phase 1 execution started
+Plan: 4 of 5 complete; next: 01-05 (WASM parity + examples)
+Status: Ready to execute 01-05
+Last activity: 2026-06-12 -- Phase 1 Plan 04 complete
 
-Progress: [█░░░░░░░░░] 4%
+Progress: [██░░░░░░░░] 19%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [█░░░░░░░░░] 4%
 | Phase 00-omarchy-research-arch-variant-study P02 | 15 | 2 tasks | 2 files |
 | Phase 01-schema-resolver-core P02 | 2 min | 2 tasks | 6 files |
 | Phase 01-schema-resolver-core P03 | 5 min | 2 tasks | 7 files |
+| Phase 01-schema-resolver-core P04 | 12 min | 3 tasks | 31 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,10 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: Phase enum stored in Graph.phase but NOT converted to edges — tie-breaking key only per SR-006/OM-023 cross-phase override
 - [01-03]: hardware.HardwareProfile is a distinct package-local struct with PCIIDs []string — richer than resolver.HardwareProfile (which has only Predicates+Facts); 01-04 will adapt at the evaluation boundary
 - [01-03]: FindPatch scans known_patches on BOTH conflicting opinions to ensure symmetry; sorts candidates by ID for determinism
+- [01-04]: Resolve returns (*ResolvedSpeech, error) — partial RS always returned on hard conflict so callers can display explanation text
+- [01-04]: EC-038 PCIIDs via hardware_override fixture block — resolver.HardwareProfile lacks PCIIDs; hardware.HardwareProfile has it
+- [01-04]: Rule4 fires when patch opinion is already active in speech; Rule2+PatchOffered fires when patch exists but not in speech
+- [01-04]: sig_level=Never repos surface TrustWarning in Explanation (T-01-10); sysctl collision detection runs before conflict resolution (SR-016)
 
 ### Decisions from Plan 00-01
 
@@ -103,7 +108,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12T20:44:51.608Z
-Stopped at: Phase 1 Plan 02 complete — resolver/graph BuildGraph+TopoSort green, EC-035/EC-036 tests passing
+Last session: 2026-06-12T21:02:00Z
+Stopped at: Phase 1 Plan 04 complete — Resolve engine + 27 EC corpus GREEN, RSLV-01/RSLV-06 satisfied
 Resume file: None
-Next: Phase 1 Plan 04 (01-04-PLAN.md) — resolve engine, docs/04 hierarchy, EC corpus (Wave 3)
+Next: Phase 1 Plan 05 (01-05-PLAN.md) — WASM entrypoint + native/WASM parity + coverage gate + examples
