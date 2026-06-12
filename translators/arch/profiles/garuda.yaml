@@ -1,0 +1,275 @@
+---
+# variant-profile: garuda
+# Garuda Linux — Arch-based distribution focused on gaming, btrfs-first defaults,
+# KDE/Dr460nized theming, and convenience wrappers (garuda-update, btrfs maintenance).
+#
+# ARCH-04 invariant: one generator, no per-variant code forks — differences are data only.
+#
+# NOTE: Omarchy-on-Garuda is a NON-GATING STRETCH criterion (SC-5, post-v1.0 completion).
+# This profile and its conflict markers ARE Phase 2 deliverables.
+# Full ISO validation with Garuda is deferred to post-v1.0.
+#
+# Sources (VERIFIED unless noted [UNVERIFIED]):
+#   github.com/garuda-linux/pkgbuilds  commit 1dc0c91 — garuda-hooks, garuda-common-settings,
+#                                                       snapper-support, garuda-update, garuda-dr460nized
+#   github.com/garuda-linux/garuda-tools commit 433ad84 — data/pacman-default.conf, garuda-tools.conf
+
+variant: garuda
+description: "Garuda Linux — Arch-based with btrfs-first defaults, GRUB bootloader, dracut initramfs, chaotic-aur repo, and Dr460nized KDE theming"
+version_at_research: "2026-06-12 (commits: pkgbuilds/1dc0c91, garuda-tools/433ad84)"
+
+# Custom repos (VERIFIED/[UNVERIFIED] per source):
+#
+# [garuda] repo: present in the installed Garuda system's pacman.conf (added during ISO creation).
+# The exact URL is inferred from garuda-tools build scripts; the direct conf is on GitLab
+# behind authentication (not in cloned public repos).
+#
+# [chaotic-aur] repo: VERIFIED primary repo from garuda-tools/data/pacman-default.conf.
+# garuda-hooks depends on chaotic-mirrorlist; garuda-update hard-codes chaotic.cx mirror URLs.
+#
+# above_core: both repos appear after standard Arch repos in Garuda's pacman-default.conf
+# (Garuda adds custom repos BELOW core/extra/community, unlike CachyOS which adds them ABOVE).
+repos:
+  - name: garuda
+    url: "https://geo-mirror.chaotic.cx/garuda/$arch"
+    # [UNVERIFIED] URL derived from garuda-tools ISO build logic; direct conf on GitLab (auth required).
+    # The garuda-update script references chaotic.cx infrastructure confirming the domain.
+    sig_level: Required DatabaseOptional  # [UNVERIFIED] exact SigLevel not in cloned source
+    above_core: false  # [UNVERIFIED] ordering not confirmed from cloned public source
+    note: "[UNVERIFIED] — [garuda] repo URL and SigLevel inferred from build scripts; direct pacman.conf on GitLab (auth required)"
+
+  - name: chaotic-aur
+    # VERIFIED: garuda-tools/data/pacman-default.conf shows [chaotic-aur] with chaotic-mirrorlist.
+    # garuda-update/main-update references https://secret-mirror.chaotic.cx/$repo/$arch as fallback.
+    # Primary CDN: https://geo-mirror.chaotic.cx/ [UNVERIFIED — mirrorlist not directly in cloned source]
+    url: "https://geo-mirror.chaotic.cx/$repo/$arch"
+    # [UNVERIFIED] Primary CDN URL — fallback URL (secret-mirror.chaotic.cx) VERIFIED from garuda-update script.
+    sig_level: Required DatabaseOptional  # chaotic-keyring required for GPG verification
+    above_core: false  # appears after standard Arch repos in pacman-default.conf (VERIFIED)
+
+# chaotic-keyring MUST be installed before any chaotic-aur or garuda repo package is fetched.
+# garuda-hooks depends on chaotic-mirrorlist; chaotic-keyring authenticates both [chaotic-aur] and [garuda].
+# [UNVERIFIED] garuda-keyring: no garuda-keyring PKGBUILD found in cloned garuda-linux/pkgbuilds;
+# Garuda appears to rely solely on chaotic-keyring + archlinux-keyring.
+keyring_install_before_repos:
+  - chaotic-keyring    # GPG key FBA220DFC880C036 [UNVERIFIED — cited from external sources; not in cloned repos]
+  # garuda-keyring: [UNVERIFIED — no PKGBUILD found; may not exist as separate package]
+
+kernel:
+  # VERIFIED: no custom Garuda kernel PKGBUILD in cloned public source (garuda-linux/pkgbuilds).
+  # garuda-tools/data/garuda-tools.conf shows: # kernel="linux-zen" (commented out — configurable).
+  # Garuda uses standard Arch linux or linux-zen kernel.
+  package: linux         # VERIFIED: stock Arch kernel is the default
+  headers: linux-headers
+  # Alternative: linux-zen (VERIFIED as documented option in garuda-tools.conf)
+  notes: "No custom Garuda kernel — uses stock Arch linux or linux-zen (configurable via garuda-tools.conf)"
+
+defaults:
+  initramfs: dracut    # VERIFIED: garuda-dracut-support conflicts=('mkinitcpio' ...) — dracut is mandatory
+  bootloader: grub     # VERIFIED: grub-garuda + garuda-hooks installs update-grub.hook, grub-install.hook
+  filesystem: btrfs    # VERIFIED: snapper-support depends=(snapper snap-pac grub-btrfs); btrfs timers always enabled
+  snapper: mandatory   # VERIFIED: snapper-support always installed; root snapper config created at install time
+  # btrfs subvolume layout (VERIFIED_SECONDARY via snapper template + garuda docs):
+  btrfs_subvolumes:
+    - "@"          # root /
+    - "@home"      # /home
+    - "@root"      # /root
+    - "@srv"       # /srv
+    - "@snapshots" # /.snapshots
+    - "@log"       # /var/log  [UNVERIFIED — layout from docs; calamares config on GitLab requires auth]
+    - "@pkg"       # /var/cache/pacman/pkg  [UNVERIFIED — same caveat as @log]
+
+# Pre-seeded opinions: configurations already expressed by Garuda's base packages.
+pre_seeded_opinions:
+
+  - category: initramfs-method
+    id: garuda/dracut
+    description: "dracut initramfs generator; garuda-dracut-support conflicts mkinitcpio (VERIFIED)"
+    packages:
+      - garuda-dracut-support  # VERIFIED: PKGBUILD has conflicts=('mkinitcpio' 'mkinitcpio-openswap' ...)
+    conflict_with_omarchy: >
+      HARD CONFLICT: Omarchy uses mkinitcpio throughout its login phase — OM-002 disables
+      mkinitcpio in preflight and re-enables it in the login phase; OM-086, OM-091, OM-099
+      all depend on mkinitcpio being the active initramfs generator. garuda-dracut-support
+      conflicts and removes mkinitcpio, making the entire Omarchy login phase incompatible.
+      Resolution requires an Omarchy speech retargeted to dracut — deferred to post-v1.0.
+
+  - category: bootloader-config
+    id: garuda/grub-mandatory
+    description: "GRUB as mandatory bootloader with grub-btrfs for btrfs snapshot boot entries (VERIFIED)"
+    packages:
+      - grub                         # VERIFIED: garuda-hooks depends on grub + update-grub
+      - update-grub                  # VERIFIED: garuda-hooks installs 99-update-grub.hook
+      - grub-btrfs                   # VERIFIED: snapper-support depends on grub-btrfs
+      - grub-theme-garuda-dr460nized # VERIFIED: PKGBUILD in garuda-linux/pkgbuilds
+      - efibootmgr                   # VERIFIED: grub-garuda PKGBUILD depends=('efibootmgr' ...)
+      - os-prober-btrfs              # VERIFIED: grub-garuda PKGBUILD
+      - memtest86plus                # VERIFIED: grub-garuda PKGBUILD
+    omarchy_opinions:
+      - OM-099  # configure-bootloader-limine (Omarchy configures limine, not GRUB)
+    conflict_with_omarchy: >
+      HARD CONFLICT: Omarchy OM-099 (configure-bootloader-limine) installs and configures
+      limine as the bootloader. Garuda's garuda-hooks package depends on grub and installs
+      GRUB management hooks (update-grub.hook, grub-install.hook, grub-btrfs-config.hook)
+      as core infrastructure. GRUB and limine both write to the EFI partition; only one
+      can be the active bootloader. Running Omarchy on Garuda would require replacing all
+      limine configuration with GRUB-aware equivalents.
+
+  - category: snapshot-policy
+    id: garuda/snapper-grub-btrfs
+    description: "Mandatory snapper root config + grub-btrfs snapshot boot menu integration (VERIFIED)"
+    packages:
+      - snapper                # VERIFIED: snapper-support/PKGBUILD depends=(snapper snap-pac grub-btrfs)
+      - snap-pac               # VERIFIED: automatic pre/post snapshots on pacman transactions
+      - grub-btrfs             # VERIFIED: adds btrfs snapshots to GRUB boot menu
+      - snapper-support        # VERIFIED: Garuda PKGBUILD creates root snapper config from snapper-template-garuda
+    omarchy_opinions:
+      - OM-099  # create-snapper-config (Omarchy also creates /etc/snapper/configs/root)
+    conflict_with_omarchy: >
+      DIRECT COLLISION: Both Garuda (via snapper-support) and Omarchy OM-099 create
+      /etc/snapper/configs/root using their own templates. The Garuda template uses
+      NUMBER_LIMIT=10, NUMBER_LIMIT_IMPORTANT=5, TIMELINE_CREATE=no; Omarchy has its own
+      snapper config. The last writer wins; without coordination one config overwrites the other.
+
+  - category: theming
+    id: garuda/sddm-dr460nized
+    description: "Dr460nized SDDM display manager theme (VERIFIED — package references confirmed; exact SDDM package [UNVERIFIED])"
+    packages:
+      - garuda-dr460nized              # VERIFIED: PKGBUILD present in garuda-linux/pkgbuilds
+      - "plasma5-themes-sweet-full-git" # VERIFIED: listed as dep in garuda-dr460nized PKGBUILD
+      # SDDM theme package: [UNVERIFIED] — referenced in garuda-dr460nized but exact package
+      # name not isolated from the cloned source files
+    omarchy_opinions:
+      - OM-097  # configure-sddm-autologin + Omarchy SDDM theme
+    conflict_with_omarchy: >
+      DIRECT COLLISION: Omarchy OM-097 deploys its own SDDM theme and autologin configuration.
+      Garuda's Dr460nized theme installs a competing SDDM theme. Both write to /etc/sddm.conf.d/
+      or /usr/share/sddm/themes/. Last writer wins; without coordination Garuda's theme
+      overwrites Omarchy's, or vice versa.
+
+  - category: update-mechanism
+    id: garuda/garuda-update-wrapper
+    description: "garuda-update replaces pacman -Syu; symlinked as /usr/bin/update (VERIFIED)"
+    packages:
+      - garuda-update  # VERIFIED: garuda-update/main-update script inspected; creates /usr/bin/update → garuda-update
+    conflict_with_omarchy: >
+      Omarchy's preflight phase runs 'pacman -Sy' directly (bypassing garuda-update).
+      garuda-update performs pre-update health checks via garuda-health and handles chaotic-mirrorlist
+      rotation. Running 'pacman -Sy' without garuda-update may skip these safety checks.
+      Risk level: medium — functional but may miss garuda-specific update safeguards.
+
+  - category: service-enable
+    id: garuda/btrfs-maintenance-timers
+    description: "btrfs-balance, btrfs-defrag, btrfs-scrub, btrfs-trim timers enabled by garuda-common-settings.install (VERIFIED)"
+    packages:
+      - btrfsmaintenance  # VERIFIED: garuda-common-settings depends=('btrfsmaintenance' ...)
+    conflict_with_omarchy: "Additive — Omarchy does not configure btrfs maintenance timers"
+
+  - category: service-enable
+    id: garuda/garuda-pacman-lock
+    description: "garuda-pacman-lock service enabled by garuda-common-settings.install (VERIFIED)"
+    conflict_with_omarchy: "None — Omarchy does not manage pacman locking"
+
+  - category: zram-config
+    id: garuda/zram-generator
+    description: "zram-generator installed as mandatory dependency of garuda-common-settings (VERIFIED)"
+    packages:
+      - zram-generator  # VERIFIED: garuda-common-settings/PKGBUILD depends=('zram-generator' ...)
+    conflict_with_omarchy: "Low — no identified Omarchy zram configuration; additive"
+
+  - category: filesystem-layout
+    id: garuda/btrfs-subvolumes
+    description: "Standard btrfs subvolume layout from Garuda calamares installer (VERIFIED_SECONDARY)"
+    # VERIFIED_SECONDARY: layout confirmed via snapper-support template (SUBVOLUME="/") + garuda docs.
+    # Direct calamares config on GitLab requires authentication; not directly verified.
+    conflict_with_omarchy: >
+      Omarchy also uses btrfs (OM-099 creates snapper config on btrfs root).
+      If the subvolume layout differs from Omarchy's expected layout, snapper and limine-btrfs
+      may reference incorrect subvolumes. Compatibility depends on @, @home, @snapshots being
+      present — these are standard and likely compatible.
+
+  - category: theming
+    id: garuda/plymouth-dr460nized
+    description: "Dr460nized Plymouth boot splash theme (VERIFIED from PKGBUILD)"
+    packages:
+      - plymouth-theme-dr460nized  # VERIFIED: PKGBUILD present in garuda-linux/pkgbuilds
+    conflict_with_omarchy: >
+      DIRECT COLLISION: Omarchy OM-095 deploys its own Plymouth theme. Both write to
+      /usr/share/plymouth/themes/ and set the active theme. Garuda's theme overrides Omarchy's
+      if installed after, or is overridden if Omarchy runs post-install.
+
+  - category: theming
+    id: garuda/grub-theme-dr460nized
+    description: "Dr460nized GRUB boot theme (VERIFIED from PKGBUILD)"
+    packages:
+      - grub-theme-garuda-dr460nized  # VERIFIED: PKGBUILD present in garuda-linux/pkgbuilds
+    conflict_with_omarchy: >
+      No direct collision: Omarchy uses limine (not GRUB) as its bootloader. If Omarchy-on-Garuda
+      is attempted, this GRUB theme would be present but Omarchy wouldn't configure GRUB,
+      so the theme is harmless but the bootloader conflict (garuda/grub-mandatory) applies.
+
+# Hard conflicts with Omarchy: structured list of incompatibilities that prevent
+# Omarchy-on-Garuda from working without an Omarchy speech retargeted to Garuda's infrastructure.
+# Each entry names the Garuda mechanism, the Omarchy mechanism it collides with, and the affected opinions.
+#
+# These conflicts are DATA — they are captured here so the generator can surface them via
+# Explanation (trust_warnings / conflict markers) when Garuda + Omarchy opinions are combined.
+conflicts_with_omarchy:
+  - mechanism: "dracut (garuda-dracut-support conflicts mkinitcpio)"
+    omarchy_mechanism: "mkinitcpio initramfs generation"
+    omarchy_opinions:
+      - OM-002   # disable-mkinitcpio (preflight — Omarchy disables mkinitcpio temporarily)
+      - OM-086   # Apple SPI keyboard — mkinitcpio hook
+      - OM-091   # mkinitcpio re-enable in login phase
+      - OM-099   # configure-bootloader-limine (uses mkinitcpio for initramfs)
+    conflict_type: hard
+    description: >
+      garuda-dracut-support declares conflicts=('mkinitcpio' ...) — it replaces mkinitcpio
+      entirely. Omarchy's preflight (OM-002) and login phase (OM-091, OM-099) assume
+      mkinitcpio is the active initramfs generator. The entire login phase is incompatible
+      with a dracut-based system. Requires full mkinitcpio → dracut retargeting of the
+      Omarchy speech.
+
+  - mechanism: "GRUB as mandatory bootloader (garuda-hooks, grub-garuda)"
+    omarchy_mechanism: "limine bootloader (OM-099 configure-bootloader-limine)"
+    omarchy_opinions:
+      - OM-099   # configure-bootloader-limine + create-snapper-config
+    conflict_type: hard
+    description: >
+      Garuda's garuda-hooks package depends on grub and installs GRUB management hooks as
+      core Garuda infrastructure (99-update-grub.hook, grub-install.hook, grub-btrfs-config.hook).
+      Omarchy OM-099 installs and configures limine-btrfs instead. Both bootloaders cannot
+      be simultaneously active; the EFI boot entry can point to only one. Requires replacing
+      the Omarchy limine configuration with GRUB equivalents on Garuda.
+
+  - mechanism: "Mandatory snapper root config (snapper-support with garuda-template)"
+    omarchy_mechanism: "Omarchy own snapper root config (OM-099 create-snapper-config)"
+    omarchy_opinions:
+      - OM-099   # create-snapper-config creates /etc/snapper/configs/root
+    conflict_type: direct
+    description: >
+      Garuda's snapper-support package creates /etc/snapper/configs/root using the garuda
+      snapper template (NUMBER_LIMIT=10, TIMELINE_CREATE=no). Omarchy OM-099 also creates
+      /etc/snapper/configs/root with its own template. The last write wins — without
+      coordination one configuration silently overwrites the other. Both also interact with
+      grub-btrfs (Garuda) vs limine-btrfs (Omarchy) for snapshot boot entries.
+
+  - mechanism: "Dr460nized SDDM theme (garuda-dr460nized)"
+    omarchy_mechanism: "Omarchy SDDM theme (OM-097 configure-sddm-autologin)"
+    omarchy_opinions:
+      - OM-097   # configure-sddm-autologin + Omarchy SDDM theme deployment
+    conflict_type: direct
+    description: >
+      Garuda deploys its Dr460nized SDDM theme as part of garuda-dr460nized (KDE theming
+      meta-package). Omarchy OM-097 deploys its own SDDM theme and configures autologin.
+      Both write to /etc/sddm.conf.d/ and /usr/share/sddm/themes/. The active SDDM theme
+      is determined by which configuration is applied last; without coordination the themes
+      conflict and one is silently discarded.
+
+open_questions:
+  - "[UNVERIFIED] [garuda] repo: exact URL and SigLevel not confirmed from cloned public repos (GitLab ISO profile requires auth)"
+  - "[UNVERIFIED] garuda-keyring: no PKGBUILD found in cloned garuda-linux/pkgbuilds; Garuda may rely solely on chaotic-keyring"
+  - "[UNVERIFIED] btrfs subvolume @log and @pkg: VERIFIED_SECONDARY only — calamares config on GitLab requires auth"
+  - "[UNVERIFIED] chaotic-aur primary CDN URL: fallback URL (secret-mirror.chaotic.cx) VERIFIED; geo-mirror.chaotic.cx is the documented primary [UNVERIFIED from mirrorlist]"
+  - "[UNVERIFIED] SDDM theme exact package name: referenced in garuda-dr460nized but not isolated from cloned source"
+  - "variant-profile conflict semantics: which wins when foundation pre-seeds and Omarchy opinion both target the same config — Phase 1 schema decision (OQ-005)"
