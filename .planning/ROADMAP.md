@@ -7,6 +7,7 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
 ## Phases
 
 **Phase Numbering:**
+
 - Integer phases (0–5): ADR-locked milestone work (numbering matches docs/07 exactly)
 - Decimal phases (e.g. 2.1): urgent insertions only (marked INSERTED)
 
@@ -20,77 +21,99 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
 ## Phase Details
 
 ### Phase 0: Omarchy Research & Arch-Variant Study
+
 **Goal**: The schema floor and resolver test corpus exist as evidence, not theory — every later design decision traces to real Omarchy and Arch-variant data
 **Depends on**: Nothing (first phase; gates everything after it)
 **Requirements**: RSCH-01, RSCH-02, RSCH-03
 **Success Criteria** (what must be TRUE):
+
   1. All six research deliverables exist in `research/` (omarchy-opinion-inventory, omarchy-points, schema-requirements, open-questions, arch-variants-delta, resolver-edge-cases), built from the cloned `basecamp/omarchy` source, not blog summaries
   2. Every post-base-Arch Omarchy decision is recorded as a candidate atomic opinion with category, OS-agnostic intent, dependencies/ordering, and anything un-agnostic flagged as a translator capability requirement; opinions grouped into candidate points
   3. The proposed opinion metadata surface is justified by real Omarchy decisions (schema surprises like ordering, script payloads, theming assets explicitly captured), and CachyOS/Garuda deltas are cataloged with a proposed declarative variant-profile shape
   4. The resolver edge-case corpus is written as concrete test scenarios ready to seed the Phase 1 TDD harness (foundation-default vs opinion collisions, repo-priority conflicts, cross-variant effectuation differences)
-**Plans**: 4 plans
-Plans:
+
+**Plans**: 4 plansPlans:
+**Wave 1**
+
 - [ ] 00-01-PLAN.md — Exhaustive Omarchy opinion inventory (OM-NNN atomic entries from cloned source)
-- [ ] 00-02-PLAN.md — Point groupings + evidence-backed schema-requirements floor (SR-NNN)
 - [ ] 00-03-PLAN.md — CachyOS/Garuda variant delta study + declarative variant-profile sketch
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 00-02-PLAN.md — Point groupings + evidence-backed schema-requirements floor (SR-NNN)
 - [ ] 00-04-PLAN.md — Resolver edge-case corpus (EC-NNN Given/When/Then) + open-questions
 
 ### Phase 1: Schema & Resolver Core
+
 **Goal**: A composition can be parsed, validated, and resolved — every conflict handled per the docs/04 hierarchy with a human-readable explanation, identically in native and WASM
 **Depends on**: Phase 0
 **Requirements**: SCHM-01, SCHM-02, RSLV-01, RSLV-02, RSLV-03, RSLV-04, RSLV-05, RSLV-06
 **Success Criteria** (what must be TRUE):
+
   1. Opinion/Point/Speech YAML schemas exist in `schemas/` (CC0), cover the full Phase 0-derived metadata floor, and a person can understand any example composition and resolution from the YAML alone
   2. The resolver resolves every harness scenario per the docs/04 rules: nice-to-have drops are visible with explanations, required-vs-required is a hard conflict unless a patch opinion exists (then offered automatically), nice-vs-nice picks a sensible default, ordering cycles fail with the offending opinions named
   3. Hardware-conditional opinions resolve against declared hardware with swap suggestions surfaced at composition time
   4. WASM and native builds produce identical results, proven by automated parity tests; resolver coverage is near-total per D19, with the Phase 0 edge-case corpus encoded as tests before implementation
   5. 3–4 example files exist (including one deliberately conflicting) that exercise the harness end-to-end
+
 **Plans**: TBD
 
 ### Phase 2: Arch Translator
+
 **Goal**: A resolved speech becomes a bootable, fully-unattended Arch installer — and Omarchy is reproducible as a speech on vanilla Arch (the north star)
 **Depends on**: Phase 1
 **Requirements**: ARCH-01, ARCH-02, ARCH-03, ARCH-04
 **Success Criteria** (what must be TRUE):
+
   1. NORTH STAR (invariant 6): building the Omarchy speech in `examples/omarchy/` produces an installed system equivalent to Omarchy on vanilla Arch, with zero install-time questions
   2. The Arch translator consumes a resolved speech via the defined input contract, wraps mkarchiso, and emits a bootable unattended ISO from inside the isolated build environment
   3. The translator declares its supported opinions/capabilities, and a speech containing an unsupported required opinion breaks visibly at composition time, never silently at install time
   4. The translator is structured around declarative variant profiles (repo list + keyring + kernel + defaults) per the Phase 0 delta study, with no per-variant fork
   5. STRETCH (non-gating, per D20): the Omarchy speech retargeted to CachyOS or Garuda via a variant profile builds with only declared, explainable differences
+
 **Plans**: TBD
 
 ### Phase 3: CLI & Build Channels
+
 **Goal**: Anyone can go compose → resolve → build to an ISO at zero cost, via local Docker or their own GitHub Actions minutes, deterministically, with their private pane never leaving their control
 **Depends on**: Phase 2
 **Requirements**: CLI-01, CLI-02, BLD-01, BLD-02, BLD-03, BLD-04, PRIV-01
 **Success Criteria** (what must be TRUE):
+
   1. `debateos compose | validate | build | pane` work against the native resolver, with the speech (including private pane) managed in `$HOME` and optionally backed up to the user's own private Git repo
   2. The Omarchy speech builds end-to-end via local Docker (`docker run` with speech mounted → ISO out) AND via the published reusable GitHub Actions workflow on a forked template repo — the same image powering both channels
   3. Builds are deterministic — identical inputs produce identical ISOs, `SOURCE_DATE_EPOCH` keyed to the resolved-speech hash — verified by automated tests, not inspection
   4. The full path runs at zero hosting cost with no central service involved; secrets/private pane never appear in shared artifacts and inject at first boot, with the key-management design finalized and documented
+
 **Plans**: TBD
 
 ### Phase 4: Debian Translator
+
 **Goal**: The opinion/translator abstraction is proven real, not Arch-shaped — one resolved speech yields installers for two foundations
 **Depends on**: Phase 3
 **Requirements**: DEB-01, DEB-02, DEB-03, COMM-01
 **Success Criteria** (what must be TRUE):
+
   1. DUAL-FOUNDATION PROOF: a representative speech builds bootable, fully-unattended installers for BOTH Arch and Debian from the same resolved input
   2. The Debian translator wraps live-build/preseed, declares its capabilities, and unsupported required opinions break visibly at composition time
   3. Arch assumptions that leaked into the schema, resolver, or example opinions are identified and fixed, with schema/capability adjustments documented
   4. The translator ownership model is documented: distributions own their translators, curators own points/speeches, community PRs welcome
+
 **Plans**: TBD
 
 ### Phase 5: Registry, Forum & Debate UI
+
 **Goal**: Users can discover points, compose visually with live conflict resolution, and proceed to build — with Git authoritative and the Forum strictly optional
 **Depends on**: Phase 4
 **Requirements**: REG-01, UI-01, UI-02, BRND-01, FORM-01, FORM-02, FORM-03, FORM-04, FORM-05
 **Success Criteria** (what must be TRUE):
+
   1. A user can discover points/speeches via the Forum (search by curator, tag, popularity, freshness, foundation compatibility), subscribe to curators or individual points, rate via GitHub OAuth identity, and follow conflict threads that link to resolving patch-opinion PRs
   2. A user can compose a speech in the Debate UI with live conflict visualization (panes, red/green overlaps) powered by the client-side WASM resolver, and proceed to build instructions — in the GitHub Pages deployment AND the identical UI served offline by `debateos compose`
   3. The static registry index generates from the GitHub YAML repos, deploys to GitHub Pages, and rebuilds on commit — Git remains the authoritative source of record
   4. With the Forum offline, the entire compose → resolve → build path still works (invariant 4); total Forum DB loss is recoverable by re-indexing GitHub; deployment notes cover the D15 hosting target
   5. The debate-themed brand voice is applied consistently across the UI and docs without obscuring meaning
+
 **Plans**: TBD
 **UI hint**: yes
 
