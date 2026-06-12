@@ -1043,6 +1043,61 @@ func makeSet(ids []resolver.OpinionID) map[resolver.OpinionID]bool {
 // Explanation literals directly (avoid importing internal type).
 type Explanation = resolve.Explanation
 
+// TestResolveSysctlAndHardConflictBothReported verifies WR-04: when a speech
+// has both a sysctl key collision AND a required-vs-required hard conflict,
+// both errors must appear in the returned error — not just the sysctl one.
+func TestResolveSysctlAndHardConflictBothReported(t *testing.T) {
+	t.Parallel()
+
+	// Two required opinions that conflict (hard conflict) AND share a sysctl key (collision).
+	opinions := []resolver.Opinion{
+		{
+			Schema:   1,
+			ID:       "pkg/sysctl-conflict-a",
+			Name:     "A with sysctl",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+			Conflicts: []resolver.OpinionRef{{ID: "pkg/sysctl-conflict-b"}},
+			SysctlParams: []resolver.SysctlParam{
+				{Key: "vm.swappiness", Value: "10"},
+			},
+		},
+		{
+			Schema:   1,
+			ID:       "pkg/sysctl-conflict-b",
+			Name:     "B with same sysctl",
+			Category: "package-install",
+			Status:   resolver.StatusRequired,
+			Conflicts: []resolver.OpinionRef{{ID: "pkg/sysctl-conflict-a"}},
+			SysctlParams: []resolver.SysctlParam{
+				{Key: "vm.swappiness", Value: "60"},
+			},
+		},
+	}
+	speech := resolver.Speech{
+		Schema:     1,
+		ID:         "test-sysctl-and-hard-conflict",
+		Foundation: "arch",
+		Opinions: []resolver.OpinionRef{
+			{ID: "pkg/sysctl-conflict-a"},
+			{ID: "pkg/sysctl-conflict-b"},
+		},
+	}
+
+	_, err := resolve.Resolve(&speech, opinions, hardware.HardwareProfile{})
+	if err == nil {
+		t.Fatal("SysctlAndHardConflict: expected error, got nil")
+	}
+
+	errMsg := err.Error()
+	if !strings.Contains(errMsg, "Sysctl") {
+		t.Errorf("SysctlAndHardConflict: error %q must mention sysctl collision", errMsg)
+	}
+	if !strings.Contains(errMsg, "Hard conflict") {
+		t.Errorf("SysctlAndHardConflict: error %q must mention hard conflict — both must be reported together", errMsg)
+	}
+}
+
 // TestResolveTrustWarningNonHardwareOpinion verifies WR-02: a non-hardware-
 // conditional opinion with a sig_level=Never custom repo must emit a
 // TrustWarning in its Explanation — not just hardware-conditional ones.

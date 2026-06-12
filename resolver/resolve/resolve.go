@@ -105,10 +105,10 @@ func Resolve(speech *resolver.Speech, opinions []resolver.Opinion, hw hardware.H
 
 	// ── Step 3: Sysctl key collision detection (SR-016) ────────────────────
 	// For any two active opinions that both declare the same sysctl key, emit
-	// a collision error. This is separate from the Conflicts declaration.
-	if err := detectSysctlCollisions(opinions, active, dropped, rs, index); err != nil {
-		return rs, err
-	}
+	// a collision explanation. Do NOT return early — collect the sysctl error
+	// and continue to pairwise conflict detection so all errors are reported
+	// together (WR-04). The combined error is returned after Step 4.
+	sysctlErr := detectSysctlCollisions(opinions, active, dropped, rs, index)
 
 	// ── Step 4: Pairwise conflict resolution ───────────────────────────────
 	// Process each active opinion's Conflicts list.
@@ -152,8 +152,15 @@ func Resolve(speech *resolver.Speech, opinions []resolver.Opinion, hw hardware.H
 		}
 	}
 
-	if len(hardConflicts) > 0 {
-		return rs, fmt.Errorf("%s", strings.Join(hardConflicts, "; "))
+	// Combine sysctl collision error (if any) with hard-conflict errors so all
+	// issues are visible in a single error message (WR-01 + WR-04).
+	if sysctlErr != nil || len(hardConflicts) > 0 {
+		var msgs []string
+		if sysctlErr != nil {
+			msgs = append(msgs, sysctlErr.Error())
+		}
+		msgs = append(msgs, hardConflicts...)
+		return rs, fmt.Errorf("%s", strings.Join(msgs, "; "))
 	}
 
 	// ── Step 4b: Repo ordering explanations (EC-010/EC-011) ────────────────
