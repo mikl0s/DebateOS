@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 0 Plan 02 complete — research/omarchy-points.md (32 points) and research/schema-requirements.md (SR-001..SR-022) written
-last_updated: "2026-06-12T20:27:58.048Z"
-last_activity: 2026-06-12 -- Phase 0 Plan 01 completed
+stopped_at: Phase 1 Plan 02 complete — resolver/graph BuildGraph+TopoSort green, EC-035/EC-036 tests passing
+last_updated: "2026-06-12T20:44:51.612Z"
+last_activity: 2026-06-12 -- Phase 1 execution started
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 9
+  completed_plans: 6
   percent: 17
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-12)
 
 **Core value:** Compose a speech from curators' points, resolve conflicts explainably, and build a bootable unattended installer — zero cost, no central service in the critical path.
-**Current focus:** Phase 0 — Omarchy Research & Arch-Variant Study
+**Current focus:** Phase 1 — Schema & Resolver Core
 
 ## Current Position
 
-Phase: 0 (Omarchy Research & Arch-Variant Study) — EXECUTING
-Plan: 4 of 4 (Plan 01 complete)
+Phase: 1 (Schema & Resolver Core) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-06-12 -- Phase 0 Plan 01 completed
+Last activity: 2026-06-12 -- Phase 1 execution started
 
 Progress: [█░░░░░░░░░] 4%
 
@@ -51,6 +51,7 @@ Progress: [█░░░░░░░░░] 4%
 *Updated after each plan completion*
 | Phase 00-omarchy-research-arch-variant-study P03 | 10 | 2 tasks | 1 files |
 | Phase 00-omarchy-research-arch-variant-study P02 | 15 | 2 tasks | 2 files |
+| Phase 01-schema-resolver-core P02 | 2 min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,8 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: 27 EC-NNN scenarios produced with full docs/04 coverage; variant-profile conflict semantics deferred to Phase 1
 - [Phase ?]: migrations-as-schema-concept recorded as OQ-001 open question; deferred to Phase 1/post-v1
 - [Phase ?]: 306 runtime bin/ helpers classified as translator infrastructure not opinions (OQ-008)
+- [Phase ?]: TopoSort is a free function (not a method on Graph) — cleaner call site for 01-04 resolver
+- [Phase ?]: Phase enum stored in Graph.phase but NOT converted to edges — tie-breaking key only per SR-006/OM-023 cross-phase override
 
 ### Decisions from Plan 00-01
 
@@ -97,7 +100,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12T19:27:12.461Z
-Stopped at: Phase 0 Plan 02 complete — research/omarchy-points.md (32 points) and research/schema-requirements.md (SR-001..SR-022) written
+Last session: 2026-06-12T20:44:51.608Z
+Stopped at: Phase 1 Plan 02 complete — resolver/graph BuildGraph+TopoSort green, EC-035/EC-036 tests passing
 Resume file: None
 Next: Phase 0 Plan 02 (00-02-PLAN.md) or Plan 03 (00-03-PLAN.md) — both Wave 1 plans now complete
