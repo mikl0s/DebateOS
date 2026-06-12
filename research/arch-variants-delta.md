@@ -181,8 +181,11 @@ The `cachyos-settings` package depends on:
 **Pre-seeded sysctl opinions** that may conflict with Omarchy's:
 - `vm.swappiness = 100` (CachyOS) vs Omarchy's `increase-file-watchers.sh`
   (`fs.inotify.max_user_watches`) — different keys, no direct collision
-- `fs.file-max = 2097152` (CachyOS) vs Omarchy's `increase-fd-limit.sh`
-  (`fs.file-max`) — **SAME KEY: direct collision** on `/etc/sysctl.d/` drop-in
+- `fs.file-max = 2097152` (CachyOS, sysctl kernel parameter via sysctl.d) vs Omarchy's
+  `increase-fd-limit.sh` (OM-038) — **NO KEY COLLISION**: OM-038 sets `DefaultLimitNOFILE`
+  via systemd `system.conf.d/` and `user.conf.d/` drop-ins (per-process RLIMIT_NOFILE),
+  NOT a sysctl parameter. These are distinct mechanisms in different namespaces; CachyOS
+  raises the global fd ceiling and Omarchy sets the per-process limit — additive, not conflicting.
 
 ### Trust Level
 
@@ -200,7 +203,7 @@ The `cachyos-settings` package depends on:
 | Keyring | `cachyos-keyring` required before repo use | `custom-repo` (keyring dep) | None — different keyring |
 | Kernel | `linux-cachyos` (EEVDF, 7.0.12) as default | `kernel-install` | Collides with Omarchy `linux` + `linux-ptl` Intel kernel |
 | CPU-optimized packages | glibc, mesa, ffmpeg etc. rebuilt for v3/v4 | implicit in `custom-repo` | Package name identical, different binary |
-| sysctl | `70-cachyos-settings.conf` — 12 sysctl params | `sysctl-param` | `fs.file-max` direct collision with Omarchy |
+| sysctl | `70-cachyos-settings.conf` — 12 sysctl params | `sysctl-param` | No sysctl key collision with Omarchy: OM-038 sets DefaultLimitNOFILE (systemd per-process limit, not sysctl); OM-036/OM-037 use different keys |
 | zram | zram0 zstd, size=RAM, swap-priority=100 | `zram-config` | Collision if Omarchy configures zram |
 | ananicy-cpp | Enabled by default via cachyos-settings | `service-enable` | None direct — Omarchy doesn't configure ananicy |
 | systemd-resolved | Enabled by cachyos-settings | `service-enable` | Omarchy also enables systemd-resolved — same intent, potentially idempotent |
@@ -428,8 +431,8 @@ direct calamares config on GitLab requires auth to clone]
 | Snapper | none | Optional (cachyos-snapper-support) | Mandatory (snapper-support) |
 | sysctl tuning | minimal | 12 params (70-cachyos-settings) | none via pkg [UNVERIFIED] |
 | zram | none | Configured via zram-generator.conf | Via zram-generator dep |
-| Update wrapper | pacman | cachy-update (optional notifier) | garuda-update (mandatory) |
-| Theming | none | SDDM: cachyos-themes-sddm | Dr460nized KDE/SDDM/Plymouth/GRUB |
+| Update wrapper | pacman | cachy-update (optional notifier) [UNVERIFIED] | garuda-update (mandatory) |
+| Theming | none | SDDM: cachyos-themes-sddm [UNVERIFIED] | Dr460nized KDE/SDDM/Plymouth/GRUB |
 | CPU arch levels | x86_64 only | x86_64, x86_64-v3, x86_64-v4 | x86_64 only |
 
 ---
@@ -530,7 +533,7 @@ pre_seeded_opinions:
            kernel.nmi_watchdog, kernel.unprivileged_userns_clone,
            kernel.printk, kernel.kptr_restrict,
            net.core.netdev_max_backlog, fs.file-max]
-    conflict_with_omarchy: "fs.file-max (direct collision with increase-fd-limit.sh)"
+    conflict_with_omarchy: "None identified: OM-038 sets DefaultLimitNOFILE via systemd drop-ins (per-process RLIMIT_NOFILE), not a sysctl key; different mechanism from fs.file-max. OM-036/OM-037 use different sysctl keys (tcp_mtu_probing, inotify.max_user_watches)."
 
   - category: zram-config
     id: cachyos/zram-defaults

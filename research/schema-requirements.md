@@ -85,9 +85,13 @@ implicit ordering-conflict if another opinion triggers mkinitcpio between them.
 
 **Evidence (variant):** Garuda's `garuda-dracut-support` conflicts `mkinitcpio` — a
 required-vs-required hard conflict with Omarchy's OM-002/OM-099 login opinions.
-CachyOS `70-cachyos-settings.conf` sets `fs.file-max`; Omarchy OM-038 also sets `fs.file-max`
-via `increase-fd-limit.sh` — a sysctl-param collision expressible only if conflicts are
-declared at the opinion level.
+CachyOS `70-cachyos-settings.conf` sets `fs.file-max` (a global sysctl kernel parameter).
+Omarchy OM-038 sets `DefaultLimitNOFILE` via systemd drop-ins in `system.conf.d/` and
+`user.conf.d/` — this is a per-process RLIMIT_NOFILE, not a sysctl key. The two are distinct
+mechanisms in different namespaces and do NOT collide on a shared key. A real sysctl-param
+collision scenario exists between opinions writing the same sysctl key (e.g. two opinions both
+writing `fs.inotify.max_user_watches`), which is exercised by EC-005 (synthesized) to confirm
+that conflict declarations at the opinion level enable per-key detection.
 
 ---
 
@@ -337,13 +341,17 @@ pairs and the target drop-in file name. Multiple opinions may write to different
 files (different parameter sets); the resolver must detect collisions when two opinions write
 the same sysctl key.
 
-**Evidence:** OM-036 (net.ipv4.tcp_mtu_probing=1), OM-037 (fs.inotify.max_user_watches),
-OM-038 (DefaultLimitNOFILE via systemd drop-in, logically a sysctl-class param).
+**Evidence:** OM-036 (net.ipv4.tcp_mtu_probing=1), OM-037 (fs.inotify.max_user_watches).
+Note: OM-038 sets `DefaultLimitNOFILE` via systemd `system.conf.d/` and `user.conf.d/`
+drop-ins — this is a per-process RLIMIT_NOFILE managed by the systemd service manager, NOT
+a sysctl kernel parameter. OM-038 belongs in a `systemd-limit` category, not `sysctl-param`.
 
-**Variant evidence:** CachyOS `70-cachyos-settings.conf` sets `fs.file-max`; OM-038 also
-touches the system file descriptor limit. The schema must allow per-key conflict detection
-across sysctl-param opinions so that sysctl collisions between a speech opinion and a
-variant's pre-seeded opinion are surfaced at composition time.
+**Variant evidence:** CachyOS `70-cachyos-settings.conf` sets `fs.file-max` (a true sysctl
+kernel parameter). This does not collide with OM-038 (different mechanism, different namespace).
+The schema must allow per-key conflict detection across sysctl-param opinions so that sysctl
+collisions between a speech opinion and a variant's pre-seeded opinion — for example, two
+opinions both writing `fs.inotify.max_user_watches` — are surfaced at composition time
+(see EC-005 synthesized scenario).
 
 ---
 
@@ -424,7 +432,9 @@ ordered list of included points with their conflict-resolution decisions. The fo
 declaration gates which variant-profile pre-seeded opinions are active, enabling the resolver
 to detect variant-vs-speech opinion conflicts.
 
-**Variant evidence:** CachyOS pre-seeds `fs.file-max` (conflicts OM-038). Garuda pre-seeds
+**Variant evidence:** CachyOS pre-seeds `fs.file-max` via sysctl (no collision with OM-038,
+which uses a different mechanism: systemd `DefaultLimitNOFILE` drop-ins). CachyOS pre-seeds
+`linux-cachyos` kernel (conflicts Omarchy `linux` kernel opinion). Garuda pre-seeds
 `mkinitcpio` conflicts (hard conflict with OM-002/OM-099 login phase opinions). These
 conflicts are only detectable if the speech declares its foundation target and the resolver
 can access the variant profile's pre-seeded opinion list.

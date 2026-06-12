@@ -125,26 +125,42 @@ linux-cachyos as default; Omarchy base packages include `linux`)
 
 ### EC-005
 
-**Title:** CachyOS fs.file-max sysctl vs Omarchy fs.file-max sysctl
+**Title:** Synthesized: sysctl key collision between two opinions writing the same kernel parameter
 
-**Given:** A speech targets CachyOS as its foundation. CachyOS-Settings pre-seeds
-`fs.file-max = 2097152` via `/usr/lib/sysctl.d/70-cachyos-settings.conf`. The speech
-includes Omarchy's `sysctl-param/increase-fd-limit` opinion (OM-038), which writes
-`fs.file-max` to a drop-in file in `/etc/sysctl.d/` (setting a soft limit of 65536
-and hard limit 524288 via `DefaultLimitNOFILE`).
+**Note (correction):** The original version of this scenario incorrectly claimed that
+CachyOS `fs.file-max` (a sysctl kernel parameter) and Omarchy OM-038 `DefaultLimitNOFILE`
+(a systemd per-process RLIMIT set via `system.conf.d/` and `user.conf.d/` drop-ins) collide
+on the same sysctl key. They do NOT — they are distinct mechanisms operating in different
+namespaces (`/usr/lib/sysctl.d/` vs `/etc/systemd/system.conf.d/`; kernel parameter vs
+per-process resource limit). CachyOS and Omarchy OM-038 are additive, not conflicting:
+CachyOS raises the global fd ceiling (`fs.file-max=2097152`) and Omarchy sets the per-process
+limit (`DefaultLimitNOFILE=65536:524288`) — both can coexist.
 
-**When:** The resolver evaluates the speech on the CachyOS foundation.
+This scenario has been reclassified as synthesized to demonstrate the general per-key sysctl
+collision detection capability required by SR-016. The synthesized scenario uses a hypothetical
+second sysctl opinion that DOES write `fs.inotify.max_user_watches` — the same key as OM-037.
 
-**Then:** The resolver detects a sysctl key collision on `fs.file-max`. The later-loading
-drop-in wins (higher numeric prefix in `/etc/sysctl.d/` wins), but both opinions claim
-ownership of the same key. The resolver emits:
-> "Conflict: both the CachyOS foundation (70-cachyos-settings.conf, fs.file-max=2097152)
-> and your speech (Omarchy increase-fd-limit, fs.file-max via DefaultLimitNOFILE) configure
-> the same sysctl parameter. The effective value depends on drop-in load order. A patch opinion
-> is needed to merge these into a single authoritative sysctl drop-in, or one must be dropped."
+**Given:** A speech includes Omarchy's `sysctl-param/increase-file-watchers` opinion (OM-037),
+which writes `fs.inotify.max_user_watches = 524288` to `/etc/sysctl.d/99-omarchy-watchers.conf`.
+The speech also includes a hypothetical additional opinion `sysctl-param/extra-inotify-tuning`
+that writes `fs.inotify.max_user_watches = 1048576` to `/etc/sysctl.d/90-extra-tuning.conf`.
+Both opinions claim the same sysctl key.
 
-provenance: evidence-backed (CachyOS-Settings `usr/lib/sysctl.d/70-cachyos-settings.conf`
-verified in commit b1aedc7; Omarchy `install/config/increase-fd-limit.sh`)
+**When:** The resolver evaluates the speech.
+
+**Then:** The resolver detects a sysctl key collision: two opinions in the same speech both
+declare ownership of `fs.inotify.max_user_watches` with different values. The resolver emits:
+> "Sysctl key collision: 'fs.inotify.max_user_watches' is written by two opinions in this
+> speech — increase-file-watchers (OM-037, value=524288) and extra-inotify-tuning
+> (value=1048576). The effective value depends on drop-in numeric prefix order, which is
+> non-deterministic across opinion composition. A patch opinion is needed to merge these into
+> a single authoritative drop-in, or one must be dropped."
+
+provenance: synthesized (demonstrates per-key sysctl collision detection required by SR-016;
+OM-037 is evidence-backed from Omarchy `install/config/increase-file-watchers.sh`;
+the second opinion is synthesized to exercise the collision rule. CachyOS `fs.file-max` vs
+Omarchy OM-038 `DefaultLimitNOFILE` are NOT a sysctl collision — they are different
+mechanisms; see Note above.)
 
 ---
 
@@ -695,20 +711,27 @@ Omarchy has no GRUB theming opinion; Omarchy `install/login/limine-snapper.sh` u
 
 ## Coverage Matrix
 
-The following table maps all 8 resolution rules from `docs/04-conflict-resolution.md` to the
-EC-NNN scenarios above. Every rule has at least one scenario.
+The following table maps the 4 numbered resolution rules from `docs/04-conflict-resolution.md`
+and the additional behavioral sections (hardware-conditional, ordering, cycle detection) to
+the EC-NNN scenarios above. Every rule and behavioral section has at least one scenario.
 
-| docs/04 Resolution Rule | Relevant EC-NNN | Notes |
-|------------------------|----------------|-------|
+(Note: docs/04 contains exactly 4 numbered resolution rules in its "Resolution hierarchy
+(precise rules)" section. The additional rows below map named behavioral sections from
+docs/04 — `## Ordering`, `## Hardware-aware resolution`, `## Cycle detection` — which are
+covered behaviors but are not numbered rules in docs/04.)
+
+| docs/04 Resolution Rule / Behavior | Relevant EC-NNN | Notes |
+|------------------------------------|----------------|-------|
 | **Rule 1: Required beats nice-to-have** | EC-012, EC-030 | EC-030: required kernel drops nice-to-have DKMS; EC-012: required repo drops nice-to-have repo |
-| **Rule 2: Required-vs-required hard conflict** | EC-001, EC-002, EC-003, EC-004, EC-005, EC-031, EC-050, EC-051 | Multiple real evidence-backed conflicts; EC-031 synthesized for pure-rule demonstration |
+| **Rule 2: Required-vs-required hard conflict** | EC-001, EC-002, EC-003, EC-004, EC-031, EC-050, EC-051 | Multiple real evidence-backed conflicts; EC-031 synthesized for pure-rule demonstration |
 | **Rule 3: Required-vs-required with patch** | EC-032, EC-034 | EC-032: dracut/mkinitcpio patch; EC-034: merged pacman.conf patch |
 | **Rule 4: Nice-vs-nice sensible default** | EC-033 | Two nice-to-have terminal emulators; resolver picks Omarchy default (foot) |
-| **Rule 5: Patch overrides hierarchy** | EC-032, EC-034 | Patch opinion resolves what would otherwise be a hard-stop conflict |
-| **Rule 6: Ordering/toposort** | EC-035, EC-010, EC-011 | EC-035: three-hop dependency chain; EC-010/EC-011: repo ordering within pacman.conf |
-| **Rule 7: Cycle detection** | EC-036 | Circular must-install-after between two config opinions |
-| **Rule 8: Hardware-conditional (skip)** | EC-037 | NVIDIA driver skipped — no NVIDIA GPU in declared hardware |
-| **Rule 8: Hardware-conditional (apply)** | EC-038, EC-040, EC-041, EC-042 | T2 block applied; CachyOS kernel collision with hardware context |
+| **Patch overrides hierarchy (behavioral section)** | EC-032, EC-034 | Patch opinion resolves what would otherwise be a hard-stop conflict |
+| **Ordering/toposort (behavioral section)** | EC-035, EC-010, EC-011 | EC-035: three-hop dependency chain; EC-010/EC-011: repo ordering within pacman.conf |
+| **Cycle detection (behavioral section)** | EC-036 | Circular must-install-after between two config opinions |
+| **Hardware-conditional skip (behavioral section)** | EC-037 | NVIDIA driver skipped — no NVIDIA GPU in declared hardware |
+| **Hardware-conditional apply (behavioral section)** | EC-038, EC-040, EC-041, EC-042 | T2 block applied; CachyOS kernel collision with hardware context |
+| **Per-key sysctl collision detection (SR-016 capability)** | EC-005 | Synthesized: two opinions writing same sysctl key in same speech |
 
 ---
 
@@ -716,13 +739,13 @@ EC-NNN scenarios above. Every rule has at least one scenario.
 
 | Class | EC-IDs | Count | Provenance |
 |-------|--------|-------|------------|
-| Class 1: Foundation pre-seeded vs user | EC-001 to EC-005 | 5 | All evidence-backed |
+| Class 1: Foundation pre-seeded vs user | EC-001 to EC-005 | 5 | EC-001, EC-002, EC-003, EC-004 evidence-backed; EC-005 synthesized (corrected — see EC-005 note) |
 | Class 2: Repo priority | EC-010 to EC-012 | 3 | EC-010, EC-011 evidence-backed; EC-012 synthesized |
 | Class 3: Cross-variant effectuation | EC-020 to EC-023 | 4 | All evidence-backed |
 | Class 4: docs/04 rule coverage | EC-030 to EC-038 | 9 | EC-030, EC-031, EC-035, EC-037, EC-038 evidence-backed; EC-032, EC-033, EC-034, EC-036 synthesized |
 | Class 5: CachyOS kernel collision | EC-040 to EC-042 | 3 | All evidence-backed |
 | Class 6: Garuda theming | EC-050 to EC-052 | 3 | All evidence-backed |
-| **Total** | **EC-001 to EC-052** | **27** | **19 evidence-backed, 8 synthesized** |
+| **Total** | **EC-001 to EC-052** | **27** | **21 evidence-backed, 6 synthesized** |
 
 ---
 
@@ -730,6 +753,7 @@ EC-NNN scenarios above. Every rule has at least one scenario.
 
 | EC-NNN | Synthesized Reason |
 |--------|-------------------|
+| EC-005 | Original evidence-backed claim was factually wrong (OM-038 writes DefaultLimitNOFILE via systemd drop-in, NOT fs.file-max via sysctl.d; these are different mechanisms). Reclassified as synthesized to demonstrate per-key sysctl collision detection capability (SR-016) using OM-037 as the evidence-backed base |
 | EC-012 | Required-beats-nice-to-have for custom-repo category needed; no natural evidence-backed example found |
 | EC-032 | Required-vs-required-with-patch rule needs a concrete example; dracut/mkinitcpio conflict is real, patch is synthesized |
 | EC-033 | Nice-vs-nice sensible default rule needs a terminal emulator example; Omarchy uses foot but no real two-terminal conflict in the speech |
