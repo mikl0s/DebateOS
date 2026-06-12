@@ -1,0 +1,14 @@
+schema: 1
+id: example/speeches/my-workstation
+name: My workstation
+foundation: example-foundation
+points:
+  - id: example/points/minimal-desktop
+    version: "1.0.0"
+opinions:
+  - id: example/apps/editor
+hardware:
+  predicates:
+    - hw-discrete-gpu
+  facts:
+    cpu-model: "151"

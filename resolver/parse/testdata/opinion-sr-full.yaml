@@ -1,0 +1,93 @@
+schema: 1
+id: example/desktop/compositor-settings
+name: Compositor settings
+category: config-deployment
+intent: Deploy the compositor configuration with sensible animation defaults
+status: required
+depends_on:
+  - id: example/desktop/compositor
+conflicts:
+  - id: example/desktop/alternative-compositor
+known_patches:
+  - id: example/patches/compositor-coexist
+    resolves: example/desktop/alternative-compositor
+    rationale: Runs the two compositors on separate sessions
+hardware_condition:
+  type: and
+  operands:
+    - type: leaf
+      predicate: hw-discrete-gpu
+    - type: not
+      operands:
+        - type: leaf
+          predicate: hw-virtual-machine
+    - type: leaf
+      predicate: hw-cpu-model
+      values: ["151", "154", "183"]
+install_phase: config
+ordering:
+  after:
+    - id: example/desktop/compositor
+  before:
+    - id: example/desktop/session-manager
+translator_capabilities:
+  - config-file-deploy
+  - symlink
+packages:
+  - example-compositor-tools
+remove_packages:
+  - legacy-compositor
+file_assets:
+  - src: assets/compositor/settings.conf
+    dst: .config/compositor/settings.conf
+custom_repos:
+  - name: example-extras
+    url: https://repo.example.org/extras
+    sig_level: Never
+    priority: 10
+    keyring: example-extras-keyring
+runtime_tool_installs:
+  - manager: npm
+    packages:
+      - "@example/cli-tool"
+execution_phase: install-time
+script_payload:
+  script: |
+    #!/bin/sh
+    mkdir -p "$HOME/.config/compositor"
+  capabilities:
+    - shell-script
+    - home-write
+display_manager:
+  name: example-dm
+  greeter: example-greeter
+  auto_login: true
+bootloader:
+  name: example-boot
+  timeout: 3
+  snapshot: true
+services:
+  - name: example-compositor
+    enable: true
+    deferred: false
+  - name: example-indexer
+    enable: false
+    deferred: true
+sysctl_params:
+  - key: fs.inotify.max_user_watches
+    value: "524288"
+    drop_in_file: 60-example.conf
+kernel_params:
+  - key: quiet
+  - key: splash
+    value: silent
+group_memberships:
+  - group: video
+mime_associations:
+  - mime_pattern: image/*
+    app_id: example-viewer.desktop
+theme:
+  bundle_dir: themes/example-dark
+  symlinks:
+    current: themes/example-dark
+  is_default: true

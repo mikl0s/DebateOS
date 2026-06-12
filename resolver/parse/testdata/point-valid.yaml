@@ -1,0 +1,12 @@
+schema: 1
+id: example/points/minimal-desktop
+name: Minimal desktop
+intent: A small coherent desktop environment with a compositor and terminal
+curator: example-curator
+members:
+  - id: example/desktop/compositor
+    status: required
+  - id: example/desktop/compositor-settings
+    status: required
+  - id: example/apps/terminal
+    status: nice-to-have

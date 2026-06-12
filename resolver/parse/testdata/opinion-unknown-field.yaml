@@ -1,0 +1,5 @@
+schema: 1
+id: example/desktop/typo-opinion
+name: Opinion with a typo'd field
+category: config-deployment
+statues: required
