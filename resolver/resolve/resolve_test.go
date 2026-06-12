@@ -278,6 +278,18 @@ func TestResolveEC(t *testing.T) {
 			},
 		},
 		{
+			// EC-037b: NVIDIA driver skipped; AMD driver (same category, hw condition true)
+			// is present in the same composition → skip Explanation must carry a swap suggestion.
+			name: "EC-037b",
+			ecCase: ecCase{
+				fixture:     "ec037b-hardware-swap-suggestion.yaml",
+				wantErr:     false,
+				wantText:    "consider",
+				wantSkipped: []string{"hardware-conditional/nvidia-driver"},
+				wantApplied: []string{"hardware-conditional/amd-driver"},
+			},
+		},
+		{
 			// EC-038: Apple T2 block applied — hardware condition true; sig_level=Never warning
 			name: "EC-038",
 			ecCase: ecCase{
@@ -600,6 +612,66 @@ func TestResolveHardwareMismatch(t *testing.T) {
 	}
 	if !found {
 		t.Errorf("EC-037: nvidia-driver not in Skipped; got %v", rs.Skipped)
+	}
+}
+
+// TestResolveHardwareSwapSuggestion verifies RSLV-04 / SC-3: when a hardware-conditional
+// opinion is skipped (condition false) and a same-category opinion in the composition has
+// its hardware condition evaluate TRUE, the skip Explanation must carry a non-empty
+// AlternativeSuggestion naming the alternative opinion.
+//
+// Scenario (EC-037b): NVIDIA driver (hw-nvidia-gpu) + AMD driver (hw-amd-gpu) in same
+// category; hardware declares hw-amd-gpu predicate → NVIDIA skipped, AMD applied.
+// The NVIDIA skip explanation must say "consider 'AMD GPU Driver' (hardware-conditional/amd-driver)".
+func TestResolveHardwareSwapSuggestion(t *testing.T) {
+	t.Parallel()
+	opinions, speech, hw := loadFixture(t, "ec037b-hardware-swap-suggestion.yaml")
+	rs, err := resolve.Resolve(&speech, opinions, hw)
+	if err != nil {
+		t.Fatalf("EC-037b: unexpected error: %v", err)
+	}
+	if rs == nil {
+		t.Fatal("EC-037b: nil ResolvedSpeech")
+	}
+
+	// Verify NVIDIA driver is in Skipped.
+	skippedSet := makeSet(rs.Skipped)
+	if !skippedSet["hardware-conditional/nvidia-driver"] {
+		t.Errorf("EC-037b: hardware-conditional/nvidia-driver not in Skipped; got %v", rs.Skipped)
+	}
+
+	// Verify AMD driver is in Applied.
+	appliedSet := makeSet(rs.Applied)
+	if !appliedSet["hardware-conditional/amd-driver"] {
+		t.Errorf("EC-037b: hardware-conditional/amd-driver not in Applied; got %v", rs.Applied)
+	}
+
+	// The skip explanation for nvidia-driver must carry a non-empty AlternativeSuggestion
+	// naming the AMD driver alternative.
+	foundSkipEx := false
+	for _, ex := range rs.Explanations {
+		if ex.Rule == "hardware-skip" {
+			for _, id := range ex.OpinionsInvolved {
+				if id == "hardware-conditional/nvidia-driver" {
+					foundSkipEx = true
+					if ex.AlternativeSuggestion == "" {
+						t.Errorf("EC-037b: hardware-skip explanation for nvidia-driver has empty AlternativeSuggestion; want suggestion naming hardware-conditional/amd-driver")
+					} else {
+						// Verify the suggestion mentions the AMD driver ID and name.
+						if !strings.Contains(ex.AlternativeSuggestion, "hardware-conditional/amd-driver") {
+							t.Errorf("EC-037b: AlternativeSuggestion %q does not mention hardware-conditional/amd-driver", ex.AlternativeSuggestion)
+						}
+						if !strings.Contains(ex.AlternativeSuggestion, "AMD GPU Driver") {
+							t.Errorf("EC-037b: AlternativeSuggestion %q does not mention opinion name 'AMD GPU Driver'", ex.AlternativeSuggestion)
+						}
+						t.Logf("EC-037b: AlternativeSuggestion = %q", ex.AlternativeSuggestion)
+					}
+				}
+			}
+		}
+	}
+	if !foundSkipEx {
+		t.Error("EC-037b: no hardware-skip explanation found for hardware-conditional/nvidia-driver")
 	}
 }
 

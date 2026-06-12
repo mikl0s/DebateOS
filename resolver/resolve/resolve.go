@@ -49,29 +49,80 @@ func Resolve(speech *resolver.Speech, opinions []resolver.Opinion, hw hardware.H
 	}
 
 	// ── Step 1: Hardware-conditional evaluation ─────────────────────────────
-	// Iterate in stable input order (not map order) for determinism.
-	skipped := make(map[resolver.OpinionID]bool)
+	// Two-pass design (RSLV-04 / SC-3):
+	//   Pre-pass: evaluate every hardware-conditional opinion and build a
+	//   per-category index of opinions whose condition evaluates TRUE. This
+	//   lets the main pass attach an AlternativeSuggestion to skip explanations
+	//   when a same-category opinion is applicable on the declared hardware.
+	//   Main pass: emit hardware-skip / hardware-apply explanations in stable
+	//   input order with AlternativeSuggestion populated from the pre-pass index.
+	//
+	// hwEvalResult caches the evaluation result per opinion ID so we do not
+	// call EvalCondition twice for the same opinion.
+	type hwResult struct {
+		ok  bool
+		err error
+	}
+	hwEval := make(map[resolver.OpinionID]hwResult, len(opinions))
 	for _, op := range opinions {
 		if op.HardwareCondition == nil {
 			continue
 		}
 		ok, err := hardware.EvalCondition(*op.HardwareCondition, hw)
-		if err != nil {
+		hwEval[op.ID] = hwResult{ok: ok, err: err}
+	}
+
+	// hwTrueByCategory maps category → slice of opinions (sorted lexicographically
+	// by ID for determinism) whose hardware condition evaluated TRUE.
+	// Used by buildSwapSuggestion to generate AlternativeSuggestion text (RSLV-04).
+	hwTrueByCategory := make(map[string][]hwAlt)
+	for _, op := range opinions {
+		if op.HardwareCondition == nil {
+			continue
+		}
+		res, ok := hwEval[op.ID]
+		if !ok || res.err != nil || !res.ok {
+			continue
+		}
+		hwTrueByCategory[op.Category] = append(hwTrueByCategory[op.Category], hwAlt{id: op.ID, name: op.Name})
+	}
+	// Sort each category's alternatives lexicographically by ID for determinism.
+	for cat := range hwTrueByCategory {
+		alts := hwTrueByCategory[cat]
+		sort.Slice(alts, func(i, j int) bool { return alts[i].id < alts[j].id })
+		hwTrueByCategory[cat] = alts
+	}
+
+	// Main pass: emit explanations in stable input order.
+	skipped := make(map[resolver.OpinionID]bool)
+	for _, op := range opinions {
+		if op.HardwareCondition == nil {
+			continue
+		}
+		res := hwEval[op.ID]
+		if res.err != nil {
 			// Malformed hardware condition — treat as skip with explanation.
 			skipped[op.ID] = true
 			rs.Explanations = append(rs.Explanations, Explanation{
-				Text:             fmt.Sprintf("Skipped (hardware condition error): %s — %v", op.ID, err),
+				Text:             fmt.Sprintf("Skipped (hardware condition error): %s — %v", op.ID, res.err),
 				Rule:             "hardware-skip",
 				OpinionsInvolved: []resolver.OpinionID{op.ID},
 			})
 			continue
 		}
-		if !ok {
+		if !res.ok {
 			skipped[op.ID] = true
+			// Build swap suggestion from same-category hw-true alternatives (RSLV-04).
+			altSugg := buildSwapSuggestion(op.ID, op.Category, hwTrueByCategory)
+			text := fmt.Sprintf("Skipped (hardware condition false): %s — hardware condition not met for declared hardware profile.", op.ID)
+			if altSugg != "" {
+				text += " " + altSugg
+			}
 			rs.Explanations = append(rs.Explanations, Explanation{
-				Text:             fmt.Sprintf("Skipped (hardware condition false): %s — hardware condition not met for declared hardware profile.", op.ID),
-				Rule:             "hardware-skip",
-				OpinionsInvolved: []resolver.OpinionID{op.ID},
+				Text:                  text,
+				Rule:                  "hardware-skip",
+				OpinionsInvolved:      []resolver.OpinionID{op.ID},
+				AlternativeSuggestion: altSugg,
 			})
 		} else {
 			// Hardware condition true — emit Apply explanation.
@@ -570,4 +621,37 @@ func collectTrustWarning(op resolver.Opinion) string {
 		}
 	}
 	return ""
+}
+
+// hwAlt is a hardware-applicable alternative opinion entry: ID and display name.
+// Used by buildSwapSuggestion to generate AlternativeSuggestion text (RSLV-04).
+type hwAlt struct {
+	id   resolver.OpinionID
+	name string
+}
+
+// buildSwapSuggestion returns a non-empty AlternativeSuggestion string for a
+// hardware-skipped opinion when the composition contains one or more same-category
+// opinions whose hardware condition evaluates TRUE (RSLV-04 / SC-3).
+//
+// skippedID is the opinion being skipped; category is its category string.
+// hwTrueByCategory maps category → sorted (lexicographic by ID) slice of
+// hwAlt for opinions with true hardware conditions.
+//
+// Multiple alternatives are listed sorted by ID for determinism.
+// Returns "" when no same-category alternative is applicable.
+func buildSwapSuggestion(skippedID resolver.OpinionID, category string, hwTrueByCategory map[string][]hwAlt) string {
+	alts := hwTrueByCategory[category]
+	// Collect alternatives, excluding the skipped opinion itself.
+	var parts []string
+	for _, a := range alts {
+		if a.id == skippedID {
+			continue // guard: skipped opinion is never in hwTrueByCategory, but be safe
+		}
+		parts = append(parts, fmt.Sprintf("'%s' (%s)", a.name, a.id))
+	}
+	if len(parts) == 0 {
+		return ""
+	}
+	return fmt.Sprintf("You declared %s: consider %s instead.", category, strings.Join(parts, ", "))
 }

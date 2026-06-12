@@ -47,6 +47,13 @@ type Explanation struct {
 
 	// TrustWarning is set when a sig_level=Never repo is encountered (T-01-10).
 	TrustWarning string `json:"trust_warning,omitempty"`
+
+	// AlternativeSuggestion is set on hardware-skip explanations when the
+	// composition contains a same-category opinion whose hardware condition
+	// evaluates TRUE. It names the best in-composition alternative (RSLV-04 / SC-3).
+	// Format: "You declared <predicate>: consider '<Name>' (<ID>) instead."
+	// Empty on all non-hardware-skip explanations (omitempty — existing goldens unchanged).
+	AlternativeSuggestion string `json:"alternative_suggestion,omitempty"`
 }
 
 // ResolvedSpeech is the output of Resolve: the speech with all conflicts

@@ -1,0 +1,44 @@
+# EC-037b: Hardware swap suggestion — NVIDIA driver skipped; AMD driver in same category is present.
+# When an NVIDIA-conditioned opinion is skipped (no NVIDIA GPU declared) and an AMD-conditioned
+# opinion in the SAME category is present AND its hardware condition evaluates TRUE, the
+# Explanation for the NVIDIA skip must carry an AlternativeSuggestion naming the AMD opinion.
+# Hardware profile declares gpu: amd-radeon-rx-7600 (AMD, not NVIDIA).
+opinions:
+  - schema: 1
+    id: "hardware-conditional/nvidia-driver"
+    name: "NVIDIA Driver"
+    category: "hardware-conditional"
+    status: "required"
+    hardware_condition:
+      type: "leaf"
+      predicate: "hw-nvidia-gpu"
+    packages:
+      - "nvidia"
+      - "nvidia-utils"
+
+  - schema: 1
+    id: "hardware-conditional/amd-driver"
+    name: "AMD GPU Driver"
+    category: "hardware-conditional"
+    status: "required"
+    hardware_condition:
+      type: "leaf"
+      predicate: "hw-amd-gpu"
+    packages:
+      - "mesa"
+      - "vulkan-radeon"
+      - "libva-mesa-driver"
+
+speech:
+  schema: 1
+  id: "test-ec037b"
+  foundation: "arch"
+  points: []
+  opinions:
+    - id: "hardware-conditional/nvidia-driver"
+    - id: "hardware-conditional/amd-driver"
+  hardware:
+    predicates:
+      - "hw-amd-gpu"
+    facts:
+      gpu: "amd-radeon-rx-7600"
