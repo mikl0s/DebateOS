@@ -26,8 +26,8 @@ type fixtureDoc struct {
 
 // loadFixture parses an ec*.yaml testdata file and converts speech.Hardware
 // into a hardware.HardwareProfile for Resolve. The fixture YAML may supply a
-// `hardware_override` block for cases (EC-038, EC-041, EC-042) requiring
-// PCIIDs, which resolver.HardwareProfile does not carry.
+// `hardware_override` block for cases (e.g. EC-038) that need a richer
+// profile than the speech.hardware block alone provides.
 func loadFixture(t *testing.T, name string) ([]resolver.Opinion, resolver.Speech, hardware.HardwareProfile) {
 	t.Helper()
 	path := filepath.Join("testdata", name)
@@ -41,31 +41,19 @@ func loadFixture(t *testing.T, name string) ([]resolver.Opinion, resolver.Speech
 	}
 
 	// Build hardware.HardwareProfile from the speech's hardware declaration.
+	// resolver.HardwareProfile now carries PCIIDs so pci_ids in speech.hardware
+	// propagates directly without any workaround.
 	hw := hardware.HardwareProfile{}
 	if doc.Speech.Hardware != nil {
 		hw.Predicates = doc.Speech.Hardware.Predicates
 		hw.Facts = doc.Speech.Hardware.Facts
+		hw.PCIIDs = doc.Speech.Hardware.PCIIDs
 	}
-	// Apply fixture-level override for PCI IDs and richer profiles.
+	// Apply fixture-level override for richer profiles (e.g. legacy ec038 fixture
+	// that declares hardware_override rather than speech.hardware.pci_ids).
 	if doc.HardwareOverride != nil {
 		if doc.HardwareOverride.PCIIDs != nil {
 			hw.PCIIDs = doc.HardwareOverride.PCIIDs
-		}
-	}
-	// EC-038: if speech.hardware has pci_ids declared (field name in the YAML),
-	// the hardware block's YAML is already decoded into resolver.HardwareProfile
-	// which does NOT carry PCIIDs. We need to re-parse the hardware block raw.
-	// Workaround: store PCIIDs in the fixture's hardware block as a custom field
-	// and re-read them via a separate raw decode.
-	if doc.Speech.Hardware != nil {
-		// Re-decode the hardware block raw to pick up pci_ids if present.
-		var rawHWBlock struct {
-			PCIIDS []string `yaml:"pci_ids"`
-		}
-		hwRaw, _ := yaml.Marshal(doc.Speech.Hardware)
-		_ = yaml.Unmarshal(hwRaw, &rawHWBlock)
-		if len(rawHWBlock.PCIIDS) > 0 {
-			hw.PCIIDs = rawHWBlock.PCIIDS
 		}
 	}
 
@@ -297,6 +285,18 @@ func TestResolveEC(t *testing.T) {
 				wantErr:     false,
 				wantText:    "Applied (hardware condition true)",
 				wantApplied: []string{"hardware-conditional/apple-t2"},
+			},
+		},
+		{
+			// EC-038b: pci_ids declared directly in speech.hardware — CR-02 fix verification.
+			// pci_ids must propagate from speech.Hardware.PCIIDs through the normal parse path
+			// into hardware.EvalCondition without a hardware_override workaround.
+			name: "EC-038b",
+			ecCase: ecCase{
+				fixture:     "ec038b-pci-ids-in-speech.yaml",
+				wantErr:     false,
+				wantText:    "Applied (hardware condition true)",
+				wantApplied: []string{"hardware-conditional/apple-t2-direct"},
 			},
 		},
 		// ── Class 5: CachyOS kernel collision ──────────────────────────────
@@ -996,11 +996,13 @@ func loadExample(t *testing.T, name string) ([]resolver.Opinion, resolver.Speech
 		t.Fatalf("loadExample: opinions YAML parse error in %s: %v", opPath, err)
 	}
 
-	// Build hardware.HardwareProfile from speech.Hardware
+	// Build hardware.HardwareProfile from speech.Hardware.
+	// PCIIDs propagates directly now that resolver.HardwareProfile carries the field.
 	hw := hardware.HardwareProfile{}
 	if speech.Hardware != nil {
 		hw.Predicates = speech.Hardware.Predicates
 		hw.Facts = speech.Hardware.Facts
+		hw.PCIIDs = speech.Hardware.PCIIDs
 	}
 	return opinions, speech, hw
 }

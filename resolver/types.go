@@ -225,6 +225,7 @@ type PointRef struct {
 type HardwareProfile struct {
 	Predicates []string          `json:"predicates,omitempty" yaml:"predicates,omitempty"`
 	Facts      map[string]string `json:"facts,omitempty" yaml:"facts,omitempty"`
+	PCIIDs     []string          `json:"pci_ids,omitempty"   yaml:"pci_ids,omitempty"`
 }
 
 // Speech is a user's complete composition (SR-022): a foundation target plus

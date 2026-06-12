@@ -1,0 +1,35 @@
+# EC-038b: pci_ids declared directly in speech.hardware (no hardware_override).
+# Verifies CR-02 fix: resolver.HardwareProfile carries PCIIDs so pci_ids in the
+# speech YAML propagates through the normal parse path into EvalCondition.
+opinions:
+  - schema: 1
+    id: "hardware-conditional/apple-t2-direct"
+    name: "Apple T2 Support (direct pci_ids)"
+    category: "hardware-conditional"
+    status: "required"
+    hardware_condition:
+      type: "leaf"
+      predicate: "pci-id"
+      values:
+        - "106b:1801"
+        - "106b:1802"
+    packages:
+      - "linux-t2"
+    custom_repos:
+      - name: "arch-mact2"
+        url: "https://mirror.cyberd.us/arch-mact2"
+        sig_level: "Never"
+
+speech:
+  schema: 1
+  id: "test-ec038b"
+  foundation: "arch"
+  points: []
+  opinions:
+    - id: "hardware-conditional/apple-t2-direct"
+  hardware:
+    predicates: []
+    facts:
+      dmi_product_name: "MacBookPro16,1"
+    pci_ids:
+      - "106b:1801"

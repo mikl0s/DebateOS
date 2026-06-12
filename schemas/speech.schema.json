@@ -43,7 +43,12 @@
       "description": "Declared hardware profile used to evaluate hardware-conditional opinions at composition time.",
       "properties": {
         "predicates": { "type": "array", "items": { "type": "string" } },
-        "facts": { "type": "object", "additionalProperties": { "type": "string" } }
+        "facts": { "type": "object", "additionalProperties": { "type": "string" } },
+        "pci_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "PCI device IDs present on the machine in vendor:device hex format (e.g. 106b:1801). Used for pci-id hardware condition predicates (SR-004/EC-038)."
+        }
       }
     }
   }
