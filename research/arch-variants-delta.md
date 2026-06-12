@@ -449,10 +449,12 @@ direct calamares config on GitLab requires auth to clone]
    repos. The GitLab ISO profile configs (private/auth-required) would contain this.
    Tagged [UNVERIFIED] in the variant profile below.
 
-3. **CachyOS sysctl and Omarchy conflict resolution:** Both `70-cachyos-settings.conf`
-   and Omarchy's `increase-fd-limit.sh` write to `fs.file-max`. The schema needs to
-   express whether sysctl drop-ins can be merged or if they conflict at the file level.
-   This is a translator capability question for Phase 2.
+3. **CachyOS sysctl and Omarchy conflict resolution:** CachyOS's `70-cachyos-settings.conf`
+   pre-seeds sysctl keys (e.g. `fs.file-max`) while Omarchy's `increase-fd-limit.sh` raises
+   `DefaultLimitNOFILE` via systemd drop-ins — different mechanisms, no key collision
+   (see corrected EC-005/SR-016). The open question stands in general form: the schema
+   needs to express whether sysctl drop-ins touching the *same key* can be merged or
+   conflict at the file level. This is a translator capability question for Phase 2.
 
 4. **Garuda + Omarchy initramfs conflict:** Garuda's `garuda-dracut-support` conflicts
    `mkinitcpio`, but Omarchy's entire login phase assumes mkinitcpio (it disables it in
