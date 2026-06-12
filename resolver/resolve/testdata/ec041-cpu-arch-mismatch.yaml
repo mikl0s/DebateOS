@@ -6,12 +6,6 @@ opinions:
     name: "CachyOS x86-64-v3 Variant Profile"
     category: "custom-repo"
     status: "required"
-    hardware_condition:
-      type: "leaf"
-      predicate: "cpu-model-in-set"
-      values:
-        - "v3"
-        - "v4"
     custom_repos:
       - name: "cachyos-v3"
         url: "https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3"

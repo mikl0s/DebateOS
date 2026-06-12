@@ -35,5 +35,10 @@ speech:
     predicates: []
     facts:
       dmi_product_name: "MacBookPro16,1"
-    pci_ids:
-      - "106b:1801"
+
+hardware_override:
+  predicates: []
+  facts:
+    dmi_product_name: "MacBookPro16,1"
+  pci_ids:
+    - "106b:1801"

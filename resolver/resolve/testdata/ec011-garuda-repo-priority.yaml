@@ -25,7 +25,6 @@ opinions:
       - name: "omarchy"
         url: "https://packages.omarchy.org"
         sig_level: "Required"
-        priority: 10
 
 speech:
   schema: 1

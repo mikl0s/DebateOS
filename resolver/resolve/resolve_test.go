@@ -478,7 +478,9 @@ func TestResolveRuleCoverage(t *testing.T) {
 		{name: "Rule1 required-beats-nice", fixture: "ec012-required-repo-drops-nice.yaml", rule: "rule1"},
 		{name: "Rule1 required-beats-nice (kernel)", fixture: "ec030-required-drops-dkms.yaml", rule: "rule1"},
 		{name: "Rule2 required-vs-required hard conflict", fixture: "ec031-kernel-hard-conflict.yaml", rule: "rule2"},
-		{name: "Rule2 with patch offered", fixture: "ec032-dracut-patch.yaml", rule: "rule2"},
+		// EC-032: patch is already in the active speech, so Rule 4 fires (patch overrides).
+		// Rule 2 "with patch offered" is covered by EC-031 returning rule2 + PatchOffered=="" (no patch).
+		{name: "Rule2 with patch offered", fixture: "ec032-dracut-patch.yaml", rule: "rule4"},
 		{name: "Rule3 nice-vs-nice default", fixture: "ec033-nice-vs-nice-terminal.yaml", rule: "rule3"},
 		{name: "Rule4 patch overrides hierarchy", fixture: "ec034-patch-overrides.yaml", rule: "rule4"},
 		{name: "Ordering toposort", fixture: "ec035-three-hop-order.yaml", rule: "ordering"},
