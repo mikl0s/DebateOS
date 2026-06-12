@@ -1,0 +1,25 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/01-vision.md",
+  "type": "PRD",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "01 — Vision",
+  "summary": "Vision for DebateOS: making distro post-install decisions composable, shareable objects (Opinions, Points, Speeches, Debates) translated into unattended installers for any base OS.",
+  "scope": [
+    "DebateOS",
+    "Opinions",
+    "Points",
+    "Speeches",
+    "Debate (visual conflict resolution)",
+    "Translators",
+    "unattended installers",
+    "Arch foundation",
+    "Debian foundation",
+    "Omarchy reproduction",
+    "curators and remixing"
+  ],
+  "cross_refs": [],
+  "locked": false,
+  "precedence": 20,
+  "notes": ""
+}

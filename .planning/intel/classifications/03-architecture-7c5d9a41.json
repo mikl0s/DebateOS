@@ -1,0 +1,29 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/03-architecture.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "03 — Architecture",
+  "summary": "Authoritative component and data-flow map for DebateOS: resolver (native+WASM), CLI, Debate UI, translators, build backends, registry, and the optional Forum service.",
+  "scope": [
+    "Visual Debate UI (SvelteKit static + Tailwind)",
+    "CLI (Go)",
+    "Resolver (Go library, native + WASM)",
+    "Translators (Arch mkarchiso, Debian live-build)",
+    "Build backends (local Docker, GitHub Actions)",
+    "Registry (YAML in GitHub repos + static Pages index)",
+    "The Forum (Go chi + SQLite discovery service)",
+    "Hardware detection",
+    "ISO image building",
+    "Rule-based conflict resolution"
+  ],
+  "cross_refs": [
+    "09-decisions.md",
+    "04",
+    "05",
+    "06"
+  ],
+  "locked": false,
+  "precedence": 11,
+  "notes": "Manifest declared type SPEC; content corroborates (component stack, data-flow contract, technical invariants such as rule-based-not-SAT resolver and dual compile targets). Doc states its technical choices are locked with rationale in 09-decisions.md, but it is not an ADR itself so locked remains false."
+}

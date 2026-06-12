@@ -1,0 +1,27 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/08-omarchy-research.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "08 — Omarchy Research Brief (Phase 0)",
+  "summary": "Phase 0 research brief mandating reverse-engineering of Omarchy to derive the baseline opinion/point/speech schema requirements that gate DebateOS schema design.",
+  "scope": [
+    "Omarchy",
+    "opinion schema",
+    "points",
+    "speeches",
+    "Arch translator",
+    "translator capability requirements",
+    "schema requirements",
+    "Phase 0 research"
+  ],
+  "cross_refs": [
+    "research/omarchy-opinion-inventory.md",
+    "research/omarchy-points.md",
+    "research/schema-requirements.md",
+    "research/open-questions.md"
+  ],
+  "locked": false,
+  "precedence": 13,
+  "notes": "Manifest declared type SPEC (authoritative). Content heuristics alone read closer to DOC (prose research brief), but the doc defines gating constraints and deliverable contracts for the schema, consistent with the manifest's SPEC designation. Cross_refs are forward references to deliverables this brief mandates, not existing docs. North-star validation constraint: Omarchy must be reproducible as a speech on vanilla Arch."
+}

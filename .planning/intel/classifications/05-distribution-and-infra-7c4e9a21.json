@@ -1,0 +1,25 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/05-distribution-and-infra.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "05 — Distribution & Infrastructure",
+  "summary": "Specifies DebateOS's zero-cost distribution model: GitHub-backed registry, user-CI and Docker build paths, the optional Forum service, and the private-pane secrets invariants.",
+  "scope": [
+    "registry (GitHub-backed YAML + GitHub Pages static index)",
+    "distributed CI build path (GitHub Actions on user credits)",
+    "local Docker build path",
+    "deterministic builds (SOURCE_DATE_EPOCH, pinned snapshots)",
+    "The Forum (Go/chi service, SQLite via sqlc store interface, FTS5)",
+    "Forum hosting (Oracle Cloud Always Free Ampere A1, owner-hosted fallback)",
+    "personal speech storage / private pane",
+    "secrets model (no secrets in shared artifacts, first-boot injection)",
+    "optional future hosted builds (out of scope v1.0)"
+  ],
+  "cross_refs": [
+    "06"
+  ],
+  "locked": false,
+  "precedence": 16,
+  "notes": "Manifest declared SPEC; content corroborates (architecture/infrastructure contracts, mandatory security properties, storage interfaces). References doc `06` (collaborative conflict-resolution workflow) inline without a full path. Contains invariant-style language ('Core constraint (invariant)', 'all mandatory') with mild ADR flavor, but manifest type is authoritative."
+}

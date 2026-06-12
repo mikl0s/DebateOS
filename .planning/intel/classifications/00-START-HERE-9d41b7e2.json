@@ -1,0 +1,36 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/00-START-HERE.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "DebateOS — START HERE (GSD Kickoff Context)",
+  "summary": "Kickoff index and operating mandate for DebateOS v1.0, defining build order, locked-decision policy, tech stack overview, and the docs/ reading map.",
+  "scope": [
+    "DebateOS",
+    "Opinion/Point/Speech/Debate/Translator domain model",
+    "v1.0 roadmap (Phases 0-5)",
+    "Go resolver and CLI",
+    "Arch translator (mkarchiso)",
+    "Debian translator (live-build/preseed)",
+    "Debate UI (SvelteKit + Go WASM)",
+    "The Forum discovery service",
+    "registry and build infrastructure",
+    "build/dev environment constraints"
+  ],
+  "cross_refs": [
+    "docs/01-vision.md",
+    "docs/02-concepts.md",
+    "docs/03-architecture.md",
+    "docs/04-conflict-resolution.md",
+    "docs/05-distribution-and-infra.md",
+    "docs/06-social-layer.md",
+    "docs/07-roadmap.md",
+    "docs/08-omarchy-research.md",
+    "docs/09-decisions.md",
+    "docs/10-prior-art-and-lessons.md",
+    "docs/11-repo-layout.md"
+  ],
+  "locked": false,
+  "precedence": 30,
+  "notes": "Manifest declared type DOC (precedence 30); content confirms an index/mandate doc. Note it asserts decisions in 09-decisions.md are LOCKED — synthesizer should treat 09-decisions.md as the locked source, not this index."
+}

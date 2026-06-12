@@ -1,0 +1,37 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/09-decisions.md",
+  "type": "ADR",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "09 — Locked Decisions & Invariants",
+  "summary": "Authoritative register of 18 locked product/architecture decisions (D1-D18) and 7 invariants governing the DebateOS autonomous v1.0 build run.",
+  "scope": [
+    "DebateOS product naming",
+    "v1.0 scope (Phases 0-5)",
+    "licensing (AGPLv3 code, CC0 schemas/content)",
+    "monorepo layout",
+    "Go resolver (native + WASM, rule-based)",
+    "Go CLI",
+    "translators (Arch, Debian)",
+    "Debate UI (SvelteKit + adapter-static + Tailwind)",
+    "deterministic builds (Docker + GitHub Actions)",
+    "registry (YAML on GitHub + Pages)",
+    "The Forum (Go + chi + SQLite, optional discovery service)",
+    "Forum hosting (Oracle Cloud Always Free ARM)",
+    "secrets / private pane handling",
+    "schema derivation from Phase 0 Omarchy research",
+    "prior-attempt carry-forward scope",
+    "conflict resolution rules",
+    "decentralization and zero-cost invariants"
+  ],
+  "cross_refs": [
+    "11-repo-layout.md",
+    "04",
+    "05",
+    "06",
+    "10"
+  ],
+  "locked": true,
+  "precedence": 0,
+  "notes": ""
+}

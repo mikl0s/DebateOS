@@ -1,0 +1,29 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/10-prior-art-and-lessons.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "10 — Prior Art & Lessons (from the abandoned attempt)",
+  "summary": "Distills reuse/drop/avoid lessons from a prior abandoned visual Linux distro builder attempt to guide the DebateOS restart.",
+  "scope": [
+    "prior-art retrospective",
+    "visual Linux distro builder",
+    "layer-based composition",
+    "conflict detection and topological sort",
+    "archiso ISO builds",
+    "Docker build isolation",
+    "SOURCE_DATE_EPOCH determinism",
+    "The Forum (Go binary + SQLite)",
+    "SvelteKit Debate UI",
+    "GitHub OAuth"
+  ],
+  "cross_refs": [
+    "02 (docs/02-concepts.md)",
+    "05 (docs/05-distribution-and-infra.md)",
+    "07 (docs/07-roadmap.md)",
+    "09 (docs/09-decisions.md)"
+  ],
+  "locked": false,
+  "precedence": 31,
+  "notes": "Manifest declared type DOC; content confirms it (prose retrospective with reuse/drop/avoid guidance, no requirements or single decision). References decision IDs D6, D11, D13 in docs/09-decisions.md."
+}

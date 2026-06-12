@@ -1,0 +1,27 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/02-concepts.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "02 — Core Concepts & Terminology",
+  "summary": "Terminology contract defining DebateOS core concepts — Opinion, Point, Speech, Debate, Translator, Foundation, Registry, Patch Opinion — for consistent use across code, schemas, docs, and UI.",
+  "scope": [
+    "Opinion (atomic configuration decision)",
+    "Point (curated opinion bundle)",
+    "Speech (user composition manifest)",
+    "Debate (composition and conflict-resolution process)",
+    "Translator (OS-specific effectuation layer)",
+    "Foundation (base OS + bootloader + installer)",
+    "Registry (Git-backed index of points and speeches)",
+    "Patch Opinion (conflict-bridging opinion)",
+    "Forum (optional discovery service)"
+  ],
+  "cross_refs": [
+    "04-conflict-resolution.md",
+    "05",
+    "06"
+  ],
+  "locked": false,
+  "precedence": 14,
+  "notes": ""
+}

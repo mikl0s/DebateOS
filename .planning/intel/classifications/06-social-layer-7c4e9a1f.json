@@ -1,0 +1,28 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/06-social-layer.md",
+  "type": "PRD",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "06 — Social Layer",
+  "summary": "Defines the v1.0 social layer: Git-backed registry plus The Forum for curator-driven discovery, subscriptions, reputation, and collaborative conflict resolution.",
+  "scope": [
+    "The Forum (discovery service)",
+    "Git-backed registry",
+    "curators",
+    "subscriptions",
+    "reputation and ratings",
+    "search and discovery",
+    "collaborative conflict resolution",
+    "patch opinions (GitHub PRs)",
+    "speeches and points",
+    "translators",
+    "GitHub OAuth identity",
+    "brand voice"
+  ],
+  "cross_refs": [
+    "04"
+  ],
+  "locked": false,
+  "precedence": 21,
+  "notes": ""
+}

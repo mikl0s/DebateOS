@@ -1,0 +1,37 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/07-roadmap.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "07 — Roadmap (v1.0 = Phases 0–5)",
+  "summary": "Sequential v1.0 roadmap defining Phases 0-5 with goals, deliverables, success criteria, and gating dependencies; Phase 6 explicitly post-v1.0.",
+  "scope": [
+    "Omarchy research (Phase 0)",
+    "Opinion/Point/Speech YAML schema",
+    "Go resolver (native + WASM)",
+    "conflict test harness",
+    "Arch translator (mkarchiso)",
+    "Omarchy-as-a-speech north star",
+    "Go CLI (compose/validate/build)",
+    "Docker build channel",
+    "GitHub Actions build channel",
+    "secrets model (first-boot injection)",
+    "Debian translator (live-build/preseed)",
+    "static registry index (GitHub Pages)",
+    "Visual Debate UI (SvelteKit + Tailwind + Go-WASM resolver)",
+    "The Forum (Go chi + SQLite discovery service)"
+  ],
+  "cross_refs": [
+    "08-omarchy-research.md",
+    "04",
+    "05",
+    "06",
+    "research/omarchy-opinion-inventory.md",
+    "research/omarchy-points.md",
+    "research/schema-requirements.md",
+    "research/open-questions.md"
+  ],
+  "locked": false,
+  "precedence": 10,
+  "notes": "Manifest declared type SPEC with precedence 10; content reads as a roadmap/plan (could be DOC heuristically) but manifest is authoritative. Cross-refs `04`, `05`, `06` are shorthand mentions of sibling numbered docs, recorded as-written."
+}

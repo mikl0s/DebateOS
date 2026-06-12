@@ -1,0 +1,24 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/04-conflict-resolution.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "04 — Conflict Resolution (Load-Bearing)",
+  "summary": "Defines the rule-based conflict-resolution model for opinions: metadata schema, resolution hierarchy, patch opinions, hardware-aware suggestions, ordering, and explainability invariant.",
+  "scope": [
+    "opinion metadata schema",
+    "resolution hierarchy",
+    "patch opinions",
+    "hardware-aware resolution",
+    "ordering constraints / topological sort",
+    "community conflict-resolution workflow",
+    "readability invariant"
+  ],
+  "cross_refs": [
+    "08",
+    "06"
+  ],
+  "locked": false,
+  "precedence": 12,
+  "notes": ""
+}

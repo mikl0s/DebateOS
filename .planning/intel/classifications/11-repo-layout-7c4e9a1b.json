@@ -1,0 +1,27 @@
+{
+  "source_path": "/home/mikkel/repos/DebateOS/docs/11-repo-layout.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "11 — Repository Layout (Monorepo)",
+  "summary": "Defines the v1.0 target monorepo directory structure, Go module layout, build channels, licensing split, and what lives outside the monorepo.",
+  "scope": [
+    "monorepo structure",
+    "Go module (resolver, cli, forum)",
+    "resolver (native + WASM)",
+    "CLI (debateos)",
+    "translators (arch, debian)",
+    "build channels (docker, GitHub Actions)",
+    "web UI (SvelteKit)",
+    "registry",
+    "forum service",
+    "schemas (opinion, point, speech)",
+    "examples (omarchy)",
+    "licensing (AGPL-3.0 code, CC0-1.0 schemas/content)",
+    "community point/speech repos"
+  ],
+  "cross_refs": [],
+  "locked": false,
+  "precedence": 15,
+  "notes": ""
+}
