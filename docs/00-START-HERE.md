@@ -46,6 +46,10 @@ Full definitions in `02-concepts.md`. The product name is **DebateOS**; "Speech"
 - **License:** AGPLv3 for code; CC0 for schemas + opinion/point/speech content.
 - **Layout:** monorepo (`11-repo-layout.md`).
 
+## Build & dev environment
+
+The development/build host is a Linux VM with **root via `sudo`** (and Docker expected to be available). Phases 2–4 produce **real installer ISOs** — `mkarchiso`/`archiso` (Arch), `live-build`/preseed (Debian), loop devices, and Docker-based build isolation — all of which require privileged operations. **Use `sudo`/Docker as needed; do not treat privileged build steps as blockers.** Constraints: keep privileged actions confined to build tooling and CI containers; never run untrusted opinion/translator payloads outside an isolated container; and never bake host secrets into build artifacts (see `05`, invariant 7).
+
 ## Document map
 
 | File | Contents |

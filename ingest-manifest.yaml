@@ -1,0 +1,42 @@
+# GSD ingest-docs manifest for DebateOS founding context.
+# Usage:  /gsd-ingest-docs docs --manifest ingest-manifest.yaml --mode new --resolve auto
+#
+# type: ADR | PRD | SPEC | DOC   (precedence: lower = higher authority)
+# 09-decisions is ADR — its locked decisions + invariants override everything.
+docs:
+  - path: docs/09-decisions.md          # locked decisions + invariants — authoritative
+    type: ADR
+    precedence: 0
+  - path: docs/07-roadmap.md            # phases 0-5, goals, success criteria
+    type: SPEC
+    precedence: 10
+  - path: docs/03-architecture.md       # components, data flow, tech decisions
+    type: SPEC
+    precedence: 11
+  - path: docs/04-conflict-resolution.md # resolver model (load-bearing)
+    type: SPEC
+    precedence: 12
+  - path: docs/08-omarchy-research.md    # Phase 0 research brief (gates schema)
+    type: SPEC
+    precedence: 13
+  - path: docs/02-concepts.md            # terminology contract
+    type: SPEC
+    precedence: 14
+  - path: docs/11-repo-layout.md         # monorepo structure
+    type: SPEC
+    precedence: 15
+  - path: docs/05-distribution-and-infra.md # zero-cost infra + The Forum + secrets
+    type: SPEC
+    precedence: 16
+  - path: docs/01-vision.md             # mission / problem / philosophy
+    type: PRD
+    precedence: 20
+  - path: docs/06-social-layer.md       # curators, discovery, reputation
+    type: PRD
+    precedence: 21
+  - path: docs/00-START-HERE.md         # kickoff mandate + build order (index)
+    type: DOC
+    precedence: 30
+  - path: docs/10-prior-art-and-lessons.md # reuse/drop/avoid from prior attempt
+    type: DOC
+    precedence: 31
