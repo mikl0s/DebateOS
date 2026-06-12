@@ -117,7 +117,7 @@ func Resolve(speech *resolver.Speech, opinions []resolver.Opinion, hw hardware.H
 	// sortedIDs gives stable iteration order for the outer loop (Pitfall 1).
 	sortedIDs := sortedActiveIDs(opinions, active, dropped)
 
-	var hardErr error
+	var hardConflicts []string
 	for _, aID := range sortedIDs {
 		if dropped[aID] {
 			continue
@@ -145,14 +145,15 @@ func Resolve(speech *resolver.Speech, opinions []resolver.Opinion, hw hardware.H
 			}
 
 			if err := resolveConflict(opA, opB, opinions, active, dropped, rs, index); err != nil {
-				hardErr = err
-				// Continue to collect more conflicts before returning.
+				// Accumulate all hard-conflict messages so callers see every pair
+				// that must be resolved, not just the last one (WR-01).
+				hardConflicts = append(hardConflicts, err.Error())
 			}
 		}
 	}
 
-	if hardErr != nil {
-		return rs, hardErr
+	if len(hardConflicts) > 0 {
+		return rs, fmt.Errorf("%s", strings.Join(hardConflicts, "; "))
 	}
 
 	// ── Step 4b: Repo ordering explanations (EC-010/EC-011) ────────────────

@@ -1042,3 +1042,71 @@ func makeSet(ids []resolver.OpinionID) map[resolver.OpinionID]bool {
 // Explanation re-exported alias so tests in package resolve_test can construct
 // Explanation literals directly (avoid importing internal type).
 type Explanation = resolve.Explanation
+
+// TestResolveMultipleHardConflictsAllReported verifies WR-01: when a speech
+// contains two distinct required-vs-required conflict pairs, both pair IDs
+// must appear in the returned error message (not just the last one).
+func TestResolveMultipleHardConflictsAllReported(t *testing.T) {
+	t.Parallel()
+
+	// Four required opinions: A conflicts with B, C conflicts with D.
+	// Both pairs are hard conflicts; the error must mention all four IDs.
+	opinions := []resolver.Opinion{
+		{
+			Schema:    1,
+			ID:        "pkg/conflict-a",
+			Name:      "A",
+			Category:  "package-install",
+			Status:    resolver.StatusRequired,
+			Conflicts: []resolver.OpinionRef{{ID: "pkg/conflict-b"}},
+		},
+		{
+			Schema:    1,
+			ID:        "pkg/conflict-b",
+			Name:      "B",
+			Category:  "package-install",
+			Status:    resolver.StatusRequired,
+			Conflicts: []resolver.OpinionRef{{ID: "pkg/conflict-a"}},
+		},
+		{
+			Schema:    1,
+			ID:        "pkg/conflict-c",
+			Name:      "C",
+			Category:  "package-install",
+			Status:    resolver.StatusRequired,
+			Conflicts: []resolver.OpinionRef{{ID: "pkg/conflict-d"}},
+		},
+		{
+			Schema:    1,
+			ID:        "pkg/conflict-d",
+			Name:      "D",
+			Category:  "package-install",
+			Status:    resolver.StatusRequired,
+			Conflicts: []resolver.OpinionRef{{ID: "pkg/conflict-c"}},
+		},
+	}
+	speech := resolver.Speech{
+		Schema:     1,
+		ID:         "test-multi-hard-conflict",
+		Foundation: "arch",
+		Opinions: []resolver.OpinionRef{
+			{ID: "pkg/conflict-a"},
+			{ID: "pkg/conflict-b"},
+			{ID: "pkg/conflict-c"},
+			{ID: "pkg/conflict-d"},
+		},
+	}
+
+	_, err := resolve.Resolve(&speech, opinions, hardware.HardwareProfile{})
+	if err == nil {
+		t.Fatal("MultipleHardConflicts: expected error, got nil")
+	}
+
+	// Both conflict pairs must appear in the error message.
+	errMsg := err.Error()
+	for _, id := range []string{"pkg/conflict-a", "pkg/conflict-b", "pkg/conflict-c", "pkg/conflict-d"} {
+		if !strings.Contains(errMsg, id) {
+			t.Errorf("MultipleHardConflicts: error %q does not mention %q — all conflict pairs must be reported", errMsg, id)
+		}
+	}
+}
