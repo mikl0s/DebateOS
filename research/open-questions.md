@@ -53,9 +53,9 @@ passwordless sudo from OM-004), OM-104 (DNS symlink — actually could be instal
 in the inventory.
 
 **Lean (from RESEARCH.md):** Add `execution-phase: first-run` as a metadata field. Two-value
-enum (`install-time` | `first-run`) may be sufficient for v1. Record as schema surprise SR-007.
+enum (`install-time` | `first-run`) may be sufficient for v1. Record as schema surprise SR-011.
 
-**Resolved:** Phase 1 schema design (SR-007 partially addresses this; full enum definition
+**Resolved:** Phase 1 schema design (SR-011 partially addresses this; full enum definition
 belongs in Phase 1 YAML schema draft)
 
 ---
@@ -78,7 +78,8 @@ flagged as a schema surprise in the inventory.
 category with a `manager:` field (npm | pip | cargo | gem) is cleaner than creating a separate
 category for each package manager. This also handles future non-npm tools.
 
-**Resolved:** Phase 1 schema design (SR category for runtime-tool-install; maps to SR-007
+**Resolved:** Phase 1 schema design (SR-010 — Runtime Tool Install — is the schema category
+for runtime-tool-install; maps to SR-010 in schema-requirements.md, not SR-007
 translator-capability field)
 
 ---
