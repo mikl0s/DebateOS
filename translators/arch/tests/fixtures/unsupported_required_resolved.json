@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "foundation": "arch",
+  "applied": ["OM-006", "OM-023"],
+  "skipped": [],
+  "dropped": [],
+  "install_order": ["OM-006", "OM-023"],
+  "explanations": [
+    {
+      "text": "OM-006 applied: required opinion with no conflicts.",
+      "rule": "no-conflict",
+      "opinions_involved": ["OM-006"],
+      "dropped": [],
+      "kept": ["OM-006"]
+    },
+    {
+      "text": "OM-023 applied: required opinion with no conflicts.",
+      "rule": "no-conflict",
+      "opinions_involved": ["OM-023"],
+      "dropped": [],
+      "kept": ["OM-023"]
+    }
+  ]
+}

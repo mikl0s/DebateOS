@@ -1,0 +1,5 @@
+# Dev dependencies for the Arch translator Python package.
+# Production dep: PyYAML (stdlib-adjacent, stdlib + PyYAML only per CONTEXT D).
+# Test runner: pytest 9.0.3 (matches Arch official python-pytest 1:9.0.3-1).
+pytest>=9.0.3,<10
+PyYAML>=6.0

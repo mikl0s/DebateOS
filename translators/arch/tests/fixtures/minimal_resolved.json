@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "foundation": "arch",
+  "applied": ["OM-001", "OM-006"],
+  "skipped": [],
+  "dropped": [],
+  "install_order": ["OM-001", "OM-006"],
+  "explanations": [
+    {
+      "text": "OM-001 applied: required opinion with no conflicts.",
+      "rule": "no-conflict",
+      "opinions_involved": ["OM-001"],
+      "dropped": [],
+      "kept": ["OM-001"]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+[
+  {
+    "schema": 1,
+    "id": "OM-006",
+    "name": "Omarchy base package install — core compositor",
+    "category": "package-install",
+    "status": "required",
+    "translator_capabilities": ["install-named-packages"],
+    "packages": ["hyprland", "hyprlock", "hypridle"]
+  },
+  {
+    "schema": 1,
+    "id": "OM-023",
+    "name": "npm global packages install",
+    "category": "npm-global-install",
+    "status": "required",
+    "translator_capabilities": ["install-npm-global-packages"],
+    "runtime_tool_installs": [
+      {
+        "manager": "npm",
+        "packages": ["neovim", "@anthropic-ai/claude-code"]
+      }
+    ]
+  }
+]

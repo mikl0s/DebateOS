@@ -1,0 +1,28 @@
+[
+  {
+    "schema": 1,
+    "id": "OM-001",
+    "name": "Omarchy custom repo registration",
+    "category": "custom-repo",
+    "status": "required",
+    "translator_capabilities": ["add-signed-external-repo", "import-gpg-key-by-fingerprint"],
+    "custom_repos": [
+      {
+        "name": "omarchy",
+        "url": "https://packages.omarchy.org/$arch",
+        "sig_level": "Required",
+        "priority": 10,
+        "keyring": "omarchy-keyring"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "OM-006",
+    "name": "Omarchy base package install — core compositor",
+    "category": "package-install",
+    "status": "required",
+    "translator_capabilities": ["install-named-packages"],
+    "packages": ["hyprland", "hyprlock", "hypridle"]
+  }
+]
