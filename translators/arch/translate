@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# translators/arch/translate — argv-stable DebateOS Arch translator entrypoint
+#
+# FROZEN ARGV CONTRACT for Phase 3 CLI subprocess invocation (02-CONTEXT.md):
+#   translate <resolved.json> --opinions <path> --profile <name> --out <dir>
+#
+# Args:
+#   <resolved.json>  Positional: path to the ResolvedSpeech JSON (Phase 1 output)
+#   --opinions <path>  Opinion bodies source: JSON array file or YAML directory
+#   --profile <name>   Variant profile name (default: vanilla-arch)
+#   --out <dir>        Output directory for the archiso profile tree (default: ./arch-profile)
+#
+# Exits 0 on success, non-zero on failure (capability gate, missing file, etc.)
+#
+# Source: 02-CONTEXT.md Integration Points — Phase 3 CLI invocation contract
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+
+if [[ $# -eq 0 || "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    echo "usage: translate <resolved.json> --opinions <path> [--profile <name>] [--out <dir>]" >&2
+    exit 1
+fi
+
+RESOLVED_JSON="${1:?usage: translate <resolved.json> --opinions <path> --profile <name> --out <dir>}"
+shift
+
+OPINIONS=""
+PROFILE="vanilla-arch"
+OUT_DIR="./arch-profile"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --opinions)
+            OPINIONS="${2:?--opinions requires an argument}"
+            shift 2
+            ;;
+        --profile)
+            PROFILE="${2:?--profile requires an argument}"
+            shift 2
+            ;;
+        --out)
+            OUT_DIR="${2:?--out requires an argument}"
+            shift 2
+            ;;
+        *)
+            echo "unknown flag: $1" >&2
+            echo "usage: translate <resolved.json> --opinions <path> [--profile <name>] [--out <dir>]" >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [[ -z "$OPINIONS" ]]; then
+    echo "ERROR: --opinions <path> is required" >&2
+    echo "usage: translate <resolved.json> --opinions <path> [--profile <name>] [--out <dir>]" >&2
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Invoke the Python generator module
+# ---------------------------------------------------------------------------
+# PYTHONPATH ensures the module resolves correctly when called from any cwd.
+# The repo root is two levels above translators/arch/.
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+exec env PYTHONPATH="${REPO_ROOT}${PYTHONPATH:+:$PYTHONPATH}" \
+    python3 -m translators.arch.generator \
+    "$RESOLVED_JSON" "$OPINIONS" "$PROFILE" "$OUT_DIR"

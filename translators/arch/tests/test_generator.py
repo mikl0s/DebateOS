@@ -205,8 +205,9 @@ class TestGeneratorModuleMain:
     def test_generator_runnable_as_module(self):
         """generator.py can be invoked as python3 -m translators.arch.generator."""
         with tempfile.TemporaryDirectory() as out_dir:
-            # Run from repo root so module path works
-            repo_root = os.path.dirname(os.path.dirname(os.path.dirname(_ARCH_DIR)))
+            # translators/arch/ is two levels above tests/
+            # repo root is two levels above translators/arch/
+            repo_root = os.path.dirname(os.path.dirname(_ARCH_DIR))
             result = subprocess.run(
                 [
                     sys.executable, "-m", "translators.arch.generator",
