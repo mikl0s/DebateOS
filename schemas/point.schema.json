@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://debateos.org/schemas/point.schema.json",
+  "title": "Point",
+  "description": "A curated, coherent bundle of opinions. Foundation-agnostic, versioned, forkable, subscribable (SR-021).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "name", "members"],
+  "properties": {
+    "schema": { "const": 1, "description": "Schema version of this document." },
+    "id": { "type": "string", "minLength": 1, "description": "Unique point identifier (registry-namespaced path style)." },
+    "name": { "type": "string", "minLength": 1, "description": "Human-readable display name." },
+    "intent": { "type": "string", "description": "Plain-language statement of what this point delivers as a whole." },
+    "curator": { "type": "string", "description": "Identity of the curator maintaining this point." },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Opinions in this point, each marked required or nice-to-have within the point.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["required", "nice-to-have"] }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://debateos.org/schemas/speech.schema.json",
+  "title": "Speech",
+  "description": "A user's complete composition: a foundation target plus the points and individually selected opinions that compose the system (SR-022). Public panes only — the private pane never leaves the user's machine.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "foundation", "points"],
+  "properties": {
+    "schema": { "const": 1, "description": "Schema version of this document." },
+    "id": { "type": "string", "description": "Optional unique speech identifier." },
+    "name": { "type": "string", "description": "Human-readable display name." },
+    "foundation": { "type": "string", "minLength": 1, "description": "Foundation target this speech compiles for (base system + bootloader + installer family)." },
+    "points": {
+      "type": "array",
+      "description": "Points included in this composition.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "version": { "type": "string" }
+        }
+      }
+    },
+    "opinions": {
+      "type": "array",
+      "description": "Individually selected opinions outside any point.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "version": { "type": "string" }
+        }
+      }
+    },
+    "hardware": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Declared hardware profile used to evaluate hardware-conditional opinions at composition time.",
+      "properties": {
+        "predicates": { "type": "array", "items": { "type": "string" } },
+        "facts": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://debateos.org/schemas/opinion.schema.json",
+  "title": "Opinion",
+  "description": "An atomic, OS-agnostic configuration decision. Intent only — translators own all distribution mechanics.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "name", "category", "status"],
+  "properties": {
+    "schema": { "const": 1, "description": "Schema version of this document." },
+    "id": { "type": "string", "minLength": 1, "description": "Unique opinion identifier (registry-namespaced path style)." },
+    "name": { "type": "string", "minLength": 1, "description": "Human-readable display name." },
+    "category": { "type": "string", "minLength": 1, "description": "Opinion category (e.g. package-install, config-deployment, theming, hardware-conditional)." },
+    "intent": { "type": "string", "description": "Plain-language statement of what this opinion wants, free of distribution mechanics." },
+    "status": { "enum": ["required", "nice-to-have"], "description": "Role in conflict resolution (SR-001)." },
+    "depends_on": { "type": "array", "items": { "$ref": "#/$defs/opinionRef" }, "description": "Opinions this one needs (SR-002)." },
+    "conflicts": { "type": "array", "items": { "$ref": "#/$defs/opinionRef" }, "description": "Opinions this one cannot coexist with (SR-003)." },
+    "known_patches": { "type": "array", "items": { "$ref": "#/$defs/patchRef" }, "description": "Patch opinions known to resolve conflicts involving this opinion (SR-003)." },
+    "hardware_condition": { "$ref": "#/$defs/hardwareExpr", "description": "Condition gating this opinion to matching hardware (SR-004/SR-005)." },
+    "install_phase": { "enum": ["preflight", "packaging", "config", "login", "post-install", "first-run"], "description": "Pipeline phase this opinion effectuates in (SR-006)." },
+    "ordering": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Relative ordering constraints feeding the topological sort (SR-006).",
+      "properties": {
+        "before": { "type": "array", "items": { "$ref": "#/$defs/opinionRef" } },
+        "after": { "type": "array", "items": { "$ref": "#/$defs/opinionRef" } }
+      }
+    },
+    "translator_capabilities": { "type": "array", "items": { "type": "string" }, "description": "Capabilities a translator must declare to effectuate this opinion (SR-007)." },
+    "packages": { "type": "array", "items": { "type": "string" }, "description": "Packages to install, named by upstream/common name." },
+    "remove_packages": { "type": "array", "items": { "type": "string" }, "description": "Packages to remove from the foundation's defaults." },
+    "file_assets": { "type": "array", "items": { "$ref": "#/$defs/fileAsset" }, "description": "File payloads carried by this opinion (SR-008)." },
+    "custom_repos": { "type": "array", "items": { "$ref": "#/$defs/repoDecl" }, "description": "Additional package repositories with explicit trust levels (SR-009)." },
+    "runtime_tool_installs": { "type": "array", "items": { "$ref": "#/$defs/runtimeToolInstall" }, "description": "Packages installed via language/runtime package managers (SR-010)." },
+    "execution_phase": { "enum": ["install-time", "first-run"], "description": "When this opinion executes relative to first boot (SR-011)." },
+    "script_payload": { "$ref": "#/$defs/scriptPayload", "description": "Arbitrary script carried as data with declared capabilities (SR-012)." },
+    "display_manager": { "$ref": "#/$defs/displayManager", "description": "Display manager intent (SR-013)." },
+    "bootloader": { "$ref": "#/$defs/bootloader", "description": "Boot manager intent (SR-014)." },
+    "services": { "type": "array", "items": { "$ref": "#/$defs/serviceDecl" }, "description": "Services to enable or disable (SR-015)." },
+    "sysctl_params": { "type": "array", "items": { "$ref": "#/$defs/sysctlParam" }, "description": "Kernel runtime parameters via drop-in files (SR-016)." },
+    "kernel_params": { "type": "array", "items": { "$ref": "#/$defs/kernelParam" }, "description": "Kernel boot command-line parameters (SR-017)." },
+    "group_memberships": { "type": "array", "items": { "$ref": "#/$defs/groupMembership" }, "description": "System groups the installing user joins (SR-018)." },
+    "mime_associations": { "type": "array", "items": { "$ref": "#/$defs/mimeAssoc" }, "description": "Default application associations (SR-019)." },
+    "theme": { "$ref": "#/$defs/themeDecl", "description": "Theme bundle payload and activation symlinks (SR-020)." }
+  },
+  "$defs": {
+    "opinionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string" }
+      }
+    },
+    "patchRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "resolves": { "type": "string" },
+        "rationale": { "type": "string" }
+      }
+    },
+    "hardwareExpr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["leaf", "and", "or", "not"] },
+        "predicate": { "type": "string" },
+        "values": { "type": "array", "items": { "type": "string" } },
+        "match": { "type": "string" },
+        "operands": { "type": "array", "items": { "$ref": "#/$defs/hardwareExpr" } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "leaf" } } },
+          "then": { "required": ["predicate"] }
+        },
+        {
+          "if": { "properties": { "type": { "enum": ["and", "or", "not"] } } },
+          "then": { "required": ["operands"] }
+        }
+      ]
+    },
+    "fileAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["src", "dst"],
+      "properties": {
+        "src": { "type": "string", "minLength": 1 },
+        "dst": { "type": "string", "minLength": 1 }
+      }
+    },
+    "repoDecl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "url", "sig_level"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "minLength": 1 },
+        "sig_level": { "enum": ["Required", "RequiredDatabaseOptional", "OptionalTrustAll", "Never"] },
+        "priority": { "type": "integer" },
+        "keyring": { "type": "string" }
+      }
+    },
+    "runtimeToolInstall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manager", "packages"],
+      "properties": {
+        "manager": { "type": "string", "minLength": 1 },
+        "packages": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    },
+    "scriptPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["script"],
+      "properties": {
+        "script": { "type": "string", "minLength": 1 },
+        "capabilities": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "displayManager": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "greeter": { "type": "string" },
+        "auto_login": { "type": "boolean" }
+      }
+    },
+    "bootloader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "timeout": { "type": "integer" },
+        "snapshot": { "type": "boolean" }
+      }
+    },
+    "serviceDecl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "enable"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "enable": { "type": "boolean" },
+        "deferred": { "type": "boolean" }
+      }
+    },
+    "sysctlParam": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "value"],
+      "properties": {
+        "key": { "type": "string", "minLength": 1 },
+        "value": { "type": "string" },
+        "drop_in_file": { "type": "string" }
+      }
+    },
+    "kernelParam": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key"],
+      "properties": {
+        "key": { "type": "string", "minLength": 1 },
+        "value": { "type": "string" }
+      }
+    },
+    "groupMembership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group"],
+      "properties": {
+        "group": { "type": "string", "minLength": 1 }
+      }
+    },
+    "mimeAssoc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mime_pattern", "app_id"],
+      "properties": {
+        "mime_pattern": { "type": "string", "minLength": 1 },
+        "app_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "themeDecl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_dir"],
+      "properties": {
+        "bundle_dir": { "type": "string", "minLength": 1 },
+        "symlinks": { "type": "object", "additionalProperties": { "type": "string" } },
+        "is_default": { "type": "boolean" }
+      }
+    }
+  }
+}
