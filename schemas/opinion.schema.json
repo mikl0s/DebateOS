@@ -73,7 +73,7 @@
         "predicate": { "type": "string" },
         "values": { "type": "array", "items": { "type": "string" } },
         "match": { "type": "string" },
-        "operands": { "type": "array", "items": { "$ref": "#/$defs/hardwareExpr" } }
+        "operands": { "type": "array", "maxItems": 16, "items": { "$ref": "#/$defs/hardwareExpr" } }
       },
       "allOf": [
         {

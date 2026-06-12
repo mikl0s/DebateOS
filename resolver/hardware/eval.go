@@ -2,11 +2,11 @@
 // declared hardware profile (SR-004/SR-005). The resolver calls EvalCondition
 // to decide whether a hardware-conditional opinion is applied or skipped.
 //
-// Security note (T-01-07): expression depth is bounded by the validated
-// document depth (JSON Schema validates the input before it reaches here);
-// the recursive evaluator processes only schema-validated HardwareExpr trees.
-// T-01-08: EvalCondition returns an error on unknown HardwareExprType rather
-// than silently defaulting to true or false.
+// Security note (T-01-07): expression depth is bounded at maxHardwareExprDepth
+// (32 frames) by an explicit depth counter in evalConditionDepth. The JSON Schema
+// for opinion.schema.json also limits operand fan-out (maxItems: 16) to reduce
+// validator recursion. T-01-08: EvalCondition returns an error on unknown
+// HardwareExprType rather than silently defaulting to true or false.
 package hardware
 
 import (
@@ -15,6 +15,11 @@ import (
 
 	"github.com/mikkelraglan/debateos/resolver"
 )
+
+// maxHardwareExprDepth is the maximum recursion depth allowed for HardwareExpr
+// evaluation (WR-03). Exceeding this limit returns an error rather than
+// risking a goroutine stack overflow on hostile or malformed expressions.
+const maxHardwareExprDepth = 32
 
 // HardwareProfile is the evaluated representation of a machine's declared
 // hardware facts used to gate hardware-conditional opinions at composition
@@ -46,7 +51,8 @@ type HardwareProfile struct {
 // EvalCondition recursively evaluates a HardwareExpr discriminated-union
 // predicate against the declared HardwareProfile. It returns (true, nil) when
 // the condition is satisfied, (false, nil) when unsatisfied, and (false, err)
-// when the expression is malformed (unknown Type — T-01-08).
+// when the expression is malformed (unknown Type — T-01-08) or exceeds the
+// maximum recursion depth (maxHardwareExprDepth — WR-03).
 //
 // Supported node types:
 //   - HardwareExprLeaf: evaluates a single named predicate.
@@ -58,13 +64,24 @@ type HardwareProfile struct {
 //   - HardwareExprOr: at least one operand must evaluate to true.
 //   - HardwareExprNot: exactly one operand; result is negated.
 func EvalCondition(expr resolver.HardwareExpr, hw HardwareProfile) (bool, error) {
+	return evalConditionDepth(expr, hw, 0)
+}
+
+// evalConditionDepth is the depth-guarded recursive implementation of
+// EvalCondition. depth is the current call depth; the function returns an
+// error when depth exceeds maxHardwareExprDepth.
+func evalConditionDepth(expr resolver.HardwareExpr, hw HardwareProfile, depth int) (bool, error) {
+	if depth > maxHardwareExprDepth {
+		return false, fmt.Errorf("hardware: expression depth exceeds maximum (%d)", maxHardwareExprDepth)
+	}
+
 	switch expr.Type {
 	case resolver.HardwareExprLeaf:
 		return evalLeaf(expr, hw)
 
 	case resolver.HardwareExprAnd:
 		for _, operand := range expr.Operands {
-			ok, err := EvalCondition(operand, hw)
+			ok, err := evalConditionDepth(operand, hw, depth+1)
 			if err != nil {
 				return false, err
 			}
@@ -76,7 +93,7 @@ func EvalCondition(expr resolver.HardwareExpr, hw HardwareProfile) (bool, error)
 
 	case resolver.HardwareExprOr:
 		for _, operand := range expr.Operands {
-			ok, err := EvalCondition(operand, hw)
+			ok, err := evalConditionDepth(operand, hw, depth+1)
 			if err != nil {
 				return false, err
 			}
@@ -90,7 +107,7 @@ func EvalCondition(expr resolver.HardwareExpr, hw HardwareProfile) (bool, error)
 		if len(expr.Operands) != 1 {
 			return false, fmt.Errorf("hardware: NOT expression requires exactly 1 operand, got %d", len(expr.Operands))
 		}
-		ok, err := EvalCondition(expr.Operands[0], hw)
+		ok, err := evalConditionDepth(expr.Operands[0], hw, depth+1)
 		if err != nil {
 			return false, err
 		}

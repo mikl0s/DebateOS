@@ -2,6 +2,7 @@ package hardware_test
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"go.yaml.in/yaml/v3"
@@ -357,5 +358,36 @@ func TestHardwareEvalCPUModelMissing(t *testing.T) {
 	}
 	if got {
 		t.Error("expected false when cpu_model fact is absent")
+	}
+}
+
+// TestHardwareEvalDepthLimit verifies WR-03: an expression tree nested beyond
+// maxHardwareExprDepth must return an error rather than overflowing the goroutine
+// stack. A depth of 100 (well above the 32-frame limit) must produce an error.
+func TestHardwareEvalDepthLimit(t *testing.T) {
+	// Build a deeply nested NOT(NOT(NOT(...NOT(leaf)...))) chain 100 levels deep.
+	// This is far beyond the allowed maxHardwareExprDepth (32).
+	leaf := resolver.HardwareExpr{
+		Type:      resolver.HardwareExprLeaf,
+		Predicate: "hw-intel-cpu",
+	}
+	expr := leaf
+	for i := 0; i < 100; i++ {
+		expr = resolver.HardwareExpr{
+			Type:     resolver.HardwareExprNot,
+			Operands: []resolver.HardwareExpr{expr},
+		}
+	}
+
+	profile := hardware.HardwareProfile{
+		Predicates: []string{"hw-intel-cpu"},
+	}
+
+	_, err := hardware.EvalCondition(expr, profile)
+	if err == nil {
+		t.Fatal("DepthLimit: expected error for expression depth > 32, got nil")
+	}
+	if !strings.Contains(err.Error(), "depth") {
+		t.Errorf("DepthLimit: error %q should mention depth limit", err.Error())
 	}
 }
