@@ -1,0 +1,33 @@
+{
+  "capabilities": [
+    "add-signed-external-repo",
+    "import-gpg-key-by-fingerprint",
+    "disable-package-manager-hooks",
+    "restore-package-manager-hooks",
+    "install-named-packages",
+    "deploy-font-file",
+    "run-post-install-setup-script",
+    "copy-icon-files",
+    "create-desktop-launchers",
+    "install-packages-conditional-hardware",
+    "deploy-config-file-tree",
+    "manage-multi-app-theme-system",
+    "write-git-global-config",
+    "write-sysctl-drop-in",
+    "write-systemd-drop-in",
+    "configure-docker-daemon",
+    "register-mime-types",
+    "enable-systemd-service-chroot",
+    "write-udev-rules",
+    "write-modprobe-config",
+    "add-user-to-group",
+    "configure-bootloader-limine",
+    "create-snapper-config",
+    "deploy-plymouth-theme",
+    "configure-sddm-autologin",
+    "configure-pam",
+    "write-sudoers-drop-in",
+    "deploy-file-asset-bundle",
+    "systemd-user-service-firstrun"
+  ]
+}
