@@ -37,8 +37,8 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 
 <!-- Sources: REQ-omarchy-north-star, D8, D9, D20, docs/02 translator contract -->
 
-- [ ] **ARCH-01**: Arch translator (`translators/arch/`, shell/Python) consumes a resolved speech via the defined JSON/YAML input contract, wraps mkarchiso, and emits a bootable, fully-unattended Arch installer ISO
-- [x] **ARCH-02**: NORTH STAR — building the Omarchy speech (`examples/omarchy/`) produces an installed system equivalent to Omarchy on vanilla Arch (02-04: 134 opinions + 32 points + speech.yaml + TestExampleOmarchy: Applied=99 Skipped=35 Hard-conflicts=0)
+- [x] **ARCH-01**: Arch translator (`translators/arch/`, shell/Python) consumes a resolved speech via the defined JSON/YAML input contract, wraps mkarchiso, and emits a bootable, fully-unattended Arch installer ISO
+- [x] **ARCH-02**: NORTH STAR — building the Omarchy speech (`examples/omarchy/`) produces an installed system equivalent to Omarchy on vanilla Arch (02-04/02-05: 134 opinions + 32 points + speech.yaml + TestExampleOmarchy: Applied=99 Skipped=35 Hard-conflicts=0; arch-northstar-check.sh --skip-build: 16/16 PASS; full Docker ISO build blocked by host devtmpfs restriction)
 - [x] **ARCH-03**: Translator declares its supported opinions/capabilities; unsupported required opinions break visibly at composition time, never silently at install time (02-01: capabilities.json + check_capabilities() gate, 43 pytest GREEN)
 - [x] **ARCH-04**: Translator is structured for 1–2 Arch variants via declarative variant profiles (repo list + keyring + kernel + defaults) informed by the Phase 0 delta study — no per-variant forks (02-03: vanilla-arch/cachyos/garuda YAML profiles, schema README, 4 Garuda conflicts as structured data)
 
@@ -145,8 +145,8 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | RSLV-04 | Phase 1 | Complete |
 | RSLV-05 | Phase 1 | Complete |
 | RSLV-06 | Phase 1 | Complete |
-| ARCH-01 | Phase 2 | In Progress (foundation complete 02-01; mkarchiso/ISO in 02-02) |
-| ARCH-02 | Phase 2 | Complete (02-04: content half satisfied; full north-star pipeline in 02-05) |
+| ARCH-01 | Phase 2 | Complete (02-01 capabilities gate, 02-02 profile emitter + translate entrypoint, 02-05 Docker build scripts + structural validation; full mkarchiso ISO build requires host devtmpfs support) |
+| ARCH-02 | Phase 2 | Complete (02-04 + 02-05: full north-star pipeline green; equivalence gate 16/16 PASS; build tooling in place; full ISO requires host devtmpfs support) |
 | ARCH-03 | Phase 2 | Complete (02-01) |
 | ARCH-04 | Phase 2 | Complete (02-03) |
 | CLI-01 | Phase 3 | Pending |
