@@ -1,0 +1,8 @@
+# Hardware profile: AMD Radeon RX 7600 workstation (no NVIDIA GPU)
+# Used by EC-037: NVIDIA driver opinion should be skipped on this profile.
+predicates:
+  - amd-gpu
+  - battery-absent
+facts:
+  gpu: amd-radeon-rx-7600
+  cpu_vendor: amd

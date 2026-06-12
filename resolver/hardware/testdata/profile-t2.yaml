@@ -1,0 +1,10 @@
+# Hardware profile: Apple MacBook Pro with T2 security chip (PCI 106b:1801)
+# Used by EC-038: Apple T2 opinion block should be applied on this profile.
+predicates:
+  - battery-present
+  - apple-hardware
+facts:
+  gpu: amd-radeon-pro-5500m
+  cpu_vendor: intel
+pci_ids:
+  - 106b:1801
