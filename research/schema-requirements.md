@@ -144,13 +144,22 @@ constraints (before/after specific named opinions or capability names).
 
 **Evidence:** OM-001 (preflight phase; must execute before all packaging opinions — enforced
 by pipeline structure). OM-002 (preflight; hooks must be disabled before any kernel-triggering
-package install). OM-023 (packaging; after OM-041/mise, not just after all packaging). OM-041
-(config phase; before npm global installs). OM-074 (config/hardware/intel; before OM-099
-which rebuilds the UKI). OM-098 (login; before OM-099, defers initramfs rebuild). OM-099
-(login; last login step; must run after all kernel parameter drop-ins).
+package install). OM-023 (packaging by source location; but must execute AFTER config/OM-041 —
+a cross-phase ordering exception: npm.sh is in the packaging/ directory but depends on
+mise-work.sh which is in the config/ phase; the pipeline must support cross-phase before/after
+constraints, not just within-phase ordering). OM-041 (config phase; before npm global installs).
+OM-074 (config/hardware/intel; before OM-099 which rebuilds the UKI). OM-098 (login; before
+OM-099, defers initramfs rebuild). OM-099 (login; last login step; must run after all kernel
+parameter drop-ins).
+
+**Cross-phase ordering exception (OM-023):** OM-023 is the primary evidence that phase-level
+ordering is not sufficient alone — an opinion's declared phase may not match its effective
+execution order when cross-phase opinion dependencies exist. The schema must support an
+explicit `after: [OM-041]` constraint that overrides the phase sequence when necessary.
 
 **Implication:** A flat "order: integer" field is insufficient. The schema must express both
-a discrete phase enum and within-phase before/after relationships by opinion ID.
+a discrete phase enum and within-phase before/after relationships by opinion ID, with support
+for cross-phase override constraints.
 
 ---
 

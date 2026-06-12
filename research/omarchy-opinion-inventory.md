@@ -180,7 +180,7 @@ category: package-install
 intent: Install AI assistant tools that run as native applications or integration layers: claude-code (AI coding assistant), and supporting libraries for AI workflows.
 source: install/packaging/base.sh + install/omarchy-base.packages
 dependencies: OM-001
-ordering: packaging phase; npm-based AI tools are separate opinions (OM-024)
+ordering: packaging phase; npm-based AI tools are separate opinions (OM-023)
 translator-capability: install named logical packages
 
 ---
@@ -191,7 +191,7 @@ category: package-install
 intent: Install containerization and virtualization tools: Docker engine, Docker Compose, Docker Buildx plugin, and cross-architecture emulation (qemu-user-static-binfmt).
 source: install/packaging/base.sh + install/omarchy-base.packages
 dependencies: OM-001
-ordering: packaging phase; docker service configuration is a separate opinion (OM-058)
+ordering: packaging phase; docker service configuration is a separate opinion (OM-043)
 translator-capability: install named logical packages; handle privilege-requiring container tooling
 
 ---
@@ -327,7 +327,7 @@ category: npm-global-install
 intent: Install AI coding assistant and development tools via the Node.js package manager as global command-line tools: OpenAI Codex CLI, Google Gemini CLI, GitHub Copilot CLI, OpenCode AI, Playwright browser automation CLI, Pi coding agent, GitHub UI assistant (ghui), Hunk diff reviewer.
 source: install/packaging/npm.sh
 dependencies: OM-009 (mise + Node.js runtime must be available)
-ordering: packaging phase; after mise-work (OM-054) which installs Node via mise
+ordering: packaging phase by source location; after mise-work (OM-041) which configures Node via mise — this is a cross-phase dependency that requires the schema to support inter-phase ordering constraints (see SR-006); OM-041 is in the config phase, not the packaging phase
 translator-capability: install npm global packages; resolve tool names to npm package identifiers; handle cross-package-manager installs separate from the OS package manager
 
 ---
@@ -1099,7 +1099,7 @@ translator-capability: read DMI product name; write and enable a systemd service
 category: hardware-conditional
 intent: Install full Apple T2 chip support: T2-compatible kernel (linux-t2), audio firmware (apple-t2-audio-config), Broadcom WiFi/Bluetooth firmware (apple-bcm-firmware), fan control daemon (t2fanrd), Touch Bar driver (tiny-dfr). Add user to video group for Touch Bar access. Enable T2 services. Configure kernel module auto-loading for T2 hardware. Configure mkinitcpio for T2 boot modules. Set kernel parameters (intel_iommu=on, iommu=pt, pcie_ports=compat) for T2 compatibility. Configure fan speed curve.
 source: install/config/hardware/apple/fix-t2.sh
-dependencies: OM-001, OM-088a: also adds arch-mact2 repo (see post-install/pacman.sh OM-098)
+dependencies: OM-001, OM-088a: also adds arch-mact2 repo (see post-install/pacman.sh OM-100)
 ordering: config/hardware/apple phase; post-install/pacman.sh adds the arch-mact2 repo which provides linux-t2
 condition: lspci -nn | grep -q "106b:180[12]" — Apple T2 security chip PCI ID detected
 translator-capability: detect T2 chip by PCI ID; install T2-specific kernel and hardware support packages; enable multiple systemd services; write module-load configurations; write mkinitcpio module list; write bootloader kernel parameters; write hardware daemon configuration
