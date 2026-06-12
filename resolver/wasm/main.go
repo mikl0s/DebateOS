@@ -20,6 +20,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"syscall/js"
 
 	"go.yaml.in/yaml/v3"
@@ -32,8 +33,8 @@ import (
 // resolveInput is the JSON-decoded payload accepted by debateosResolve.
 // It mirrors the structure of a loaded composition: speech, opinions, hardware.
 type resolveInput struct {
-	Speech   *resolver.Speech    `json:"speech"   yaml:"speech"`
-	Opinions []resolver.Opinion  `json:"opinions" yaml:"opinions"`
+	Speech   *resolver.Speech       `json:"speech"   yaml:"speech"`
+	Opinions []resolver.Opinion     `json:"opinions" yaml:"opinions"`
 	Hardware hardware.HardwareProfile `json:"hardware" yaml:"hardware"`
 }
 
@@ -58,11 +59,17 @@ func debateosResolveFunc(_ js.Value, args []js.Value) interface{} {
 		return errorResponse("empty input")
 	}
 
-	// Try JSON decode first; fall back to YAML for convenience.
+	// Try JSON decode first (primary production path); fall back to YAML.
+	// JSON: use DisallowUnknownFields so typos like "speeech" are caught early.
+	// YAML: use KnownFields(true) for the same reason (IN-04).
 	var input resolveInput
-	if err := json.Unmarshal([]byte(inputStr), &input); err != nil {
+	jsonDec := json.NewDecoder(strings.NewReader(inputStr))
+	jsonDec.DisallowUnknownFields()
+	if err := jsonDec.Decode(&input); err != nil {
 		// Try YAML as a fallback (handles YAML-formatted input from tests/CLI).
-		if yamlErr := yaml.Unmarshal([]byte(inputStr), &input); yamlErr != nil {
+		yamlDec := yaml.NewDecoder(strings.NewReader(inputStr))
+		yamlDec.KnownFields(true)
+		if yamlErr := yamlDec.Decode(&input); yamlErr != nil {
 			return errorResponse(fmt.Sprintf("parse error (json: %v; yaml: %v)", err, yamlErr))
 		}
 	}

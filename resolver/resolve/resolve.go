@@ -376,8 +376,10 @@ func resolveConflict(
 	}
 
 	// ── Rule 3: nice-to-have vs nice-to-have ──────────────────────────────
-	// Pick the first-listed (opA, as the lower-ID in canonical sorted pair
-	// since we iterate in sorted order). opA is the "winner" / "default".
+	// opA wins because the outer loop in Resolve iterates in input order
+	// (sortedActiveIDs preserves the opinions slice order, not sorted order)
+	// and opA's Conflicts list was processed first. "First-listed in the
+	// input opinions slice wins" is the correct invariant.
 	dropped[opB.ID] = true
 	rs.Explanations = append(rs.Explanations, Explanation{
 		Text: fmt.Sprintf(
