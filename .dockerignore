@@ -1,0 +1,48 @@
+# .dockerignore
+#
+# Exclude files from the Docker build context (T-03-CTX).
+#
+# SECURITY: The build context is the repo root.  The following paths must
+# NEVER enter the image layers, even if accidentally present in the repo root.
+#
+# Private pane & age identity (PRIV-01)
+pane.yaml
+*.age
+identity.age
+private-injection.tar
+
+# Config directory (may contain pane.yaml, identity.age, cached secrets)
+.config/
+.config/debateos/
+
+# Git history (not needed in image; reduces context size)
+.git/
+.gitignore
+
+# Planning files (not needed in runtime image)
+.planning/
+
+# Node / frontend build artefacts (not part of the Go CLI build)
+node_modules/
+web/build/
+web/.svelte-kit/
+dist/
+
+# Go test and coverage artefacts
+*.test
+*.out
+coverage.out
+
+# Editor / IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS metadata
+.DS_Store
+
+# CI / secrets that might be checked out in a runner workspace
+.env
+.env.*
+secrets/
