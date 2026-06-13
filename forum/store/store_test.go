@@ -132,3 +132,111 @@ func TestListGetUpsert(t *testing.T) {
 		t.Error("ListPoints did not return inserted point")
 	}
 }
+
+// TestSubscriptions: AddSubscription, GetSubscriptions, RemoveSubscription, idempotency.
+func TestSubscriptions(t *testing.T) {
+	ctx := context.Background()
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	// Seed a point first (FK constraint)
+	if err := s.UpsertPoint(ctx, store.PointEntry{
+		ID: "sub-point", Name: "Sub Point", Intent: "test", Curator: "alice",
+		FoundationCompat: `["arch"]`,
+	}); err != nil {
+		t.Fatalf("UpsertPoint: %v", err)
+	}
+
+	// Add subscription
+	if err := s.AddSubscription(ctx, "user1", "sub-point"); err != nil {
+		t.Fatalf("AddSubscription: %v", err)
+	}
+
+	// GetSubscriptions should return the point
+	subs, err := s.GetSubscriptions(ctx, "user1")
+	if err != nil {
+		t.Fatalf("GetSubscriptions: %v", err)
+	}
+	if len(subs) != 1 {
+		t.Fatalf("expected 1 subscription, got %d", len(subs))
+	}
+	if subs[0].ID != "sub-point" {
+		t.Errorf("expected sub-point, got %q", subs[0].ID)
+	}
+
+	// Duplicate Add is idempotent (PK conflict DO NOTHING)
+	if err := s.AddSubscription(ctx, "user1", "sub-point"); err != nil {
+		t.Fatalf("duplicate AddSubscription should be idempotent: %v", err)
+	}
+	subs, _ = s.GetSubscriptions(ctx, "user1")
+	if len(subs) != 1 {
+		t.Errorf("after duplicate add, expected 1 subscription, got %d", len(subs))
+	}
+
+	// RemoveSubscription
+	if err := s.RemoveSubscription(ctx, "user1", "sub-point"); err != nil {
+		t.Fatalf("RemoveSubscription: %v", err)
+	}
+	subs, _ = s.GetSubscriptions(ctx, "user1")
+	if len(subs) != 0 {
+		t.Errorf("after remove, expected 0 subscriptions, got %d", len(subs))
+	}
+}
+
+// TestRatings: SetRating, GetRatings aggregate, out-of-range rejection.
+func TestRatings(t *testing.T) {
+	ctx := context.Background()
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	// Seed a point
+	if err := s.UpsertPoint(ctx, store.PointEntry{
+		ID: "rate-point", Name: "Rate Point", Intent: "test", Curator: "bob",
+		FoundationCompat: `["arch"]`,
+	}); err != nil {
+		t.Fatalf("UpsertPoint: %v", err)
+	}
+
+	// SetRating: user1 rates 4
+	if err := s.SetRating(ctx, "user1", "rate-point", 4); err != nil {
+		t.Fatalf("SetRating 4: %v", err)
+	}
+	sum, err := s.GetRatings(ctx, "rate-point")
+	if err != nil {
+		t.Fatalf("GetRatings: %v", err)
+	}
+	if sum.Count != 1 {
+		t.Errorf("expected count 1, got %d", sum.Count)
+	}
+	if sum.Avg != 4.0 {
+		t.Errorf("expected avg 4.0, got %f", sum.Avg)
+	}
+
+	// Second user rates 2 → avg 3.0 count 2
+	if err := s.SetRating(ctx, "user2", "rate-point", 2); err != nil {
+		t.Fatalf("SetRating 2: %v", err)
+	}
+	sum, _ = s.GetRatings(ctx, "rate-point")
+	if sum.Count != 2 {
+		t.Errorf("expected count 2, got %d", sum.Count)
+	}
+	if sum.Avg != 3.0 {
+		t.Errorf("expected avg 3.0, got %f", sum.Avg)
+	}
+
+	// Out-of-range stars=6 must error (V5 validation)
+	if err := s.SetRating(ctx, "user3", "rate-point", 6); err == nil {
+		t.Error("SetRating with stars=6 should return an error")
+	}
+
+	// stars=0 must also error
+	if err := s.SetRating(ctx, "user3", "rate-point", 0); err == nil {
+		t.Error("SetRating with stars=0 should return an error")
+	}
+}
