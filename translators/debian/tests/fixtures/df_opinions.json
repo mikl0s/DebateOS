@@ -1,0 +1,87 @@
+[
+  {
+    "schema": 1,
+    "id": "DF-001",
+    "status": "required",
+    "name": "Base CLI Toolset",
+    "category": "package-install",
+    "intent": "Install a minimal set of foundational CLI utilities (git, curl, vim).",
+    "install_phase": "packaging",
+    "translator_capabilities": ["install-packages"],
+    "packages": ["git", "curl", "vim"]
+  },
+  {
+    "schema": 1,
+    "id": "DF-002",
+    "status": "required",
+    "name": "System Message of the Day",
+    "category": "config-file",
+    "intent": "Deploy a static /etc/motd banner.",
+    "install_phase": "config",
+    "translator_capabilities": ["deploy-config-file-tree"],
+    "file_assets": [
+      {"src": "assets/motd", "dst": "etc/motd"}
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "DF-003",
+    "status": "required",
+    "name": "Enable Time Synchronisation Service",
+    "category": "service",
+    "intent": "Enable systemd-timesyncd.",
+    "install_phase": "config",
+    "translator_capabilities": ["enable-systemd-service"],
+    "services": [
+      {"name": "systemd-timesyncd.service", "enable": true, "deferred": false}
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "DF-004",
+    "status": "required",
+    "name": "TCP Fast Open Sysctl Tuning",
+    "category": "sysctl",
+    "intent": "Enable TCP Fast Open via sysctl drop-in.",
+    "install_phase": "config",
+    "translator_capabilities": ["write-sysctl-drop-in"],
+    "sysctl_params": [
+      {"key": "net.ipv4.tcp_fastopen", "value": "3", "drop_in_file": "50-debateos.conf"}
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "DF-005",
+    "status": "required",
+    "name": "Add User to Video Group",
+    "category": "user-group",
+    "intent": "Add user to the video group.",
+    "install_phase": "post-install",
+    "translator_capabilities": ["add-user-to-group"],
+    "group_memberships": [
+      {"group": "video"}
+    ]
+  },
+  {
+    "schema": 1,
+    "id": "ARCH-ONLY-001",
+    "status": "required",
+    "name": "Configure mkinitcpio (Arch-only, required)",
+    "category": "initramfs",
+    "intent": "Configure mkinitcpio hooks — Arch-specific, must CapabilityError on Debian.",
+    "install_phase": "packaging",
+    "translator_capabilities": ["configure-mkinitcpio-hooks-and-modules"],
+    "packages": []
+  },
+  {
+    "schema": 1,
+    "id": "ARCH-ONLY-NICE",
+    "status": "nice-to-have",
+    "name": "Configure mkinitcpio (Arch-only, nice-to-have)",
+    "category": "initramfs",
+    "intent": "Configure mkinitcpio hooks — Arch-specific, must be dropped (not raised) on Debian.",
+    "install_phase": "packaging",
+    "translator_capabilities": ["configure-mkinitcpio-hooks-and-modules"],
+    "packages": []
+  }
+]

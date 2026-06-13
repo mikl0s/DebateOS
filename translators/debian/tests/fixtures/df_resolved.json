@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "foundation": "debian",
+  "applied": ["DF-001", "DF-002", "DF-003", "DF-004", "DF-005"],
+  "skipped": [],
+  "dropped": [],
+  "install_order": ["DF-001", "DF-002", "DF-003", "DF-004", "DF-005"],
+  "explanations": [
+    {
+      "text": "DF-001 applied: required opinion with no conflicts.",
+      "rule": "no-conflict",
+      "opinions_involved": ["DF-001"],
+      "dropped": [],
+      "kept": ["DF-001"]
+    },
+    {
+      "text": "DF-002 applied: required opinion with no conflicts.",
+      "rule": "no-conflict",
+      "opinions_involved": ["DF-002"],
+      "dropped": [],
+      "kept": ["DF-002"]
+    },
+    {
+      "text": "DF-003 applied: required opinion with no conflicts.",
+      "rule": "no-conflict",
+      "opinions_involved": ["DF-003"],
+      "dropped": [],
+      "kept": ["DF-003"]
+    },
+    {
+      "text": "DF-004 applied: required opinion with no conflicts.",
+      "rule": "no-conflict",
+      "opinions_involved": ["DF-004"],
+      "dropped": [],
+      "kept": ["DF-004"]
+    },
+    {
+      "text": "DF-005 applied: required opinion with no conflicts.",
+      "rule": "no-conflict",
+      "opinions_involved": ["DF-005"],
+      "dropped": [],
+      "kept": ["DF-005"]
+    }
+  ]
+}
