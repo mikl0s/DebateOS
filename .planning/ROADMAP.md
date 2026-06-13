@@ -14,7 +14,7 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
 - [x] **Phase 0: Omarchy Research & Arch-Variant Study** - Evidence-backed opinion inventory + CachyOS/Garuda delta study; six deliverables that gate all design (completed 2026-06-12)
 - [x] **Phase 1: Schema & Resolver Core** - Opinion/Point/Speech schemas from Phase 0 data; rule-based Go resolver, native + WASM, built test-first (completed 2026-06-12)
 - [x] **Phase 2: Arch Translator** - mkarchiso-wrapping translator with variant-profile structure; NORTH STAR: Omarchy as a speech on vanilla Arch (completed 2026-06-12)
-- [ ] **Phase 3: CLI & Build Channels** - Go CLI, private-pane/secrets model, deterministic Docker + GitHub Actions builds at zero cost
+- [x] **Phase 3: CLI & Build Channels** - Go CLI, private-pane/secrets model, deterministic Docker + GitHub Actions builds at zero cost (completed 2026-06-13)
 - [ ] **Phase 4: Debian Translator** - live-build/preseed translator; dual-foundation proof from one resolved speech; de-Arch the abstraction
 - [ ] **Phase 5: Registry, Forum & Debate UI** - Static registry index, optional Forum (search/subscriptions/ratings/conflict threads), visual Debate UI on Pages + embedded in CLI
 
@@ -132,7 +132,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 03-04-PLAN.md — Multi-stage Docker image + reusable Actions workflow + thin caller + determinism/secret-free/coverage gates + docs + status (BLD-01..04, PRIV-01)
+- [x] 03-04-PLAN.md — Multi-stage Docker image + reusable Actions workflow + thin caller + determinism/secret-free/coverage gates + docs + status (BLD-01..04, PRIV-01) (completed 2026-06-13)
 
 ### Phase 4: Debian Translator
 
@@ -174,7 +174,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | 0. Omarchy Research & Arch-Variant Study | 4/4 | Complete   | 2026-06-12 |
 | 1. Schema & Resolver Core | 5/5 | Complete   | 2026-06-12 |
 | 2. Arch Translator | 5/5 | Complete   | 2026-06-13 |
-| 3. CLI & Build Channels | 2/4 | In Progress|  |
+| 3. CLI & Build Channels | 4/4 | Complete   | 2026-06-13 |
 | 4. Debian Translator | 0/TBD | Not started | - |
 | 5. Registry, Forum & Debate UI | 0/TBD | Not started | - |
 
