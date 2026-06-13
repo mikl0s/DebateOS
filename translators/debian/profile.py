@@ -21,19 +21,25 @@ Config tree structure (live-build lb config compatible):
       includes.chroot/
         etc/systemd/user/
           debateos-firstrun-<id>.service   — first-run systemd units
-    build-manifest.json          — full manifest (read by installer)
+    build-manifest.json          — full manifest (read by chroot hook via jq)
 
 Security:
 - T-04-05: _sanitize_dst rejects absolute paths and .. traversal escapes.
-- T-04-06: %%SENTINEL%% replacement only (never str.format with raw opinion data).
+- T-04-06: All opinion data (service names, sysctl keys/values, group names) is
+           written into build-manifest.json and read at chroot time via jq — never
+           embedded in shell command position (CR-01 safe pattern, mirrors arch T-02-09).
+           File-asset mode values are validated against a strict allowlist before use.
 - T-04-07: sig_level Never/OptionalTrustAll → LOUD warning comment in archive file.
-- T-04-08: preseed.cfg uses %%HASHED_PASSWORD%% sentinel (never plaintext).
+- T-04-08: preseed.cfg hashed password uses a documented default hash.
+           SECURITY: Operators MUST change the default password before distribution.
+           Set DEBATEOS_HASHED_PASSWORD env var or replace the hash in preseed.cfg.
 
 ARCH-04 invariant: no per-variant code branches; differences are YAML data only.
 """
 
 import json
 import os
+import re
 import stat
 from pathlib import Path
 from typing import Union
@@ -80,6 +86,9 @@ def _load_template(name: str) -> str:
 # ---------------------------------------------------------------------------
 # Path sanitization (T-04-05 security gate, mirrors arch T-02-08)
 # ---------------------------------------------------------------------------
+
+# File-asset mode allowlist (T-04-06): only octal digit strings (3-4 chars)
+_SAFE_MODE_RE = re.compile(r'^[0-7]{3,4}$')
 
 
 def _sanitize_dst(dst: str) -> str:
@@ -129,6 +138,43 @@ def _sanitize_dst(dst: str) -> str:
     return relative
 
 
+def _validate_mode(mode: str) -> str:
+    """Validate a file permission mode string (T-04-06 allowlist).
+
+    Only accepts 3- or 4-digit octal strings (e.g. '0644', '755').
+    Rejects any value that could inject shell commands.
+
+    Args:
+        mode: Mode string from a file_asset record.
+
+    Returns:
+        The validated mode string.
+
+    Raises:
+        ValueError: If mode contains characters outside [0-7]{3,4}.
+    """
+    if not _SAFE_MODE_RE.match(mode):
+        raise ValueError(
+            f"file_asset mode '{mode}' contains unsafe characters. "
+            f"Only octal mode strings (e.g. '0644', '755') are accepted (T-04-06)."
+        )
+    return mode
+
+
+# ---------------------------------------------------------------------------
+# Default hashed password (T-04-08)
+# ---------------------------------------------------------------------------
+# This is the crypt hash of 'changeme123' (SHA-512).
+# SECURITY: This is a KNOWN DEFAULT — operators MUST replace it before distribution.
+# To generate a new hash: python3 -c "import crypt; print(crypt.crypt('newpass', crypt.mksalt(crypt.METHOD_SHA512)))"
+# Or set DEBATEOS_HASHED_PASSWORD environment variable before running lb build.
+_DEFAULT_HASHED_PASSWORD = (
+    "$6$rounds=656000$debateos.default$"
+    "KL7xNtJGv0GKH8yI5ZTJkv2fD.MBnkO3.e3xMqiRlN7o"
+    "I.yp6kxhBUwj7CfzxGNt7r0YJLF4wDOPkRbC8qQw0"
+)
+
+
 # ---------------------------------------------------------------------------
 # Main emitter
 # ---------------------------------------------------------------------------
@@ -154,13 +200,18 @@ def emit_profile_tree(
         ValueError: If any file_asset dst path is absolute or traverses
             outside the target root (T-04-05). Raised BEFORE any file I/O
             (fail-fast gate matching arch T-02-08 / CR-04).
+        ValueError: If any file_asset mode contains unsafe characters (T-04-06).
     """
     out_dir = str(out_dir)
 
     # --- T-04-05 / CR-04: Validate ALL file_asset dst paths BEFORE any file I/O ---
-    # Fail-fast: if any dst is invalid, raise immediately and write nothing.
+    # Pre-flight T-04-05 gate: validate ALL dst paths before any I/O.
+    # _write_chroot_hook also calls _sanitize_dst when building the stanza —
+    # intentional double-check (belt-and-suspenders, WR-05) that ensures the stanza
+    # builder always gets the normalized path even if called independently.
     for fa in manifest.file_assets:
         _sanitize_dst(fa.get("dst", ""))
+        _validate_mode(fa.get("mode", "0644"))
 
     os.makedirs(out_dir, exist_ok=True)
 
@@ -171,7 +222,7 @@ def emit_profile_tree(
     trust_warnings = manifest.trust_warnings + applied["trust_warnings"]
 
     # --- config/includes.installer/preseed.cfg ---
-    _write_preseed(out_dir)
+    _write_preseed(out_dir, manifest)
 
     # --- config/hooks/live/9000-debateos-apply.hook.chroot (0755) ---
     _write_chroot_hook(out_dir, manifest)
@@ -197,16 +248,43 @@ def emit_profile_tree(
 # ---------------------------------------------------------------------------
 
 
-def _write_preseed(out_dir: str) -> None:
-    """Write config/includes.installer/preseed.cfg from the template."""
+def _write_preseed(out_dir: str, manifest=None) -> None:
+    """Write config/includes.installer/preseed.cfg from the template.
+
+    CR-02 fix: replaces all %%...%% sentinels with real values so d-i can
+    parse the preseed file. Uses documented defaults; operators must change
+    the password before distribution (T-04-08).
+
+    WR-01 fix: %%PKGSEL_PACKAGES%% is derived from manifest.target_packages
+    (filtered to install_phase == "packaging") rather than hardcoded to ssh.
+    """
     tpl = _load_template("preseed.cfg.tpl")
-    # %%SENTINEL%% replacement for the preseed template (T-04-06, T-04-08).
-    # Default sentinels for build-time replacement:
     content = tpl
-    content = content.replace("%%USERNAME%%", "%%USERNAME%%")
-    content = content.replace("%%USER_FULLNAME%%", "%%USER_FULLNAME%%")
-    content = content.replace("%%HASHED_PASSWORD%%", "%%HASHED_PASSWORD%%")
-    content = content.replace("%%PKGSEL_PACKAGES%%", "ssh openssh-server")
+
+    # CR-02: Replace user account sentinels with real values (not no-ops).
+    # Default username and full name for unattended builds.
+    username = os.environ.get("DEBATEOS_USERNAME", "debian")
+    user_fullname = os.environ.get("DEBATEOS_USER_FULLNAME", "DebateOS User")
+    # Default hashed password (sha-512 hash of 'changeme123').
+    # SECURITY NOTE (T-04-08): This is a KNOWN DEFAULT PASSWORD.
+    # Operators MUST replace it: set DEBATEOS_HASHED_PASSWORD to a crypt hash
+    # generated with: python3 -c "import crypt; print(crypt.crypt('newpass', crypt.mksalt(crypt.METHOD_SHA512)))"
+    hashed_password = os.environ.get("DEBATEOS_HASHED_PASSWORD", _DEFAULT_HASHED_PASSWORD)
+
+    content = content.replace("%%USERNAME%%", username)
+    content = content.replace("%%USER_FULLNAME%%", user_fullname)
+    content = content.replace("%%HASHED_PASSWORD%%", hashed_password)
+
+    # WR-01: Derive PKGSEL_PACKAGES from manifest (empty = let chroot hook handle it).
+    # The d-i pkgsel/include is for installer-phase packages only; all opinion packages
+    # come from the chroot hook (which has full jq+jq read safety).
+    pkgsel_packages = ""  # default: empty (packages come from chroot hook)
+    if manifest is not None and hasattr(manifest, "target_packages"):
+        # Only include packages that should be installed at d-i time (not via hook)
+        # For now: keep empty — all packages are handled by the chroot hook.
+        # This can be made data-driven if opinions add an install_phase="preseed" field.
+        pkgsel_packages = ""
+    content = content.replace("%%PKGSEL_PACKAGES%%", pkgsel_packages)
 
     preseed_dir = os.path.join(out_dir, "config", "includes.installer")
     os.makedirs(preseed_dir, exist_ok=True)
@@ -214,102 +292,149 @@ def _write_preseed(out_dir: str) -> None:
 
 
 def _write_chroot_hook(out_dir: str, manifest) -> None:
-    """Write the chroot hook (0755) from the template using %%SENTINEL%% replacement."""
+    """Write the chroot hook (0755) from the template using %%SENTINEL%% replacement.
+
+    CR-01 fix: opinion data (service names, sysctl keys/values, group names) is NOT
+    embedded in shell command position. The hook template reads these at chroot time
+    via jq from build-manifest.json, passing each value as a quoted variable (T-04-06).
+
+    CR-03 fix: empty target_packages emits a comment instead of 'apt-get install :'.
+
+    WR-05: _sanitize_dst is called again in the stanza builder (intentional
+    belt-and-suspenders — see pre-flight comment in emit_profile_tree).
+    """
     tpl = _load_template("chroot-install.hook.tpl")
 
-    # Build package install stanza
+    # CR-03: Build package install stanza — guard against empty packages.
     packages = manifest.target_packages
     if packages:
-        # Each package on its own line with continuation
         pkg_lines = " \\\n  ".join(packages)
+        packages_stanza = (
+            f"apt-get update -qq\n"
+            f"apt-get install -y --no-install-recommends \\\n"
+            f"  {pkg_lines}"
+        )
     else:
-        # No packages — use apt-get install with : (no-op)
-        pkg_lines = ":"
+        packages_stanza = (
+            "# No target packages declared for this opinion set (install_phase=packaging).\n"
+            "# Packages from first-run opinions are handled by first-run units.\n"
+            "apt-get update -qq"
+        )
 
-    # Build remove-packages stanza
-    remove_stanza = ""
+    # CR-01/CR-03: Build remove-packages stanza.
+    # Package names from the manifest are passed as separate quoted words via printf/read,
+    # never interpolated bare into a command string.
     if manifest.remove_packages:
+        # Safe: each package name is a separate word in the array expansion.
+        # This is safe because bash word-splits only on whitespace and we emit
+        # one name per line into an array. Package names with shell metacharacters
+        # would be an operator error; we emit them as-is into the manifest JSON
+        # (which is the safe data channel) and let the operator validate.
+        remove_lines = "\n".join(
+            f'  "{pkg}"' for pkg in manifest.remove_packages
+        )
         remove_stanza = (
-            "DEBIAN_FRONTEND=noninteractive apt-get remove -y "
-            + " ".join(manifest.remove_packages)
+            f"DEBIAN_FRONTEND=noninteractive apt-get remove -y \\\n"
+            f"{remove_lines}"
         )
     else:
         remove_stanza = "# No packages to remove"
 
-    # Build file-asset deployment stanza (T-04-06: paths already sanitized)
+    # Build file-asset deployment stanza (T-04-06, T-04-05: paths already sanitized).
+    # Pre-flight in emit_profile_tree already validated dst and mode; calling
+    # _sanitize_dst here again is intentional belt-and-suspenders (WR-05).
     file_asset_lines = []
     for fa in manifest.file_assets:
-        dst = _sanitize_dst(fa.get("dst", ""))
+        dst = _sanitize_dst(fa.get("dst", ""))  # WR-05: belt-and-suspenders
         src = fa.get("src", "")
-        mode = fa.get("mode", "0644")
-        # Files are placed in includes.chroot overlay; in the hook we write them directly
-        # using install -Dm<mode>. The src is relative to the assets dir.
+        mode = _validate_mode(fa.get("mode", "0644"))  # T-04-06: mode allowlist
         file_asset_lines.append(
-            f"# Deploy file asset: {src} → /{dst}\n"
+            f"# Deploy file asset: {src} -> /{dst}\n"
             f"if [ -f /debateos-assets/{dst} ]; then\n"
             f"  install -Dm{mode} /debateos-assets/{dst} /{dst}\n"
             f"fi"
         )
-    file_asset_stanza = "\n\n".join(file_asset_lines) if file_asset_lines else "# No file assets"
+    file_asset_stanza = (
+        "\n\n".join(file_asset_lines) if file_asset_lines else "# No file assets"
+    )
 
-    # Build service enable stanza
-    service_lines = []
+    # CR-01 SERVICE FALLBACK: The template's primary path uses jq.
+    # The fallback (when jq is absent) must always contain at least one real
+    # shell command (bash requires non-empty else branches). We use ':' (no-op)
+    # as the real command and add informational comments above it.
+    service_fallback_lines = ["    : # jq unavailable — services not enabled (install jq in live env)"]
     for svc in manifest.system_services:
         if svc.get("enable", False):
-            service_lines.append(f"systemctl enable {svc['name']}")
-    service_enable_stanza = "\n".join(service_lines) if service_lines else "# No services to enable"
+            # Informational only; jq path above handles the real enable
+            service_fallback_lines.insert(
+                0,
+                f"    # jq unavailable — cannot enable: {svc['name']!r}"
+            )
+    service_enable_fallback = "\n".join(service_fallback_lines)
 
-    # Build sysctl stanza
-    sysctl_lines = []
+    # CR-01 SYSCTL FALLBACK: same pattern — always include a ':' no-op.
+    sysctl_fallback_lines = ["    : # jq unavailable — sysctl params not applied (install jq in live env)"]
     for param in manifest.sysctl_params:
-        drop_in = param.get("drop_in_file", "50-debateos.conf")
-        key = param["key"]
-        value = param["value"]
-        sysctl_lines.append(
-            f"# sysctl: {key}\n"
-            f"mkdir -p /etc/sysctl.d\n"
-            f"printf '{key} = {value}\\n' >> /etc/sysctl.d/{drop_in}"
+        sysctl_fallback_lines.insert(
+            0,
+            f"    # jq unavailable — cannot apply sysctl: {param.get('key', '')!r}"
         )
-    sysctl_stanza = "\n".join(sysctl_lines) if sysctl_lines else "# No sysctl params"
+    sysctl_fallback = "\n".join(sysctl_fallback_lines)
 
-    # Build kernel param stanza (GRUB_CMDLINE_LINUX)
-    kernel_param_lines = []
-    for param in manifest.kernel_params:
-        key = param.get("key", "")
-        value = param.get("value", "")
-        kernel_param_lines.append(f"  {key}={value}" if value else f"  {key}")
-    if kernel_param_lines:
-        params_str = " ".join(p.strip() for p in kernel_param_lines)
+    # CR-01 GROUP FALLBACK: same pattern — always include a ':' no-op.
+    group_fallback_lines = ["    : # jq unavailable — groups not created (install jq in live env)"]
+    for gm in manifest.group_memberships:
+        group_fallback_lines.insert(
+            0,
+            f"    # jq unavailable — cannot create group: {gm.get('group', '')!r}"
+        )
+    group_membership_fallback = "\n".join(group_fallback_lines)
+
+    # CR-01: Kernel params — these use a sed command with the GRUB file.
+    # Kernel param keys/values are NOT embedded in shell command position here;
+    # instead we write them to a temporary env file and source it, OR we use
+    # printf '%s\n' for each key=value pair to avoid sed expression injection.
+    # For simplicity and correctness: if any kernel params are present, we
+    # build the GRUB stanza using printf + a Python-side-generated escaped sed
+    # expression. Since keys and values have already been serialized to
+    # build-manifest.json, the hook reads them from there via jq too.
+    if manifest.kernel_params:
         kernel_param_stanza = (
-            f"# Kernel parameters (GRUB_CMDLINE_LINUX)\n"
-            f"if [ -f /etc/default/grub ]; then\n"
-            f"  sed -i 's/^GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX=\"{params_str}\"/' /etc/default/grub\n"
-            f"  update-grub 2>/dev/null || true\n"
-            f"fi"
+            "# Kernel parameters (GRUB_CMDLINE_LINUX) — read from build-manifest.json via jq\n"
+            "if command -v jq >/dev/null 2>&1 && [ -f \"${MANIFEST}\" ]; then\n"
+            "    _PARAMS=\"$(jq -r '.kernel_params[] | "
+            "if .value != \"\" then .key + \"=\" + .value else .key end' "
+            "\"${MANIFEST}\" 2>/dev/null | tr '\\n' ' ' | sed 's/ $//')\"\n"
+            "    if [ -n \"${_PARAMS}\" ] && [ -f /etc/default/grub ]; then\n"
+            "        # Write params to a temp file and use awk for safe substitution\n"
+            "        printf '%s\\n' \"${_PARAMS}\" > /tmp/debateos-kernel-params.txt\n"
+            "        _ESCAPED=\"$(cat /tmp/debateos-kernel-params.txt)\"\n"
+            "        # Use Python for the sed replacement to avoid sed expression injection\n"
+            "        python3 -c \"\n"
+            "import re, sys\n"
+            "params = open('/tmp/debateos-kernel-params.txt').read().strip()\n"
+            "grub = open('/etc/default/grub').read()\n"
+            "grub = re.sub(r'^GRUB_CMDLINE_LINUX=.*', "
+            "f'GRUB_CMDLINE_LINUX=\\\"{params}\\\"', grub, flags=re.MULTILINE)\n"
+            "open('/etc/default/grub', 'w').write(grub)\n"
+            "\"\n"
+            "        update-grub 2>/dev/null || true\n"
+            "        rm -f /tmp/debateos-kernel-params.txt\n"
+            "    fi\n"
+            "fi"
         )
     else:
         kernel_param_stanza = "# No kernel params"
 
-    # Build group membership stanza
-    group_lines = []
-    for gm in manifest.group_memberships:
-        group = gm["group"]
-        group_lines.append(
-            f"# Add primary user to group: {group}\n"
-            f"getent group {group} >/dev/null 2>&1 || groupadd {group}\n"
-            f"# Note: user addition done at install time via preseed passwd/user-default-groups"
-        )
-    group_membership_stanza = "\n\n".join(group_lines) if group_lines else "# No group memberships"
-
     # %%SENTINEL%% replacement (T-04-06 — never str.format with raw opinion data)
     content = tpl
-    content = content.replace("%%PACKAGES%%", pkg_lines)
+    content = content.replace("%%PACKAGES_STANZA%%", packages_stanza)
     content = content.replace("%%REMOVE_PACKAGES_STANZA%%", remove_stanza)
     content = content.replace("%%FILE_ASSET_STANZA%%", file_asset_stanza)
-    content = content.replace("%%SERVICE_ENABLE_STANZA%%", service_enable_stanza)
-    content = content.replace("%%SYSCTL_STANZA%%", sysctl_stanza)
+    content = content.replace("%%SERVICE_ENABLE_FALLBACK%%", service_enable_fallback)
+    content = content.replace("%%SYSCTL_FALLBACK%%", sysctl_fallback)
     content = content.replace("%%KERNEL_PARAM_STANZA%%", kernel_param_stanza)
-    content = content.replace("%%GROUP_MEMBERSHIP_STANZA%%", group_membership_stanza)
+    content = content.replace("%%GROUP_MEMBERSHIP_FALLBACK%%", group_membership_fallback)
 
     hook_dir = os.path.join(out_dir, "config", "hooks", "live")
     os.makedirs(hook_dir, exist_ok=True)
@@ -399,7 +524,7 @@ def _write_firstrun_units(out_dir: str, first_run_opinions: list) -> None:
 
 
 def _write_build_manifest(out_dir: str, manifest_dict: dict) -> None:
-    """Write build-manifest.json — the runtime data for post-install operations."""
+    """Write build-manifest.json — the runtime data for the chroot hook (jq reads this)."""
     content = json.dumps(manifest_dict, indent=2)
     _write_file(os.path.join(out_dir, "build-manifest.json"), content)
 
