@@ -276,15 +276,20 @@ func (s *SQLiteStore) Reindex(ctx context.Context) error {
 }
 
 // Truncate wipes all data (tests only).
+// FK deletion order must be observed: child tables first, parent (points) last.
+// - TruncateRatings      → deletes from ratings (FK child of points)
+// - TruncateSubscriptions → deletes from subscriptions (FK child of points)
+// - TruncateConflictThreads → deletes from conflict_threads (no FK to points)
+// - TruncatePoints        → deletes from points (parent)
+// Adding a new FK-child table requires a new Truncate* step here. (WR-03)
 func (s *SQLiteStore) Truncate(ctx context.Context) error {
-	// Must delete in FK order: ratings, subscriptions, conflict_threads, then points.
 	if err := s.q.TruncateRatings(ctx); err != nil {
 		return err
 	}
 	if err := s.q.TruncateSubscriptions(ctx); err != nil {
 		return err
 	}
-	if err := s.q.TruncateAll(ctx); err != nil {
+	if err := s.q.TruncateConflictThreads(ctx); err != nil {
 		return err
 	}
 	return s.q.TruncatePoints(ctx)

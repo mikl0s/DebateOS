@@ -253,12 +253,16 @@ func (q *Queries) SetRating(ctx context.Context, arg SetRatingParams) error {
 	return err
 }
 
-const truncateAll = `-- name: TruncateAll :exec
+const truncateConflictThreads = `-- name: TruncateConflictThreads :exec
 DELETE FROM conflict_threads
 `
 
-func (q *Queries) TruncateAll(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, truncateAll)
+// TruncateConflictThreads deletes all rows from the conflict_threads table.
+// Named explicitly to signal that it only covers conflict_threads; callers
+// that need to clear other tables must call TruncateRatings, TruncateSubscriptions,
+// and TruncatePoints separately (see SQLiteStore.Truncate). (WR-03)
+func (q *Queries) TruncateConflictThreads(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, truncateConflictThreads)
 	return err
 }
 

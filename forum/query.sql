@@ -77,7 +77,7 @@ ON CONFLICT(id) DO UPDATE SET
   status       = excluded.status,
   patch_pr_url = excluded.patch_pr_url;
 
--- name: TruncateAll :exec
+-- name: TruncateConflictThreads :exec
 DELETE FROM conflict_threads;
 
 -- name: TruncateRatings :exec

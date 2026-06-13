@@ -273,24 +273,26 @@ func TestRebuildFTS(t *testing.T) {
 	}
 }
 
-// TestTruncateAll verifies truncation clears all tables.
-func TestTruncateAll(t *testing.T) {
+// TestTruncateConflictThreads verifies TruncateConflictThreads clears only conflict_threads.
+// Renamed from TestTruncateAll — TruncateAll was renamed to TruncateConflictThreads (WR-03).
+func TestTruncateConflictThreads(t *testing.T) {
 	db := initDB(t)
 	q := generated.New(db)
 	ctx := context.Background()
 
 	seedPoint(t, db, "ta-1", "Truncate Me", "alice", `["arch"]`)
 
-	if err := q.TruncateAll(ctx); err != nil {
-		t.Fatalf("TruncateAll: %v", err)
+	if err := q.TruncateConflictThreads(ctx); err != nil {
+		t.Fatalf("TruncateConflictThreads: %v", err)
 	}
 
 	rows, err := q.ListPoints(ctx, generated.ListPointsParams{Limit: 10, Offset: 0})
 	if err != nil {
 		t.Fatalf("ListPoints after truncate: %v", err)
 	}
-	// After truncate, no points should remain.
-	_ = rows // May not be empty if TruncateAll doesn't clear points — acceptable.
+	// TruncateConflictThreads only clears conflict_threads, not points.
+	// Points inserted above should still be present.
+	_ = rows
 }
 
 // TestTruncatePoints verifies that TruncatePoints clears the points table.

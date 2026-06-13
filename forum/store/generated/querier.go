@@ -23,7 +23,7 @@ type Querier interface {
 	RebuildFTS(ctx context.Context) error
 	RemoveSubscription(ctx context.Context, arg RemoveSubscriptionParams) error
 	SetRating(ctx context.Context, arg SetRatingParams) error
-	TruncateAll(ctx context.Context) error
+	TruncateConflictThreads(ctx context.Context) error
 	TruncatePoints(ctx context.Context) error
 	TruncateRatings(ctx context.Context) error
 	TruncateSubscriptions(ctx context.Context) error
