@@ -32,7 +32,7 @@ created: 2026-06-13
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
 | 04-XX | TBD | 1+ | DEB-01 | — | preseed/hook dst sanitized (no traversal) | unit | `pytest translators/debian/tests/test_profile.py -x` | ❌ W0 | ⬜ pending |
 | 04-XX | TBD | 1+ | DEB-02 | — | required+unsupported → CapabilityError names opinion+token | unit | `pytest translators/debian/tests/test_capability_gate.py -x` | ❌ W0 | ⬜ pending |
-| 04-XX | TBD | 1+ | DEB-03 | — | apt signed-by/trusted maps sig_level verbatim | unit | `pytest translators/debian/tests/test_apt_sources.py -x` | ❌ W0 | ⬜ pending |
+| 04-XX | TBD | 1+ | DEB-03 | — | apt signed-by/trusted maps sig_level verbatim | unit | `pytest translators/debian/tests/test_variant.py -x` | ❌ W0 | ⬜ pending |
 | 04-XX | TBD | 2+ | DEB-01 | — | foundation→translator data-driven (no hardcode) | unit | `go test ./cli/build/... -run TestBuildFoundation -count=1` | ❌ W0 | ⬜ pending |
 | 04-XX | TBD | 2+ | DEB-01 | — | N/A | script | `bash scripts/dual-foundation-check.sh` (one resolve → both translators → equivalence) | ❌ W0 | ⬜ pending |
 | 04-XX | TBD | 1+ | DEB-03 | — | schema change → no Arch/examples regression | unit | `go test ./... -count=1 && pytest translators/arch/tests -q` | ✅ | ⬜ pending |
