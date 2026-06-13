@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"filippo.io/age"
@@ -29,7 +30,7 @@ const identityFileName = "identity.age"
 // Security: the file is written with os.OpenFile(O_CREATE|O_WRONLY|O_TRUNC, 0600)
 // so the private key is never exposed with a wider mode (T-03-PERM).
 func LoadOrCreateIdentity(dir string) (*age.X25519Identity, error) {
-	path := fmt.Sprintf("%s/%s", dir, identityFileName)
+	path := filepath.Join(dir, identityFileName)
 
 	// Try to read existing identity first.
 	data, err := os.ReadFile(path)
@@ -75,8 +76,13 @@ func LoadOrCreateIdentity(dir string) (*age.X25519Identity, error) {
 }
 
 // EncryptFile age-encrypts src to dst using the public key of identity.
-// dst is created 0600 (T-03-PERM). The age format is streaming so large
-// files do not need to be fully buffered.
+// dst is created 0600 (T-03-PERM).
+//
+// Note: this implementation reads src fully into RAM via os.ReadFile before
+// encrypting (IN-02: the prior docstring claimed streaming, which was
+// misleading). For pane.yaml this is harmless — files are small. A streaming
+// path (io.Copy into the age writer) can replace os.ReadFile if large-file
+// support is needed.
 //
 // Security: only filippo.io/age is used — no hand-rolled crypto (V6).
 func EncryptFile(id *age.X25519Identity, src, dst string) error {

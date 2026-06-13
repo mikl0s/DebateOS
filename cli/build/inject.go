@@ -116,9 +116,14 @@ func WriteInjectionTar(outDir string, assets []PaneAsset) (string, error) {
 	for i, a := range assets {
 		entries[i] = privateManifestEntry{Path: sanitized[i], Mode: a.Mode}
 	}
+	// IN-03: use epoch sentinel instead of time.Now() to make the manifest
+	// deterministic across runs. The determinism-test.sh gate does not
+	// currently cover private-injection.tar; when it does, a wall-clock
+	// Created field would break that gate. The sentinel value matches the
+	// ModTime used for all tar headers in this file.
 	manifest := privateManifest{
 		Version: 1,
-		Created: time.Now().UTC().Format(time.RFC3339),
+		Created: time.Unix(0, 0).UTC().Format(time.RFC3339),
 		Files:   entries,
 	}
 	manifestBytes, err := json.Marshal(manifest)
