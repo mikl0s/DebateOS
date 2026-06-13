@@ -51,9 +51,9 @@ jobs:
           if [ -x scripts/generate-index.sh ]; then
             bash scripts/generate-index.sh
           else
-            echo "WARNING: scripts/generate-index.sh not found — index not regenerated"
-            echo "Add a generate-index.sh script or a cmd/gen-index binary to automate this step."
-            exit 0
+            echo "ERROR: scripts/generate-index.sh not found — index cannot be regenerated" >&2
+            echo "Add a generate-index.sh script or a cmd/gen-index binary to automate this step." >&2
+            exit 1
           fi
 
       - name: Check for index changes
