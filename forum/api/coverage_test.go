@@ -791,6 +791,32 @@ func TestRemoveSubscriptionStoreError(t *testing.T) {
 	}
 }
 
+// TestGetPointUsesChi: GET /api/points/{id} with chi router returns the point.
+// CR-03: verifies chi.URLParam is used (not r.PathValue or URL path slicing).
+func TestGetPointUsesChi(t *testing.T) {
+	s := newTestStore(t)
+	seedStoreWithPoints(t, s, []store.PointEntry{
+		{ID: "chi-point", Name: "Chi Point", Curator: "alice", FoundationCompat: `["arch"]`},
+	})
+
+	router := api.NewRouter(s, noIdentity)
+	req := httptest.NewRequest(http.MethodGet, "/api/points/chi-point", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d (body: %s)", w.Code, w.Body.String())
+	}
+
+	var point store.PointEntry
+	if err := json.NewDecoder(w.Body).Decode(&point); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	if point.ID != "chi-point" {
+		t.Errorf("expected id=chi-point, got %q", point.ID)
+	}
+}
+
 // TestListPointsEmpty: GET /api/points returns [] not null when store is empty.
 func TestListPointsEmpty(t *testing.T) {
 	s := newTestStore(t)

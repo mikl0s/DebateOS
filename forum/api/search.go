@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/mikl0s/debateos/forum/store"
 )
 
@@ -62,11 +63,14 @@ func (h *handlers) listPoints(w http.ResponseWriter, r *http.Request) {
 }
 
 // getPoint handles GET /api/points/{id}
+// Uses chi.URLParam to extract the path parameter (consistent with getRatings).
+// The r.PathValue fallback was removed — it did not work with chi routing and
+// the path-slice fallback was incorrect under path-prefix deployments (CR-03).
 func (h *handlers) getPoint(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
+	id := chi.URLParam(r, "id")
 	if id == "" {
-		// chi path param fallback
-		id = r.URL.Path[len("/api/points/"):]
+		http.Error(w, "point id required", http.StatusBadRequest)
+		return
 	}
 
 	point, err := h.store.GetPoint(r.Context(), id)
