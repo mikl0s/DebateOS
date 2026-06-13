@@ -609,6 +609,42 @@ func TestPostConflictRequiresIdentity(t *testing.T) {
 	}
 }
 
+// TestPostConflictEmptyIDRejected: POST /api/conflicts with empty id returns 400 (WR-06).
+// An empty string is a valid SQLite primary key value but a nonsensical thread ID;
+// all threads submitted with id="" would collide on the same row.
+func TestPostConflictEmptyIDRejected(t *testing.T) {
+	s := newTestStore(t)
+	router := api.NewRouter(s, fakeIdentity("user-1"))
+
+	// id is explicitly empty.
+	body := `{"id":"","point_a":"op-a","point_b":"op-b","status":"open"}`
+	req := httptest.NewRequest(http.MethodPost, "/api/conflicts", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("WR-06: expected 400 for empty id, got %d (body: %s)", w.Code, w.Body.String())
+	}
+}
+
+// TestPostConflictMissingIDRejected: POST /api/conflicts with no id field returns 400.
+func TestPostConflictMissingIDRejected(t *testing.T) {
+	s := newTestStore(t)
+	router := api.NewRouter(s, fakeIdentity("user-1"))
+
+	// id field omitted entirely.
+	body := `{"point_a":"op-a","point_b":"op-b","status":"open"}`
+	req := httptest.NewRequest(http.MethodPost, "/api/conflicts", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("WR-06: expected 400 for missing id, got %d (body: %s)", w.Code, w.Body.String())
+	}
+}
+
 // TestPostConflictDefaultStatus: POST /api/conflicts without status field defaults to open.
 func TestPostConflictDefaultStatus(t *testing.T) {
 	s := newTestStore(t)

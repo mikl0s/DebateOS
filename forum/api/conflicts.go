@@ -63,6 +63,10 @@ func (h *handlers) postConflict(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.ID == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
 	if req.PointA == "" || req.PointB == "" {
 		http.Error(w, "point_a and point_b are required", http.StatusBadRequest)
 		return
