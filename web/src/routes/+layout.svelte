@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css';
+	import { base } from '$app/paths';
 
 	let { children } = $props();
 </script>
@@ -20,7 +21,7 @@
 	>
 		<!-- DebateOS wordmark -->
 		<a
-			href="/"
+			href="{base}/"
 			style="
 				font-size: var(--font-size-heading);
 				font-weight: 600;
@@ -36,7 +37,7 @@
 		<!-- Nav links -->
 		<div style="display: flex; gap: var(--spacing-md); margin-left: auto; align-items: center;">
 			<a
-				href="/debate/"
+				href="{base}/debate/"
 				style="
 					font-size: var(--font-size-label);
 					color: var(--color-text-secondary);
@@ -50,7 +51,7 @@
 				Debate
 			</a>
 			<a
-				href="/browse/"
+				href="{base}/browse/"
 				style="
 					font-size: var(--font-size-label);
 					color: var(--color-text-secondary);

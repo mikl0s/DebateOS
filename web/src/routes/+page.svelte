@@ -1,8 +1,9 @@
 <script lang="ts">
 	// Landing page — empty debate state
-	// BRND-01: uses canonical DebateOS vocabulary only.
-	// Forbidden: config, preset, package set, distro (A6).
+	// BRND-01: uses canonical DebateOS vocabulary only (A6).
+	// Canonical terms: Opinion, Point, Speech, Debate, Foundation, Translator.
 	// Verbatim copy from UI-SPEC §Copywriting contract.
+	import { base } from '$app/paths';
 </script>
 
 <svelte:head>
@@ -69,7 +70,7 @@
 	<!-- Primary CTA — UI-SPEC "Start Debating" -->
 	<div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; justify-content: center;">
 		<a
-			href="/debate/"
+			href="{base}/debate/"
 			style="
 				display: inline-flex;
 				align-items: center;
@@ -90,7 +91,7 @@
 		</a>
 
 		<a
-			href="/browse/"
+			href="{base}/browse/"
 			style="
 				display: inline-flex;
 				align-items: center;

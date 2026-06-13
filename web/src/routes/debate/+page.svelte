@@ -3,6 +3,7 @@
 	// WASM is loaded here. Wave-2 will implement full DebateStage.
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
+	// base is used to prefix WASM asset URLs (UI-02 dual-delivery)
 
 	let wasmLoaded = $state(false);
 	let wasmError = $state(false);
@@ -78,7 +79,7 @@
 				directly. Your foundation is chosen — time to take a stand.
 			</p>
 			<a
-				href="/browse/"
+				href="{base}/browse/"
 				style="
 					display: inline-flex;
 					align-items: center;

@@ -20,9 +20,9 @@ const config = {
 			base: process.env.BASE_PATH ?? ''
 		},
 		prerender: {
-			// Ignore missing favicon (static asset, not a route)
-			handleHttpError: ({ path, referrer, message }) => {
-				if (path === '/favicon.png') return;
+			// Ignore missing favicon (static asset; not a route; may have base-path prefix)
+			handleHttpError: ({ path, message }) => {
+				if (path.endsWith('/favicon.png')) return;
 				throw new Error(message);
 			}
 		}
