@@ -1,0 +1,10 @@
+schema: 1
+id: SMP-003
+name: Systemd Service Enable
+category: services
+intent: Enable a sample systemd service available on all foundations.
+status: required
+install_phase: packaging
+translator_capabilities:
+- enable-systemd-service
+- write-sysctl-drop-in

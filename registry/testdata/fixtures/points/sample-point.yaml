@@ -1,0 +1,12 @@
+schema: 1
+id: registry-test/sample-point
+name: Sample Point
+intent: A sample point for registry generator tests covering both arch and debian compatibility scenarios.
+curator: test@debateos.example
+members:
+- id: SMP-001
+  status: required
+- id: SMP-002
+  status: nice-to-have
+- id: SMP-003
+  status: required

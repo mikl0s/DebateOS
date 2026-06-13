@@ -1,0 +1,13 @@
+schema: 1
+id: SMP-001
+name: Sample Package Install
+category: package-install
+intent: Install a sample set of packages available on all foundations.
+status: required
+install_phase: packaging
+translator_capabilities:
+- install-packages
+- deploy-config-file-tree
+packages:
+- git
+- curl

@@ -1,0 +1,11 @@
+schema: 1
+id: SMP-002
+name: SDDM Theme Deploy
+category: theming
+intent: Deploy a custom SDDM display manager theme (arch-only capability).
+status: nice-to-have
+install_phase: packaging
+translator_capabilities:
+- deploy-sddm-theme
+packages:
+- sddm
