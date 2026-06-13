@@ -240,3 +240,75 @@ func TestRatings(t *testing.T) {
 		t.Error("SetRating with stars=0 should return an error")
 	}
 }
+
+// TestConflictThreads: UpsertConflictThread round-trips; status updatable; symmetric lookup.
+func TestConflictThreads(t *testing.T) {
+	ctx := context.Background()
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	// Insert a conflict thread.
+	thread := store.ConflictThread{
+		ID:         "ct-test-01",
+		PointA:     "docker-op",
+		PointB:     "podman-op",
+		Status:     "open",
+		PatchPRURL: "https://github.com/mikl0s/debateos/pull/12",
+	}
+	if err := s.UpsertConflictThread(ctx, thread); err != nil {
+		t.Fatalf("UpsertConflictThread: %v", err)
+	}
+
+	// Retrieve by (a, b).
+	threads, err := s.GetConflicts(ctx, "docker-op", "podman-op")
+	if err != nil {
+		t.Fatalf("GetConflicts(a,b): %v", err)
+	}
+	if len(threads) != 1 {
+		t.Fatalf("expected 1 thread, got %d", len(threads))
+	}
+	got := threads[0]
+	if got.ID != "ct-test-01" {
+		t.Errorf("ID: got %q", got.ID)
+	}
+	if got.PatchPRURL != "https://github.com/mikl0s/debateos/pull/12" {
+		t.Errorf("PatchPRURL: got %q", got.PatchPRURL)
+	}
+	if got.Status != "open" {
+		t.Errorf("Status: got %q", got.Status)
+	}
+
+	// Symmetric lookup: (b, a) should also return the thread.
+	threads2, err := s.GetConflicts(ctx, "podman-op", "docker-op")
+	if err != nil {
+		t.Fatalf("GetConflicts(b,a): %v", err)
+	}
+	if len(threads2) != 1 {
+		t.Errorf("symmetric lookup: expected 1, got %d", len(threads2))
+	}
+
+	// Update status to resolved.
+	thread.Status = "resolved"
+	if err := s.UpsertConflictThread(ctx, thread); err != nil {
+		t.Fatalf("UpsertConflictThread (update): %v", err)
+	}
+
+	threads3, err := s.GetConflicts(ctx, "docker-op", "podman-op")
+	if err != nil {
+		t.Fatalf("GetConflicts after update: %v", err)
+	}
+	if len(threads3) == 0 {
+		t.Fatal("no threads after status update")
+	}
+	if threads3[0].Status != "resolved" {
+		t.Errorf("after update: expected resolved, got %q", threads3[0].Status)
+	}
+
+	// PatchPRURL preserved after status update.
+	if threads3[0].PatchPRURL != "https://github.com/mikl0s/debateos/pull/12" {
+		t.Errorf("PatchPRURL after update: got %q", threads3[0].PatchPRURL)
+	}
+}
