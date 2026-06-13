@@ -245,6 +245,91 @@ func TestGoldenIndex(t *testing.T) {
 	}
 }
 
+// TestLoadCapabilities verifies that LoadCapabilities reads both capabilities.json
+// files and returns a non-empty map with "arch" and "debian" keys.
+func TestLoadCapabilities(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Walk up to module root (registry/ is one level below root).
+	repoRoot := filepath.Join(wd, "..")
+	archPath := filepath.Join(repoRoot, "translators", "arch", "capabilities.json")
+	debianPath := filepath.Join(repoRoot, "translators", "debian", "capabilities.json")
+
+	caps, err := registry.LoadCapabilities(archPath, debianPath)
+	if err != nil {
+		t.Fatalf("LoadCapabilities returned error: %v", err)
+	}
+
+	archCaps, ok := caps["arch"]
+	if !ok || len(archCaps) == 0 {
+		t.Error("expected non-empty 'arch' capabilities")
+	}
+	debianCaps, ok := caps["debian"]
+	if !ok || len(debianCaps) == 0 {
+		t.Error("expected non-empty 'debian' capabilities")
+	}
+
+	// At minimum, both foundations must support install-packages.
+	archHas := false
+	for _, c := range archCaps {
+		if c == "install-packages" {
+			archHas = true
+		}
+	}
+	if !archHas {
+		t.Error("arch capabilities missing 'install-packages'")
+	}
+	debianHas := false
+	for _, c := range debianCaps {
+		if c == "install-packages" {
+			debianHas = true
+		}
+	}
+	if !debianHas {
+		t.Error("debian capabilities missing 'install-packages'")
+	}
+}
+
+// TestLoadCapabilitiesErrors verifies error handling in LoadCapabilities.
+func TestLoadCapabilitiesErrors(t *testing.T) {
+	// Non-existent arch path
+	_, err := registry.LoadCapabilities("/nonexistent/arch/capabilities.json", "/nonexistent/debian/capabilities.json")
+	if err == nil {
+		t.Fatal("expected error for non-existent capabilities.json, got nil")
+	}
+
+	// Non-existent debian path (valid arch, bad debian)
+	wd, _ := os.Getwd()
+	repoRoot := filepath.Join(wd, "..")
+	archPath := filepath.Join(repoRoot, "translators", "arch", "capabilities.json")
+	_, err = registry.LoadCapabilities(archPath, "/nonexistent/debian/capabilities.json")
+	if err == nil {
+		t.Fatal("expected error for non-existent debian capabilities.json, got nil")
+	}
+}
+
+// TestGenerateIndexEmptyDirs verifies behavior with empty points/opinions dirs.
+func TestGenerateIndexEmptyDirs(t *testing.T) {
+	tmpDir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(tmpDir, "points"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(tmpDir, "opinions"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	caps := capabilitiesForTest()
+	idx, err := registry.GenerateIndex(tmpDir, caps, "2026-01-01T00:00:00Z")
+	if err != nil {
+		t.Fatalf("GenerateIndex with empty dirs returned error: %v", err)
+	}
+	if len(idx.Points) != 0 {
+		t.Errorf("expected 0 points for empty dirs, got %d", len(idx.Points))
+	}
+}
+
 // TestEmitHTML verifies that EmitHTML produces a non-empty JS-free browse page
 // that contains the point name and compat badges.
 func TestEmitHTML(t *testing.T) {

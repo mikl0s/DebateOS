@@ -241,6 +241,159 @@ func TestRatings(t *testing.T) {
 	}
 }
 
+// TestOpenInvalidDSN: Open with invalid DSN returns an error or creates a file (SQLite behavior).
+// Primarily tests that Open doesn't panic and returns a usable or failed state.
+func TestOpenValidDSN(t *testing.T) {
+	// A known-good DSN: in-memory
+	db, err := store.Open(":memory:")
+	if err != nil {
+		t.Fatalf("Open(:memory:) failed: %v", err)
+	}
+	defer db.Close()
+	if db == nil {
+		t.Error("Open returned nil db")
+	}
+}
+
+// TestNewWrapsDB: New returns a non-nil SQLiteStore.
+func TestNewWrapsDB(t *testing.T) {
+	db, err := store.Open(":memory:")
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+
+	s := store.New(db)
+	if s == nil {
+		t.Fatal("New returned nil")
+	}
+	if s.DB() == nil {
+		t.Error("DB() returned nil")
+	}
+}
+
+// TestStoreClose: Close returns nil for an in-memory store.
+func TestStoreClose(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	if err := s.Close(); err != nil {
+		t.Errorf("Close: %v", err)
+	}
+}
+
+// TestGetPointNil: GetPoint returns nil, nil for a non-existent ID.
+func TestGetPointNil(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	got, err := s.GetPoint(context.Background(), "does-not-exist")
+	if err != nil {
+		t.Fatalf("GetPoint: %v", err)
+	}
+	if got != nil {
+		t.Errorf("expected nil for missing point, got %+v", got)
+	}
+}
+
+// TestSearchPointsEmptyStore: SearchPoints on empty store returns empty slice.
+func TestSearchPointsEmptyStore(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	results, err := s.SearchPoints(context.Background(), "anything", "", 10)
+	if err != nil {
+		t.Fatalf("SearchPoints: %v", err)
+	}
+	if len(results) != 0 {
+		t.Errorf("expected 0 results, got %d", len(results))
+	}
+}
+
+// TestGetConflictsEmpty: GetConflicts on empty store returns empty slice.
+func TestGetConflictsEmpty(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	threads, err := s.GetConflicts(context.Background(), "x", "y")
+	if err != nil {
+		t.Fatalf("GetConflicts: %v", err)
+	}
+	if len(threads) != 0 {
+		t.Errorf("expected 0 threads, got %d", len(threads))
+	}
+}
+
+// TestTruncateStoreMethod: Truncate clears all data.
+func TestTruncateStoreMethod(t *testing.T) {
+	ctx := context.Background()
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	if err := s.UpsertPoint(ctx, store.PointEntry{
+		ID: "truncate-me", Name: "T", Curator: "a", FoundationCompat: `["arch"]`,
+		CommitDate: "2026-01-01", Tags: "[]",
+	}); err != nil {
+		t.Fatalf("UpsertPoint: %v", err)
+	}
+
+	if err := s.Truncate(ctx); err != nil {
+		t.Fatalf("Truncate: %v", err)
+	}
+
+	pts, err := s.ListPoints(ctx, 10, 0)
+	if err != nil {
+		t.Fatalf("ListPoints after Truncate: %v", err)
+	}
+	if len(pts) != 0 {
+		t.Errorf("expected 0 points after Truncate, got %d", len(pts))
+	}
+}
+
+// TestStoreReindex: store.Reindex rebuilds the FTS index.
+func TestStoreReindex(t *testing.T) {
+	ctx := context.Background()
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	// Reindex on an empty store should succeed.
+	if err := s.Reindex(ctx); err != nil {
+		t.Fatalf("Reindex: %v", err)
+	}
+}
+
+// TestGetRatingsEmpty: GetRatings for a non-existent point returns zero summary.
+func TestGetRatingsEmpty(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	sum, err := s.GetRatings(context.Background(), "nonexistent")
+	if err != nil {
+		t.Fatalf("GetRatings: %v", err)
+	}
+	if sum.Count != 0 {
+		t.Errorf("expected count 0 for nonexistent point, got %d", sum.Count)
+	}
+}
+
 // TestConflictThreads: UpsertConflictThread round-trips; status updatable; symmetric lookup.
 func TestConflictThreads(t *testing.T) {
 	ctx := context.Background()
@@ -311,4 +464,87 @@ func TestConflictThreads(t *testing.T) {
 	if threads3[0].PatchPRURL != "https://github.com/mikl0s/debateos/pull/12" {
 		t.Errorf("PatchPRURL after update: got %q", threads3[0].PatchPRURL)
 	}
+}
+
+// TestClosedDBErrors: Error paths in SQLiteStore methods when the underlying DB is closed.
+// Covers the error return branches in GetRatings, SearchPoints, UpsertPoint, etc.
+func TestClosedDBErrors(t *testing.T) {
+	ctx := context.Background()
+
+	// Open a real in-memory DB, apply migrations, then close it.
+	// The wrapped store will now return errors on all operations.
+	db, err := store.Open(":memory:")
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	s := store.New(db)
+	db.Close() // close the underlying DB
+
+	t.Run("GetRatings", func(t *testing.T) {
+		if _, err := s.GetRatings(ctx, "p"); err == nil {
+			t.Error("expected error from GetRatings with closed DB, got nil")
+		}
+	})
+
+	t.Run("UpsertPoint", func(t *testing.T) {
+		err := s.UpsertPoint(ctx, store.PointEntry{ID: "x", Name: "X", Curator: "c", FoundationCompat: `["arch"]`})
+		if err == nil {
+			t.Error("expected error from UpsertPoint with closed DB, got nil")
+		}
+	})
+
+	t.Run("Truncate", func(t *testing.T) {
+		if err := s.Truncate(ctx); err == nil {
+			t.Error("expected error from Truncate with closed DB, got nil")
+		}
+	})
+
+	t.Run("SearchPoints", func(t *testing.T) {
+		// Non-empty q triggers FTS5 path which hits the closed DB.
+		if _, err := s.SearchPoints(ctx, "docker", "", 10); err == nil {
+			t.Error("expected error from SearchPoints with closed DB, got nil")
+		}
+	})
+
+	t.Run("GetPoint", func(t *testing.T) {
+		if _, err := s.GetPoint(ctx, "missing"); err == nil {
+			t.Error("expected error from GetPoint with closed DB, got nil")
+		}
+	})
+
+	t.Run("ListPoints", func(t *testing.T) {
+		if _, err := s.ListPoints(ctx, 10, 0); err == nil {
+			t.Error("expected error from ListPoints with closed DB, got nil")
+		}
+	})
+
+	t.Run("AddSubscription", func(t *testing.T) {
+		if err := s.AddSubscription(ctx, "user1", "point1"); err == nil {
+			t.Error("expected error from AddSubscription with closed DB, got nil")
+		}
+	})
+
+	t.Run("RemoveSubscription", func(t *testing.T) {
+		if err := s.RemoveSubscription(ctx, "user1", "point1"); err == nil {
+			t.Error("expected error from RemoveSubscription with closed DB, got nil")
+		}
+	})
+
+	t.Run("GetSubscriptions", func(t *testing.T) {
+		if _, err := s.GetSubscriptions(ctx, "user1"); err == nil {
+			t.Error("expected error from GetSubscriptions with closed DB, got nil")
+		}
+	})
+
+	t.Run("GetConflicts", func(t *testing.T) {
+		if _, err := s.GetConflicts(ctx, "a", "b"); err == nil {
+			t.Error("expected error from GetConflicts with closed DB, got nil")
+		}
+	})
+
+	t.Run("Reindex", func(t *testing.T) {
+		if err := s.Reindex(ctx); err == nil {
+			t.Error("expected error from Reindex with closed DB, got nil")
+		}
+	})
 }

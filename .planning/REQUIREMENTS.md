@@ -82,7 +82,7 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 
 <!-- Sources: REQ-registry-authoritative, REQ-curator-ecosystem, D12, docs/05 -->
 
-- [ ] **REG-01**: Points and public speeches are plain YAML in GitHub repos (versioning/forking/PRs/attribution via GitHub); a static registry index is generated from those repos, hosted on GitHub Pages, rebuilt on commit — the registry is the authoritative source of truth and the shareable/forkable/subscribable substrate for curator reputation
+- [x] **REG-01**: Points and public speeches are plain YAML in GitHub repos (versioning/forking/PRs/attribution via GitHub); a static registry index is generated from those repos, hosted on GitHub Pages, rebuilt on commit — the registry is the authoritative source of truth and the shareable/forkable/subscribable substrate for curator reputation
 
 ### Debate UI
 
@@ -160,7 +160,7 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | DEB-02 | Phase 4 | Complete (04-02: dual-foundation example speech + TestExampleDualFoundation; 04-05: scripts/dual-foundation-check.sh --skip-iso: 20/20 PASS — resolve ONCE, both translators, equivalence git/curl/vim + etc/motd VERIFIED) |
 | DEB-03 | Phase 4 | Complete (04-04: 6-finding audit in docs/arch-leak-audit.md; build.go foundationRegistry FIXED; 5 other findings correctly isolated/documented) |
 | COMM-01 | Phase 4 | Complete (04-05: docs/ownership-model.md — "distributions own their translators", entrypoint contract, capabilities.json, profile schema, foundationRegistry registration, translators/common/ reuse) |
-| REG-01 | Phase 5 | Pending |
+| REG-01 | Phase 5 | Complete (05-06: registry/index.json generated; .github/workflows/registry-index.yml CI rebuild on commit; docs/registry-forum-ui.md authoritative guide; registry is the source of truth for Forum Reindex and CLI compose) |
 | UI-01 | Phase 5 | Complete |
 | UI-02 | Phase 5 | Complete |
 | BRND-01 | Phase 5 | Complete |
@@ -196,4 +196,4 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 
 ---
 *Requirements defined: 2026-06-12*
-*Last updated: 2026-06-13 after Phase 4 completion (04-05: DEB-01, DEB-02, DEB-03, COMM-01 marked Complete)*
+*Last updated: 2026-06-13 after Phase 5 Plan 06 completion (05-06: REG-01 marked Complete; all 9 Phase-5 requirements Complete — UI-01, UI-02, BRND-01, FORM-01..05, REG-01)*

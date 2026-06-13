@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # scripts/check-coverage.sh
 #
-# Two-gate coverage check for DebateOS (D19 / Phase 3 extension):
+# Four-gate coverage check for DebateOS (D19 / Phase 5 extension):
 #   Gate 1: ./resolver/... must be >= 90%   (original gate, unchanged)
 #   Gate 2: ./cli/...      must be >= 85%   (added Phase 3 Plan 04)
+#   Gate 3: ./registry/... must be >= 85%   (added Phase 5 Plan 06)
+#   Gate 4: ./forum/...    must be >= 85%   (added Phase 5 Plan 06)
 #
-# Fails (exit non-zero) if EITHER gate is below threshold.
-# Passes (exit 0) when both gates are at or above their thresholds.
+# Fails (exit non-zero) if ANY gate is below threshold.
+# Passes (exit 0) when all gates are at or above their thresholds.
 #
 # Usage: bash scripts/check-coverage.sh
 #        (run from the module root)
@@ -17,26 +19,32 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 RESOLVER_THRESHOLD=90
 CLI_THRESHOLD=85
+REGISTRY_THRESHOLD=85
+FORUM_THRESHOLD=85
 
 echo "=== DebateOS Coverage Gate ==="
-echo "  resolver/ threshold: ${RESOLVER_THRESHOLD}%"
-echo "  cli/      threshold: ${CLI_THRESHOLD}%"
+echo "  resolver/  threshold: ${RESOLVER_THRESHOLD}%"
+echo "  cli/       threshold: ${CLI_THRESHOLD}%"
+echo "  registry/  threshold: ${REGISTRY_THRESHOLD}%"
+echo "  forum/     threshold: ${FORUM_THRESHOLD}%"
 echo ""
 
 # Helper: run coverage for a package path and check against a threshold.
 # Returns 0 if coverage >= threshold, 1 otherwise.
 # Prints the result line to stdout.
+# Usage: check_package_coverage "label" "threshold" pkg1 [pkg2 ...]
 check_package_coverage() {
     local LABEL="$1"
-    local PKG="$2"
-    local THRESHOLD="$3"
+    local THRESHOLD="$2"
+    shift 2
+    local PKGS=("$@")
 
     local PROFILE
     PROFILE="$(mktemp /tmp/debateos-cover-XXXXXX.out)"
     trap "rm -f '${PROFILE}'" RETURN
 
-    echo "--- Running go test -coverprofile over ${PKG} ---"
-    (cd "${REPO_ROOT}" && go test -coverprofile="${PROFILE}" -covermode=atomic "${PKG}" -count=1 2>&1)
+    echo "--- Running go test -coverprofile over ${PKGS[*]} ---"
+    (cd "${REPO_ROOT}" && go test -coverprofile="${PROFILE}" -covermode=atomic "${PKGS[@]}" -count=1 2>&1)
     echo ""
 
     local TOTAL_LINE
@@ -47,7 +55,7 @@ check_package_coverage() {
     COVERAGE="$(echo "${TOTAL_LINE}" | awk '{print $3}' | tr -d '%')"
 
     if [ -z "${COVERAGE}" ]; then
-        echo "ERROR: could not parse total coverage for ${PKG}" >&2
+        echo "ERROR: could not parse total coverage for ${PKGS[*]}" >&2
         return 1
     fi
 
@@ -68,14 +76,30 @@ check_package_coverage() {
     fi
 }
 
-# Track overall pass/fail across both gates.
+# Track overall pass/fail across all gates.
 OVERALL=0
 
 echo ""
-check_package_coverage "resolver/" "./resolver/..." "${RESOLVER_THRESHOLD}" || OVERALL=1
+check_package_coverage "resolver/" "${RESOLVER_THRESHOLD}" "./resolver/..." || OVERALL=1
 
 echo ""
-check_package_coverage "cli/" "./cli/..." "${CLI_THRESHOLD}" || OVERALL=1
+check_package_coverage "cli/" "${CLI_THRESHOLD}" "./cli/..." || OVERALL=1
+
+echo ""
+check_package_coverage "registry/" "${REGISTRY_THRESHOLD}" "./registry/..." || OVERALL=1
+
+# Forum coverage: exclude the binary entrypoint (forum/cmd/forumctl — main package,
+# untestable without running the whole service).
+# The 85% gate applies to the testable core packages listed below.
+# forum/cmd/forumctl is excluded because its main(), runServe(), and runReindex()
+# functions require a running service environment (not unit-testable).
+echo ""
+check_package_coverage "forum/ (testable core)" "${FORUM_THRESHOLD}" \
+  "./forum" \
+  "./forum/api" \
+  "./forum/migrations" \
+  "./forum/store" \
+  "./forum/store/generated" || OVERALL=1
 
 echo ""
 if [ "${OVERALL}" = "0" ]; then

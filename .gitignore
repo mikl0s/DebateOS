@@ -16,11 +16,13 @@ OldDocs/
 /wasm
 /debateos
 /resolve-json
+/forumctl
 
 # --- Node / SvelteKit (web/) ---
 node_modules/
 .svelte-kit/
 /web/build/
+/web/test-results/
 .vercel/
 *.log
 .env

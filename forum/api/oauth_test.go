@@ -7,6 +7,7 @@ package api_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -25,6 +26,8 @@ type fakeOAuthProvider struct {
 	userID string
 	// exchangeErr allows tests to simulate Exchange failures.
 	exchangeErr error
+	// getUserIDErr allows tests to simulate GetUserID failures.
+	getUserIDErr error
 }
 
 func (f *fakeOAuthProvider) AuthCodeURL(state string) string {
@@ -39,6 +42,9 @@ func (f *fakeOAuthProvider) Exchange(ctx context.Context, code string) (string, 
 }
 
 func (f *fakeOAuthProvider) GetUserID(ctx context.Context, token string) (string, error) {
+	if f.getUserIDErr != nil {
+		return "", f.getUserIDErr
+	}
 	return f.userID, nil
 }
 
@@ -355,4 +361,216 @@ func TestOAuthJSONExport(t *testing.T) {
 	_ = json.Marshal // ensure encoding/json is used in test binary
 	// If this compiles and runs, oauth.go exists with the required symbols.
 	var _ api.OAuthProvider = (*fakeOAuthProvider)(nil)
+}
+
+// --- TestNewRealGitHubOAuthConstructor ---
+// Verifies that NewRealGitHubOAuth creates a valid provider with the given credentials,
+// and that AuthCodeURL generates a URL containing the state parameter (no network call).
+func TestNewRealGitHubOAuthConstructor(t *testing.T) {
+	p := api.NewRealGitHubOAuth("client-id-test", "client-secret-test", "http://localhost/callback")
+	if p == nil {
+		t.Fatal("NewRealGitHubOAuth returned nil")
+	}
+
+	// AuthCodeURL only formats a redirect URL — no network call required.
+	url := p.AuthCodeURL("csrf-state-nonce")
+	if url == "" {
+		t.Fatal("AuthCodeURL returned empty string")
+	}
+	if !strings.Contains(url, "csrf-state-nonce") {
+		t.Errorf("expected AuthCodeURL to contain state nonce, got: %q", url)
+	}
+
+	// Verify it's for GitHub's OAuth endpoint.
+	if !strings.Contains(url, "github.com") {
+		t.Errorf("expected AuthCodeURL to point to github.com, got: %q", url)
+	}
+}
+
+// --- TestCallbackMissingStateCookie ---
+// GET /oauth/callback without a state cookie → 400.
+func TestCallbackMissingStateCookie(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	provider := &fakeOAuthProvider{userID: "alice"}
+	sessions := api.NewSessionStore()
+	router := api.NewRouterWithOAuth(s, provider, sessions)
+
+	// No state cookie at all.
+	req := httptest.NewRequest(http.MethodGet, "/oauth/callback?code=somecode&state=anystate", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected 400 for missing state cookie, got %d", w.Code)
+	}
+}
+
+// --- TestCallbackMissingCode ---
+// GET /oauth/callback with valid state but no code → 400.
+func TestCallbackMissingCode(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	provider := &fakeOAuthProvider{userID: "alice"}
+	sessions := api.NewSessionStore()
+	router := api.NewRouterWithOAuth(s, provider, sessions)
+
+	// Get a valid state from login.
+	loginReq := httptest.NewRequest(http.MethodGet, "/oauth/login", nil)
+	loginW := httptest.NewRecorder()
+	router.ServeHTTP(loginW, loginReq)
+	var stateCookie *http.Cookie
+	for _, c := range loginW.Result().Cookies() {
+		if c.Name == "oauth_state" {
+			stateCookie = c
+		}
+	}
+	if stateCookie == nil {
+		t.Fatal("no state cookie from login")
+	}
+
+	// Callback with valid state but no code.
+	req := httptest.NewRequest(http.MethodGet, "/oauth/callback?state="+stateCookie.Value, nil)
+	req.AddCookie(stateCookie)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected 400 for missing code, got %d", w.Code)
+	}
+}
+
+// --- TestCallbackExchangeError ---
+// GET /oauth/callback when Exchange fails → 502.
+func TestCallbackExchangeError(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	provider := &fakeOAuthProvider{
+		userID:      "alice",
+		exchangeErr: errors.New("exchange failed"),
+	}
+	sessions := api.NewSessionStore()
+	router := api.NewRouterWithOAuth(s, provider, sessions)
+
+	// Get a valid state from login.
+	loginReq := httptest.NewRequest(http.MethodGet, "/oauth/login", nil)
+	loginW := httptest.NewRecorder()
+	router.ServeHTTP(loginW, loginReq)
+	var stateCookie *http.Cookie
+	for _, c := range loginW.Result().Cookies() {
+		if c.Name == "oauth_state" {
+			stateCookie = c
+		}
+	}
+	if stateCookie == nil {
+		t.Fatal("no state cookie from login")
+	}
+
+	req := httptest.NewRequest(http.MethodGet,
+		"/oauth/callback?code=badcode&state="+stateCookie.Value, nil)
+	req.AddCookie(stateCookie)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadGateway {
+		t.Errorf("expected 502 for exchange error, got %d", w.Code)
+	}
+}
+
+// --- TestCallbackGetUserIDError ---
+// GET /oauth/callback when GetUserID fails → 502.
+func TestCallbackGetUserIDError(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	provider := &fakeOAuthProvider{
+		userID:       "alice",
+		getUserIDErr: errors.New("github api error"),
+	}
+	sessions := api.NewSessionStore()
+	router := api.NewRouterWithOAuth(s, provider, sessions)
+
+	// Get a valid state from login.
+	loginReq := httptest.NewRequest(http.MethodGet, "/oauth/login", nil)
+	loginW := httptest.NewRecorder()
+	router.ServeHTTP(loginW, loginReq)
+	var stateCookie *http.Cookie
+	for _, c := range loginW.Result().Cookies() {
+		if c.Name == "oauth_state" {
+			stateCookie = c
+		}
+	}
+	if stateCookie == nil {
+		t.Fatal("no state cookie from login")
+	}
+
+	req := httptest.NewRequest(http.MethodGet,
+		"/oauth/callback?code=somecode&state="+stateCookie.Value, nil)
+	req.AddCookie(stateCookie)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadGateway {
+		t.Errorf("expected 502 for GetUserID error, got %d", w.Code)
+	}
+}
+
+// --- TestGetRatingsViaChi ---
+// GET /api/ratings/{pointId} with a real point ID returns JSON summary.
+func TestGetRatingsViaChi(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	if err := s.UpsertPoint(context.Background(), store.PointEntry{
+		ID: "chi-rating-point", Name: "Chi Point", Curator: "x", FoundationCompat: `["arch"]`,
+	}); err != nil {
+		t.Fatalf("UpsertPoint: %v", err)
+	}
+
+	router := api.NewRouter(s, func(r *http.Request) (string, bool) { return "user-1", true })
+
+	// First set a rating so the aggregate is non-trivial.
+	rateReq := httptest.NewRequest(http.MethodPost, "/api/ratings",
+		strings.NewReader(`{"point_id":"chi-rating-point","stars":4}`))
+	rateReq.Header.Set("Content-Type", "application/json")
+	rateW := httptest.NewRecorder()
+	router.ServeHTTP(rateW, rateReq)
+	if rateW.Code != http.StatusOK {
+		t.Fatalf("POST /api/ratings: expected 200, got %d", rateW.Code)
+	}
+
+	// Now GET /api/ratings/{pointId}.
+	req := httptest.NewRequest(http.MethodGet, "/api/ratings/chi-rating-point", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("GET /api/ratings/chi-rating-point: expected 200, got %d (body: %s)", w.Code, w.Body.String())
+	}
+
+	var result map[string]interface{}
+	if err := json.NewDecoder(w.Body).Decode(&result); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	if result["count"].(float64) != 1 {
+		t.Errorf("expected count=1, got %v", result["count"])
+	}
 }

@@ -89,3 +89,13 @@ func min(a, b int) int {
 	}
 	return b
 }
+
+// TestServeUIInvalidAddr verifies that ServeUI returns an error for an invalid address.
+// Port 99999 exceeds the valid range (0-65535) so net.Listen fails immediately,
+// allowing this test to exercise the ServeUI code path without blocking.
+func TestServeUIInvalidAddr(t *testing.T) {
+	err := embeddedui.ServeUI(":99999")
+	if err == nil {
+		t.Error("expected error for invalid port 99999, got nil")
+	}
+}

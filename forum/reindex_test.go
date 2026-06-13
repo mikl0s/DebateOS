@@ -7,13 +7,74 @@ package forum_test
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"testing"
 
 	"github.com/mikl0s/debateos/forum"
 	"github.com/mikl0s/debateos/forum/store"
 	"github.com/mikl0s/debateos/registry/index"
 )
+
+// errStore is a minimal store.Store implementation that returns errors on UpsertPoint
+// and Reindex, for testing error paths in forum.Reindex.
+type errStore struct {
+	upsertErr  error
+	reindexErr error
+}
+
+func (e *errStore) SearchPoints(_ context.Context, _, _ string, _ int) ([]store.PointEntry, error) {
+	return nil, nil
+}
+func (e *errStore) GetPoint(_ context.Context, _ string) (*store.PointEntry, error) {
+	return nil, nil
+}
+func (e *errStore) ListPoints(_ context.Context, _, _ int) ([]store.PointEntry, error) {
+	return nil, nil
+}
+func (e *errStore) UpsertPoint(_ context.Context, _ store.PointEntry) error {
+	return e.upsertErr
+}
+func (e *errStore) AddSubscription(_ context.Context, _, _ string) error   { return nil }
+func (e *errStore) RemoveSubscription(_ context.Context, _, _ string) error { return nil }
+func (e *errStore) GetSubscriptions(_ context.Context, _ string) ([]store.PointEntry, error) {
+	return nil, nil
+}
+func (e *errStore) SetRating(_ context.Context, _, _ string, _ int) error { return nil }
+func (e *errStore) GetRatings(_ context.Context, _ string) (store.RatingSummary, error) {
+	return store.RatingSummary{}, nil
+}
+func (e *errStore) GetConflicts(_ context.Context, _, _ string) ([]store.ConflictThread, error) {
+	return nil, nil
+}
+func (e *errStore) UpsertConflictThread(_ context.Context, _ store.ConflictThread) error {
+	return nil
+}
+func (e *errStore) Reindex(_ context.Context) error { return e.reindexErr }
+func (e *errStore) Truncate(_ context.Context) error { return nil }
+func (e *errStore) Close() error                    { return nil }
+func (e *errStore) DB() *sql.DB                     { return nil }
+
+// TestReindexUpsertError: Reindex returns error when UpsertPoint fails.
+func TestReindexUpsertError(t *testing.T) {
+	ctx := context.Background()
+	s := &errStore{upsertErr: errors.New("upsert failed")}
+	idx := sampleRegistryIndex(1)
+	if err := forum.Reindex(ctx, s, idx); err == nil {
+		t.Error("expected error when UpsertPoint fails, got nil")
+	}
+}
+
+// TestReindexFTSError: Reindex returns error when FTS rebuild fails.
+func TestReindexFTSError(t *testing.T) {
+	ctx := context.Background()
+	s := &errStore{reindexErr: errors.New("fts rebuild failed")}
+	idx := sampleRegistryIndex(1)
+	if err := forum.Reindex(ctx, s, idx); err == nil {
+		t.Error("expected error when Reindex FTS fails, got nil")
+	}
+}
 
 // sampleRegistryIndex builds a minimal RegistryIndex with n points.
 func sampleRegistryIndex(n int) *index.RegistryIndex {
@@ -133,6 +194,47 @@ func TestReindexFromLargerIndex(t *testing.T) {
 	}
 	if len(points2) != 5 {
 		t.Errorf("idempotent: expected 5 points, got %d", len(points2))
+	}
+}
+
+// TestReindexNilIndex: Reindex with nil index returns error.
+func TestReindexNilIndex(t *testing.T) {
+	ctx := context.Background()
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	if err := forum.Reindex(ctx, s, nil); err == nil {
+		t.Error("expected error for nil index, got nil")
+	}
+}
+
+// TestReindexEmptyIndex: Reindex with empty index succeeds with no points.
+func TestReindexEmptyIndex(t *testing.T) {
+	ctx := context.Background()
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	idx := &index.RegistryIndex{
+		Schema:      index.SchemaVersion,
+		GeneratedAt: "2026-01-01T00:00:00Z",
+		Points:      []index.PointEntry{},
+	}
+	if err := forum.Reindex(ctx, s, idx); err != nil {
+		t.Fatalf("Reindex empty index: %v", err)
+	}
+
+	points, err := s.ListPoints(ctx, 10, 0)
+	if err != nil {
+		t.Fatalf("ListPoints: %v", err)
+	}
+	if len(points) != 0 {
+		t.Errorf("expected 0 points for empty index, got %d", len(points))
 	}
 }
 

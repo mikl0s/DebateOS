@@ -50,6 +50,48 @@ func TestComposeFlagBackcompat(t *testing.T) {
 	}
 }
 
+// TestComposeServeNoListen verifies that --serve --no-listen returns 0 without blocking.
+func TestComposeServeNoListen(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := compose.Run([]string{"--serve", "--addr", ":0", "--no-listen"}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("--serve --no-listen expected exit 0, got %d\nstderr: %s", code, stderr.String())
+	}
+	// Output should mention the serve intent.
+	out := stdout.String()
+	if len(out) > 0 {
+		// Any output is acceptable — no crash is the key invariant.
+		t.Logf("serve output: %s", out)
+	}
+}
+
+// TestComposeServeWithAddrFlag verifies --addr flag is recognized.
+func TestComposeServeWithAddrFlag(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := compose.Run([]string{"--serve", "--addr", ":9999", "--no-listen"}, &stdout, &stderr)
+	// Should succeed (no unknown flag error).
+	errOut := stderr.String()
+	if contains(errOut, "flag provided but not defined") {
+		t.Errorf("--addr flag not recognized: %s", errOut)
+	}
+	if code != 0 && contains(errOut, "flag provided but not defined") {
+		t.Errorf("--addr flag caused unexpected error: %s", errOut)
+	}
+}
+
+// TestComposeServeErrorPath verifies that --serve with an invalid port returns exit 1.
+// Uses port 99999 (invalid, >65535) so ListenAndServe fails immediately without blocking.
+func TestComposeServeErrorPath(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := compose.Run([]string{"--serve", "--addr", ":99999"}, &stdout, &stderr)
+	if code != 1 {
+		t.Errorf("expected exit 1 for serveUI error, got %d (stderr: %s)", code, stderr.String())
+	}
+	if stderr.Len() == 0 {
+		t.Error("expected error message on stderr for serveUI failure")
+	}
+}
+
 func contains(s, sub string) bool {
 	return len(s) >= len(sub) && (s == sub || len(sub) == 0 ||
 		func() bool {
