@@ -553,6 +553,57 @@ func TestPaneEncryptFileMissingSrc(t *testing.T) {
 	}
 }
 
+// ─── WR-03: permission re-check on existing sensitive files ──────────────────
+
+// TestLoadPaneInsecurePermissions verifies that loadPane (via pane get) returns
+// a non-zero exit and an error when pane.yaml has wider than 0600 permissions.
+// T-03-PERM requires "perms enforced not just on create" — an external tool
+// restoring pane.yaml at 0644 must be detected on read.
+func TestLoadPaneInsecurePermissions(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("DEBATEOS_DIR", dir)
+	fr := &runner.FakeRunner{}
+
+	// Write pane.yaml with 0644 (world-readable) — simulates a bad restore.
+	if err := os.WriteFile(filepath.Join(dir, "pane.yaml"), []byte("key: value\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	var out, errBuf bytes.Buffer
+	code := pane.Run([]string{"get", "key"}, &out, &errBuf, fr)
+	if code == 0 {
+		t.Fatal("expected non-zero exit when pane.yaml has insecure permissions (0644), got 0")
+	}
+	errStr := errBuf.String()
+	if !strings.Contains(errStr, "insecure") && !strings.Contains(errStr, "perm") && !strings.Contains(errStr, "0644") {
+		t.Errorf("expected permission error message, got: %s", errStr)
+	}
+}
+
+// TestLoadOrCreateIdentityInsecurePermissions verifies that LoadOrCreateIdentity
+// returns an error when identity.age has wider than 0600 permissions.
+func TestLoadOrCreateIdentityInsecurePermissions(t *testing.T) {
+	dir := t.TempDir()
+
+	// Generate a valid identity first, then chmod it to 0644.
+	if _, err := pane.LoadOrCreateIdentity(dir); err != nil {
+		t.Fatalf("initial identity create: %v", err)
+	}
+	idPath := filepath.Join(dir, "identity.age")
+	if err := os.Chmod(idPath, 0644); err != nil {
+		t.Fatalf("chmod identity.age: %v", err)
+	}
+
+	// Second call must fail with a permission error.
+	_, err := pane.LoadOrCreateIdentity(dir)
+	if err == nil {
+		t.Fatal("expected error when identity.age has insecure permissions (0644), got nil")
+	}
+	if !strings.Contains(err.Error(), "insecure") && !strings.Contains(err.Error(), "perm") && !strings.Contains(err.Error(), "0644") {
+		t.Errorf("expected permission error message, got: %v", err)
+	}
+}
+
 // TestPaneDecryptFileMissingSrc verifies that DecryptFile fails cleanly
 // when the source encrypted file does not exist.
 func TestPaneDecryptFileMissingSrc(t *testing.T) {

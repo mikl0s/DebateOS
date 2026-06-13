@@ -105,6 +105,15 @@ func loadPane(dir string) (paneData, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read %s: %w", path, err)
 	}
+	// WR-03 / T-03-PERM: re-check permissions on existing file.
+	// An external tool (editor, backup, rsync) may restore pane.yaml with
+	// wider permissions (e.g. 0644).  Detect and reject before use so the
+	// user is alerted rather than silently reading a potentially-exposed file.
+	info, statErr := os.Stat(path)
+	if statErr == nil && info.Mode().Perm() != 0600 {
+		return nil, fmt.Errorf("%s has insecure permissions %04o (want 0600); "+
+			"run: chmod 0600 %s", path, info.Mode().Perm(), path)
+	}
 	var m paneData
 	if err := yaml.Unmarshal(data, &m); err != nil {
 		return nil, fmt.Errorf("parse %s: %w", path, err)

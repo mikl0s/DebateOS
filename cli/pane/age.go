@@ -34,6 +34,14 @@ func LoadOrCreateIdentity(dir string) (*age.X25519Identity, error) {
 	// Try to read existing identity first.
 	data, err := os.ReadFile(path)
 	if err == nil {
+		// WR-03 / T-03-PERM: re-check permissions on existing file.
+		// An external tool (backup, rsync, editor) may restore identity.age
+		// with wider permissions.  Detect and reject before exposing the key.
+		info, statErr := os.Stat(path)
+		if statErr == nil && info.Mode().Perm() != 0600 {
+			return nil, fmt.Errorf("%s has insecure permissions %04o (want 0600); "+
+				"run: chmod 0600 %s", path, info.Mode().Perm(), path)
+		}
 		// File exists — parse and return. Strip trailing whitespace/newline that
 		// fmt.Fprintln appended at write time.
 		id, err := age.ParseX25519Identity(strings.TrimSpace(string(data)))
