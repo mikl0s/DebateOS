@@ -146,7 +146,21 @@ Plans:
   3. Arch assumptions that leaked into the schema, resolver, or example opinions are identified and fixed, with schema/capability adjustments documented
   4. The translator ownership model is documented: distributions own their translators, curators own points/speeches, community PRs welcome
 
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+**Wave 1**
+
+- [ ] 04-01-PLAN.md — Extract translators/common/ shared core (contract/manifest/firstrun) + Arch regression gate (DEB-03)
+- [ ] 04-02-PLAN.md — Foundation-neutral dual-foundation example speech + clean-resolve Go gate (DEB-02)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 04-03-PLAN.md — Debian translator core: capability gate + apt sig_level mapping + preseed/chroot-hook emitter + translate entrypoint (DEB-01, DEB-03)
+- [ ] 04-04-PLAN.md — Foundation-aware build.go dispatch (foundationRegistry) + DEB-03 Arch-leak audit doc (DEB-01, DEB-03)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 04-05-PLAN.md — dual-foundation-check gate + Debian build/validate scripts + ownership-model.md + REQUIREMENTS status (DEB-01, DEB-02, COMM-01)
 
 ### Phase 5: Registry, Forum & Debate UI
 
@@ -175,7 +189,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | 1. Schema & Resolver Core | 5/5 | Complete   | 2026-06-12 |
 | 2. Arch Translator | 5/5 | Complete   | 2026-06-13 |
 | 3. CLI & Build Channels | 4/4 | Complete   | 2026-06-13 |
-| 4. Debian Translator | 0/TBD | Not started | - |
+| 4. Debian Translator | 0/5 | Planned | - |
 | 5. Registry, Forum & Debate UI | 0/TBD | Not started | - |
 
 ---
