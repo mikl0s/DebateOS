@@ -30,6 +30,8 @@ import (
 	"os"
 	"path/filepath"
 
+	yaml "go.yaml.in/yaml/v3"
+
 	"github.com/mikl0s/debateos/cli/config"
 	"github.com/mikl0s/debateos/cli/internal/loader"
 	"github.com/mikl0s/debateos/cli/runner"
@@ -96,7 +98,11 @@ func Run(args []string, stdout, stderr io.Writer, r runner.Runner) int {
 	// Expand and clean the output dir.
 	outDir := *outFlag
 	if !filepath.IsAbs(outDir) {
-		cwd, _ := os.Getwd()
+		cwd, err := os.Getwd()
+		if err != nil {
+			fmt.Fprintf(stderr, "build: getcwd: %v\n", err)
+			return 1
+		}
 		outDir = filepath.Join(cwd, outDir)
 	}
 
@@ -172,12 +178,17 @@ func Run(args []string, stdout, stderr io.Writer, r runner.Runner) int {
 		return 1
 	}
 
+	// ── Load private pane from config dir (CR-03 / PRIV-01) ────────────────
+	// pane.yaml lives only in the XDG config dir (never the speech dir);
+	// its key→value entries are injected as private file assets at
+	// etc/debateos/<key> inside private-injection.tar.
+	// Absence of pane.yaml is not an error — emit an empty (manifest-only) tar.
+	paneAssets := loadPaneAssets(stderr)
+
 	// Emit private-injection.tar next to the output artifacts (T-03-LEAK).
-	// No private-pane assets to inject in the base implementation; callers
-	// with a pane.yaml may pass assets. For now emit an empty tar so the
-	// first-boot unit can always find the artifact.
-	// (The manifest still provides version + created fields.)
-	if _, tarErr := WriteInjectionTar(outDir, nil); tarErr != nil {
+	// The tar carries private pane assets (if any); the first-boot unit
+	// finds this artifact on mounted removable media and applies it.
+	if _, tarErr := WriteInjectionTar(outDir, paneAssets); tarErr != nil {
 		fmt.Fprintf(stderr, "build: injection tar: %v\n", tarErr)
 		return 1
 	}
@@ -219,6 +230,51 @@ func resolveDir(dirFlag string) (string, error) {
 		return dirFlag, nil
 	}
 	return config.DebateOSDir()
+}
+
+// loadPaneAssets reads pane.yaml from the DebateOS config dir and converts
+// each key→value entry into a PaneAsset stored at etc/debateos/<key> (0600).
+//
+// Absence of pane.yaml is not an error — returns nil.
+// On any other error, a warning is printed to stderr and nil is returned so
+// the build continues (degraded but not broken).
+//
+// Security (PRIV-01 / T-03-LEAK): pane.yaml never leaves the local machine;
+// assets are stored in the injection tar only, not in the arch-profile tree.
+func loadPaneAssets(stderr io.Writer) []PaneAsset {
+	configDir, err := config.DebateOSDir()
+	if err != nil {
+		// Config dir unavailable — skip pane merge silently.
+		return nil
+	}
+
+	paneYAMLPath := filepath.Join(configDir, "pane.yaml")
+	data, err := os.ReadFile(paneYAMLPath)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		fmt.Fprintf(stderr, "build: warning: could not read pane.yaml (%v) — private pane will not be injected\n", err)
+		return nil
+	}
+
+	var paneData map[string]string
+	if err := yaml.Unmarshal(data, &paneData); err != nil {
+		fmt.Fprintf(stderr, "build: warning: could not parse pane.yaml (%v) — private pane will not be injected\n", err)
+		return nil
+	}
+
+	// Convert each pane entry to an asset stored at etc/debateos/<key>.
+	// Use 0600 so first-boot tooling applies restrictive permissions.
+	assets := make([]PaneAsset, 0, len(paneData))
+	for key, value := range paneData {
+		assets = append(assets, PaneAsset{
+			Dst:     filepath.Join("etc", "debateos", key),
+			Content: []byte(value),
+			Mode:    0600,
+		})
+	}
+	return assets
 }
 
 // joinArgs joins a string slice with spaces for display purposes only.

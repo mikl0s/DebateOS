@@ -648,6 +648,116 @@ func TestBuildNoConfigDir(t *testing.T) {
 	}
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CR-03: private pane merge — pane.yaml loaded from config dir and injected
+// ─────────────────────────────────────────────────────────────────────────────
+
+// TestBuildPrivatePaneMerge verifies that when pane.yaml exists in the config
+// dir (DEBATEOS_DIR), debateos build --skip-iso:
+//   1. Does NOT return non-zero (build succeeds).
+//   2. Writes private-injection.tar to the out dir.
+//   3. The injection tar is non-empty (contains more than just the manifest).
+//   4. The private pane entries appear as assets in the tar under etc/debateos/.
+//   5. The manifest inside the tar lists the private entries.
+func TestBuildPrivatePaneMerge(t *testing.T) {
+	speechDir := minimalSpeechDir(t)
+	outDir := t.TempDir()
+	configDir := t.TempDir()
+
+	// Set DEBATEOS_DIR to the config dir (separate from speechDir).
+	t.Setenv("DEBATEOS_DIR", configDir)
+
+	// Write a pane.yaml with a private entry in the config dir.
+	paneYAML := "ssh_key: ssh-ed25519 AAAA... user@host\napi_token: secret-api-key-12345\n"
+	if err := os.WriteFile(filepath.Join(configDir, "pane.yaml"), []byte(paneYAML), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	fake := &runner.FakeRunner{}
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", outDir, "--profile", "vanilla-arch", "--skip-iso"},
+		&stdout, &stderr, fake,
+	)
+	if code != 0 {
+		t.Fatalf("build with pane.yaml: expected exit 0, got %d\nstderr: %s", code, stderr.String())
+	}
+
+	// private-injection.tar must exist in outDir.
+	tarPath := filepath.Join(outDir, "private-injection.tar")
+	if _, err := os.Stat(tarPath); err != nil {
+		t.Fatalf("private-injection.tar not found in out dir: %v", err)
+	}
+
+	// Tar must contain more than just the manifest (pane assets must be injected).
+	entries := readTarEntries(t, tarPath)
+	if _, ok := entries["debateos-private.json"]; !ok {
+		t.Fatal("debateos-private.json manifest not in tar")
+	}
+	if len(entries) <= 1 {
+		t.Errorf("private-injection.tar should have pane assets beyond just the manifest; entries: %v", tarKeys(entries))
+	}
+
+	// The manifest must list the pane entries.
+	var manifest struct {
+		Version int    `json:"version"`
+		Created string `json:"created"`
+		Files   []struct {
+			Path string `json:"path"`
+			Mode int    `json:"mode"`
+		} `json:"files"`
+	}
+	if err := json.Unmarshal(entries["debateos-private.json"], &manifest); err != nil {
+		t.Fatalf("manifest parse error: %v", err)
+	}
+	if len(manifest.Files) == 0 {
+		t.Error("manifest.files must list the private pane entries")
+	}
+
+	// At least one pane entry must appear as etc/debateos/<key> in the tar.
+	foundPaneEntry := false
+	for name := range entries {
+		if strings.HasPrefix(name, "etc/debateos/") {
+			foundPaneEntry = true
+			break
+		}
+	}
+	if !foundPaneEntry {
+		t.Errorf("no etc/debateos/* entry found in injection tar; entries: %v", tarKeys(entries))
+	}
+}
+
+// TestBuildNoPaneMergeWhenNoPaneYaml verifies that build succeeds and writes
+// an injection tar with only the manifest when no pane.yaml is present in the
+// config dir (the no-private-pane path must still work cleanly).
+func TestBuildNoPaneMergeWhenNoPaneYaml(t *testing.T) {
+	speechDir := minimalSpeechDir(t)
+	outDir := t.TempDir()
+	configDir := t.TempDir()
+	t.Setenv("DEBATEOS_DIR", configDir)
+	// No pane.yaml written to configDir.
+
+	fake := &runner.FakeRunner{}
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", outDir, "--profile", "vanilla-arch", "--skip-iso"},
+		&stdout, &stderr, fake,
+	)
+	if code != 0 {
+		t.Fatalf("build without pane.yaml: expected exit 0, got %d\nstderr: %s", code, stderr.String())
+	}
+
+	// Tar must exist but contain only the manifest.
+	tarPath := filepath.Join(outDir, "private-injection.tar")
+	if _, err := os.Stat(tarPath); err != nil {
+		t.Fatalf("private-injection.tar not found: %v", err)
+	}
+	entries := readTarEntries(t, tarPath)
+	if len(entries) != 1 {
+		t.Errorf("no-pane tar should have exactly 1 entry (manifest), got %d: %v", len(entries), tarKeys(entries))
+	}
+}
+
 // TestDeriveEpochBoundaries verifies DeriveEpoch stays within [epochMin, epochMax).
 func TestDeriveEpochBoundaries(t *testing.T) {
 	const minEpoch = int64(1577836800)
