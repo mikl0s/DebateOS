@@ -157,7 +157,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 |-------|----------------|--------|-----------|
 | 0. Omarchy Research & Arch-Variant Study | 4/4 | Complete   | 2026-06-12 |
 | 1. Schema & Resolver Core | 5/5 | Complete   | 2026-06-12 |
-| 2. Arch Translator | 5/5 | Complete   | 2026-06-12 |
+| 2. Arch Translator | 5/5 | Complete   | 2026-06-13 |
 | 3. CLI & Build Channels | 0/TBD | Not started | - |
 | 4. Debian Translator | 0/TBD | Not started | - |
 | 5. Registry, Forum & Debate UI | 0/TBD | Not started | - |
