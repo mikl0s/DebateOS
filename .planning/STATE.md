@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-01-PLAN.md — CLI foundation config/runner/compose/validate
-last_updated: "2026-06-13T02:23:10.012Z"
-last_activity: 2026-06-13 -- Phase 3 Plan 01 complete (CLI foundation)
+stopped_at: Completed 03-03-PLAN.md — build subcommand resolve→epoch→translate→docker + injection tar
+last_updated: "2026-06-13T12:11:20Z"
+last_activity: 2026-06-13 -- Phase 3 Plan 03 complete (build subcommand + private-injection.tar)
 progress:
   total_phases: 6
   completed_phases: 3
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 3 (CLI & Build Channels) — EXECUTING
-Plan: 2 of 4
-Status: Ready to execute
-Last activity: 2026-06-13 -- Phase 3 Plan 01 complete (CLI foundation)
+Plan: 3 of 4
+Status: Ready to execute plan 4
+Last activity: 2026-06-13 -- Phase 3 Plan 03 complete (build subcommand + private-injection.tar)
 
-Progress: [███░░░░░░░] 36%
+Progress: [████░░░░░░] 44%
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Progress: [███░░░░░░░] 36%
 | Phase 02-arch-translator P05 | 18h | - tasks | - files |
 | Phase 03-cli-build-channels P01 | 12 min | 2 tasks (4 commits) | 12 files |
 | Phase 03-cli-build-channels P02 | 35 | 2 tasks | 5 files |
+| Phase 03-cli-build-channels P03 | 20 min | 2 tasks (3 commits) | 5 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,13 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: pane backup routes git via Runner interface — FakeRunner in tests, zero network calls
 - [Phase ?]: only pane.yaml.age (ciphertext) ever staged — plaintext never in git (T-03-PLAINTEXT)
 
+### Decisions from Plan 03-03
+
+- [03-03]: DeriveEpoch exported from cli/build — 03-04 determinism gate imports without re-implementing (epochMin=1577836800, epochMax=2208988800 mirror manifest.py)
+- [03-03]: WriteInjectionTar(outDir, nil) emits manifest-only tar when no private assets; first-boot unit always finds artifact
+- [03-03]: sanitizeDst uses sentinel-root filepath.Clean containment check — identical semantic to profile.py _sanitize_dst (T-03-TRAV)
+- [03-03]: .gitignore `build/` narrowed to `/web/build/` — prevents shadowing cli/build/ Go package
+
 ### Decisions from Plan 03-01
 
 - [03-01]: Runner interface uses variadic args (exec.Command(name, args...)); never sh -c — T-03-AI mitigation
@@ -143,7 +151,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-13T02:23:10.007Z
-Stopped at: Completed 03-01-PLAN.md — CLI foundation config/runner/compose/validate
+Last session: 2026-06-13T12:11:20Z
+Stopped at: Completed 03-03-PLAN.md — build subcommand + private-injection.tar
 Resume file: None
-Next: Phase 3 Plan 02 (03-02-PLAN.md) — private pane + age X25519 backup/restore
+Next: Phase 3 Plan 04 (03-04-PLAN.md) — Docker image + GHA workflow + determinism/coverage gates

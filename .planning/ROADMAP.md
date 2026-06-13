@@ -128,7 +128,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 03-03-PLAN.md — build subcommand: resolve→epoch→translate→docker via Runner; --dry-run/--skip-iso; private-injection.tar (CLI-01, BLD-01, BLD-03, PRIV-01)
+- [x] 03-03-PLAN.md — build subcommand: resolve→epoch→translate→docker via Runner; --dry-run/--skip-iso; private-injection.tar (CLI-01, BLD-01, BLD-03, PRIV-01) (completed 2026-06-13)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
