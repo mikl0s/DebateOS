@@ -50,7 +50,7 @@ func (f *fakeOAuthProvider) GetUserID(ctx context.Context, token string) (string
 
 // --- TestOAuthLoginRedirect ---
 // GET /oauth/login must:
-//   - Set a state cookie (httpOnly, SameSite=Lax).
+//   - Set a state cookie (httpOnly, Secure, SameSite=Lax).
 //   - Redirect (302) to the provider AuthCodeURL containing the state value.
 func TestOAuthLoginRedirect(t *testing.T) {
 	s, err := store.NewInMemory()
@@ -90,6 +90,71 @@ func TestOAuthLoginRedirect(t *testing.T) {
 	loc := resp.Header.Get("Location")
 	if !strings.Contains(loc, stateCookie.Value) {
 		t.Errorf("redirect location %q does not contain state %q", loc, stateCookie.Value)
+	}
+}
+
+// --- TestOAuthCookiesHaveSecureFlag ---
+// CR-01: All cookies set during the OAuth flow must carry Secure=true,
+// HttpOnly=true, and SameSite=Lax to prevent interception over plain HTTP.
+func TestOAuthCookiesHaveSecureFlag(t *testing.T) {
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	provider := &fakeOAuthProvider{userID: "secure-user"}
+	sessions := api.NewSessionStore()
+	router := api.NewRouterWithOAuth(s, provider, sessions)
+
+	// Step 1: GET /oauth/login — expect oauth_state cookie with Secure flag.
+	loginReq := httptest.NewRequest(http.MethodGet, "/oauth/login", nil)
+	loginW := httptest.NewRecorder()
+	router.ServeHTTP(loginW, loginReq)
+
+	loginResp := loginW.Result()
+	var stateCookie *http.Cookie
+	for _, c := range loginResp.Cookies() {
+		if c.Name == "oauth_state" {
+			stateCookie = c
+		}
+	}
+	if stateCookie == nil {
+		t.Fatal("oauth_state cookie not set on login")
+	}
+	if !stateCookie.Secure {
+		t.Error("CR-01: oauth_state cookie missing Secure=true")
+	}
+	if !stateCookie.HttpOnly {
+		t.Error("CR-01: oauth_state cookie missing HttpOnly=true")
+	}
+
+	// Step 2: GET /oauth/callback — expect forum_session cookie with Secure flag.
+	cbReq := httptest.NewRequest(http.MethodGet,
+		"/oauth/callback?code=x&state="+stateCookie.Value, nil)
+	cbReq.AddCookie(stateCookie)
+	cbW := httptest.NewRecorder()
+	router.ServeHTTP(cbW, cbReq)
+
+	if cbW.Code != http.StatusFound {
+		t.Fatalf("callback: expected 302, got %d (body: %s)", cbW.Code, cbW.Body.String())
+	}
+
+	cbResp := cbW.Result()
+	var sessionCookie *http.Cookie
+	for _, c := range cbResp.Cookies() {
+		if c.Name == "forum_session" {
+			sessionCookie = c
+		}
+	}
+	if sessionCookie == nil {
+		t.Fatal("forum_session cookie not set on callback")
+	}
+	if !sessionCookie.Secure {
+		t.Error("CR-01: forum_session cookie missing Secure=true")
+	}
+	if !sessionCookie.HttpOnly {
+		t.Error("CR-01: forum_session cookie missing HttpOnly=true")
 	}
 }
 

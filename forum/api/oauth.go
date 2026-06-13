@@ -4,7 +4,7 @@
 //   - GitHub OAuth ONLY. No native accounts, no passwords.
 //   - OAuth state parameter validated via crypto/rand (T-05-13 CSRF).
 //   - Access token used for user-ID lookup then DISCARDED — never stored (T-05-14).
-//   - Session cookie is httpOnly + SameSite=Lax; stores an opaque session ID only.
+//   - Session cookie is httpOnly + Secure + SameSite=Lax; stores an opaque session ID only.
 //   - No secrets persist in SQLite (only the session ID → userID map, in-memory).
 package api
 
@@ -114,6 +114,7 @@ const (
 	stateCookieName   = "oauth_state"
 	sessionTTL        = 24 * time.Hour
 	stateTTL          = 15 * time.Minute
+	sweepInterval     = 5 * time.Minute
 )
 
 // sessionEntry holds the GitHub user ID associated with a session token.
@@ -125,17 +126,51 @@ type sessionEntry struct {
 // SessionStore is an in-memory map of opaque session IDs → GitHub user IDs.
 // It is the only session persistence in the Forum; no secrets are stored.
 // Thread-safe. In a multi-instance deployment, replace with a Redis-backed store.
+// A background goroutine sweeps expired entries every 5 minutes (CR-02).
 type SessionStore struct {
 	mu       sync.RWMutex
 	sessions map[string]sessionEntry
 	states   map[string]time.Time // state → expiry (short-lived CSRF nonces)
 }
 
-// NewSessionStore creates an empty SessionStore.
+// NewSessionStore creates an empty SessionStore and starts a background
+// sweep goroutine that removes expired entries every sweepInterval.
+// The goroutine runs as a daemon (no stop channel) — acceptable for a
+// process-lifetime store. For shutdown, call sweepExpired directly.
 func NewSessionStore() *SessionStore {
-	return &SessionStore{
+	ss := &SessionStore{
 		sessions: make(map[string]sessionEntry),
 		states:   make(map[string]time.Time),
+	}
+	go ss.sweepLoop()
+	return ss
+}
+
+// sweepExpired removes expired state nonces and sessions.
+// It is exported-like (unexported but callable from tests via internal_test.go)
+// to allow deterministic testing without waiting for the ticker.
+func (ss *SessionStore) sweepExpired() {
+	now := time.Now()
+	ss.mu.Lock()
+	for k, exp := range ss.states {
+		if now.After(exp) {
+			delete(ss.states, k)
+		}
+	}
+	for k, e := range ss.sessions {
+		if now.After(e.expiresAt) {
+			delete(ss.sessions, k)
+		}
+	}
+	ss.mu.Unlock()
+}
+
+// sweepLoop runs sweepExpired on a ticker. Runs for the process lifetime.
+func (ss *SessionStore) sweepLoop() {
+	ticker := time.NewTicker(sweepInterval)
+	defer ticker.Stop()
+	for range ticker.C {
+		ss.sweepExpired()
 	}
 }
 
@@ -224,13 +259,15 @@ func (o *oauthHandlers) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Short-lived state cookie (httpOnly, SameSite=Lax per security requirements).
+	// Short-lived state cookie (httpOnly, Secure, SameSite=Lax per security requirements).
+	// Secure=true: HTTPS-only transmission. Ignored by most browsers on localhost (CR-01).
 	http.SetCookie(w, &http.Cookie{
 		Name:     stateCookieName,
 		Value:    state,
 		Path:     "/",
 		MaxAge:   int(stateTTL.Seconds()),
 		HttpOnly: true,
+		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	})
 
@@ -258,13 +295,14 @@ func (o *oauthHandlers) callbackHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Clear the state cookie (consumed).
+	// Clear the state cookie (consumed). Secure=true so the clear is also HTTPS-only.
 	http.SetCookie(w, &http.Cookie{
 		Name:     stateCookieName,
 		Value:    "",
 		Path:     "/",
 		MaxAge:   -1,
 		HttpOnly: true,
+		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	})
 
@@ -300,12 +338,14 @@ func (o *oauthHandlers) callbackHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// Session cookie: httpOnly + Secure + SameSite=Lax (CR-01).
 	http.SetCookie(w, &http.Cookie{
 		Name:     sessionCookieName,
 		Value:    sid,
 		Path:     "/",
 		MaxAge:   int(sessionTTL.Seconds()),
 		HttpOnly: true,
+		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	})
 

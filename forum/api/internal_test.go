@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 )
 
 // TestJSONDecodeBodyValid: jsonDecodeBody correctly decodes valid JSON.
@@ -148,5 +149,52 @@ func TestIdentityFnFromSessionsNoSession(t *testing.T) {
 	userID, ok := fn(req)
 	if ok || userID != "" {
 		t.Errorf("expected empty, got %q ok=%v", userID, ok)
+	}
+}
+
+// TestSweepExpiredRemovesExpiredEntries: sweepExpired removes entries past their
+// expiry from both states and sessions maps (CR-02).
+// Uses direct map manipulation to inject already-expired entries, then calls
+// sweepExpired() synchronously — no real-time waiting required.
+func TestSweepExpiredRemovesExpiredEntries(t *testing.T) {
+	ss := NewSessionStore()
+
+	// Inject an already-expired state nonce directly into the map.
+	ss.mu.Lock()
+	ss.states["expired-state"] = time.Now().Add(-1 * time.Hour) // already expired
+	ss.states["valid-state"] = time.Now().Add(15 * time.Minute)  // still valid
+	// Inject an already-expired session.
+	ss.sessions["expired-session"] = sessionEntry{
+		userID:    "old-user",
+		expiresAt: time.Now().Add(-1 * time.Hour), // already expired
+	}
+	ss.sessions["valid-session"] = sessionEntry{
+		userID:    "active-user",
+		expiresAt: time.Now().Add(24 * time.Hour), // still valid
+	}
+	ss.mu.Unlock()
+
+	// Call sweepExpired directly (deterministic — no ticker dependency).
+	ss.sweepExpired()
+
+	// Expired entries must be gone; valid entries must remain.
+	ss.mu.RLock()
+	_, hasExpiredState := ss.states["expired-state"]
+	_, hasValidState := ss.states["valid-state"]
+	_, hasExpiredSession := ss.sessions["expired-session"]
+	_, hasValidSession := ss.sessions["valid-session"]
+	ss.mu.RUnlock()
+
+	if hasExpiredState {
+		t.Error("expired-state was NOT removed by sweepExpired")
+	}
+	if !hasValidState {
+		t.Error("valid-state was incorrectly removed by sweepExpired")
+	}
+	if hasExpiredSession {
+		t.Error("expired-session was NOT removed by sweepExpired")
+	}
+	if !hasValidSession {
+		t.Error("valid-session was incorrectly removed by sweepExpired")
 	}
 }
