@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-01-PLAN.md — REG-01 registry generator + go.mod single-owner (all Phase-5 deps pinned)
-last_updated: "2026-06-13T16:30:00.000Z"
+stopped_at: Completed 05-02-PLAN.md — SvelteKit+Tailwind v4 scaffold, typed WASM loader, BRND-01 landing page, build-wasm.sh
+last_updated: "2026-06-13T15:46:10.793Z"
 last_activity: 2026-06-13 -- Phase 5 Plan 1 complete (registry generator + go.mod)
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 29
-  completed_plans: 24
+  completed_plans: 25
   percent: 83
 ---
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 5 (Registry, Forum & Debate UI) — EXECUTING
-Plan: 2 of 6
-Status: Executing Phase 5
+Plan: 3 of 6
+Status: Ready to execute
 Last activity: 2026-06-13 -- Phase 5 Plan 1 complete (registry generator + go.mod)
 
 Progress: [█████████░] 83%
@@ -70,6 +70,7 @@ Progress: [█████████░] 83%
 | Phase 04-debian-translator P04 | 18 min | 2 tasks (3 commits) | 3 files |
 | Phase 04-debian-translator P05 | 35 min | 3 tasks (3 commits) | 8 files |
 | Phase 05-registry-forum-debate-ui P01 | 6 min | 2 tasks (4 commits) | 13 files |
+| Phase 05-registry-forum-debate-ui P02 | 30 min | 2 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,10 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: age X25519 identity local-only, no escrow (PRIV-01/D16): identity.age 0600 in config dir
 - [Phase ?]: pane backup routes git via Runner interface — FakeRunner in tests, zero network calls
 - [Phase ?]: only pane.yaml.age (ciphertext) ever staged — plaintext never in git (T-03-PLAINTEXT)
+- [Phase ?]: [05-02]: @lucide/svelte replaces deprecated lucide-svelte (official npm replacement)
+- [Phase ?]: [05-02]: @fontsource-variable/inter for variable font (not @fontsource/inter/variable.css)
+- [Phase ?]: [05-02]: adapter-static fallback='404.html' for CSR /debate route (ssr=false + prerender=false)
+- [Phase ?]: [05-02]: base-prefixed hrefs via $app/paths throughout all routes; handles BASE_PATH dual-delivery correctly
 
 ### Decisions from Plan 05-01
 
@@ -194,7 +199,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-13T16:30:00.000Z
-Stopped at: Completed 05-01-PLAN.md — REG-01 registry generator + go.mod single-owner (all Phase-5 deps pinned: chi v5.3.0, sqlite v1.46.1, oauth2 v0.34.0)
+Last session: 2026-06-13T15:46:10.788Z
+Stopped at: Completed 05-02-PLAN.md — SvelteKit+Tailwind v4 scaffold, typed WASM loader, BRND-01 landing page, build-wasm.sh
 Resume file: None
 Next: Phase 5 Plan 02 — SvelteKit Debate UI scaffold (WASM integration, adapter-static, dual delivery)

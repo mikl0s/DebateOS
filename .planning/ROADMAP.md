@@ -180,7 +180,7 @@ Plans:
 **Wave 1**
 
 - [x] 05-01-PLAN.md — Registry static index generator (parse/validate via resolver/parse, foundation-compat from capabilities.json, deterministic JSON + browse HTML) + go.mod single-owner of all phase Go deps (REG-01)
-- [ ] 05-02-PLAN.md — SvelteKit + adapter-static + Tailwind v4 scaffold, UI-SPEC @theme tokens, typed Go-WASM loader/wrapper, WASM build script, BASE_PATH dual-delivery seam, brand landing (UI-01, UI-02, BRND-01)
+- [x] 05-02-PLAN.md — SvelteKit + adapter-static + Tailwind v4 scaffold, UI-SPEC @theme tokens, typed Go-WASM loader/wrapper, WASM build script, BASE_PATH dual-delivery seam, brand landing (UI-01, UI-02, BRND-01)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -206,7 +206,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | 2. Arch Translator | 5/5 | Complete   | 2026-06-13 |
 | 3. CLI & Build Channels | 4/4 | Complete   | 2026-06-13 |
 | 4. Debian Translator | 5/5 | Complete   | 2026-06-13 |
-| 5. Registry, Forum & Debate UI | 0/6 | Not started | - |
+| 5. Registry, Forum & Debate UI | 2/6 | In Progress|  |
 
 ---
 *Roadmap created: 2026-06-12 from ADR-locked phase structure (docs/07, docs/09 via .planning/intel/)*

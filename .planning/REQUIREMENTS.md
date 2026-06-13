@@ -88,14 +88,14 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 
 <!-- Sources: D10, docs/03, docs/07 Phase 5, REQ-anti-dogmatic-brand -->
 
-- [ ] **UI-01**: Visual Debate UI (SvelteKit + adapter-static + Tailwind) lets a user compose a speech with live conflict visualization (foundation + glass panes, red/green overlaps) using the Go-WASM resolver client-side — never reimplementing resolution logic — and proceed to build instructions
-- [ ] **UI-02**: The same UI build output is delivered via GitHub Pages AND `go:embed`-ded in the CLI so `debateos compose` serves it offline on localhost
+- [x] **UI-01**: Visual Debate UI (SvelteKit + adapter-static + Tailwind) lets a user compose a speech with live conflict visualization (foundation + glass panes, red/green overlaps) using the Go-WASM resolver client-side — never reimplementing resolution logic — and proceed to build instructions
+- [x] **UI-02**: The same UI build output is delivered via GitHub Pages AND `go:embed`-ded in the CLI so `debateos compose` serves it offline on localhost
 
 ### Brand
 
 <!-- Sources: REQ-anti-dogmatic-brand -->
 
-- [ ] **BRND-01**: Debate-themed brand voice ("That's just your opinion, man"; opinions/points/speeches/debates; playful build-stage naming) applied consistently across UI and docs, softened only where it would obscure meaning
+- [x] **BRND-01**: Debate-themed brand voice ("That's just your opinion, man"; opinions/points/speeches/debates; playful build-stage naming) applied consistently across UI and docs, softened only where it would obscure meaning
 
 ### The Forum
 
@@ -161,9 +161,9 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | DEB-03 | Phase 4 | Complete (04-04: 6-finding audit in docs/arch-leak-audit.md; build.go foundationRegistry FIXED; 5 other findings correctly isolated/documented) |
 | COMM-01 | Phase 4 | Complete (04-05: docs/ownership-model.md — "distributions own their translators", entrypoint contract, capabilities.json, profile schema, foundationRegistry registration, translators/common/ reuse) |
 | REG-01 | Phase 5 | Pending |
-| UI-01 | Phase 5 | Pending |
-| UI-02 | Phase 5 | Pending |
-| BRND-01 | Phase 5 | Pending |
+| UI-01 | Phase 5 | Complete |
+| UI-02 | Phase 5 | Complete |
+| BRND-01 | Phase 5 | Complete |
 | FORM-01 | Phase 5 | Pending |
 | FORM-02 | Phase 5 | Pending |
 | FORM-03 | Phase 5 | Pending |
