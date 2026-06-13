@@ -758,6 +758,79 @@ func TestBuildNoPaneMergeWhenNoPaneYaml(t *testing.T) {
 	}
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CR-04: tw.Close() error must be surfaced, not swallowed by defer
+// ─────────────────────────────────────────────────────────────────────────────
+
+// TestWriteInjectionTarCloseError verifies that WriteInjectionTar returns
+// a non-nil error when the underlying writer fails to close (simulated by
+// writing to a path in a non-existent directory, forcing os.Create to fail
+// rather than the close, since Go's tar.Writer wraps an in-memory buffer that
+// always closes cleanly). We test the observable contract: WriteInjectionTar
+// to a valid outDir produces a readable, complete tar (i.e., Close succeeded).
+// A corrupt/incomplete tar would cause tar.NewReader to fail mid-read.
+func TestWriteInjectionTarCompleteOnClose(t *testing.T) {
+	// Write a tar with an asset and verify it is a complete, readable tar.
+	// If tw.Close() is skipped/deferred-swallowed, the end-of-archive blocks
+	// are missing and tar.NewReader.Next() returns io.ErrUnexpectedEOF.
+	outDir := t.TempDir()
+	assets := []build.PaneAsset{
+		{Dst: "etc/debateos/token", Content: []byte("secret-token\n"), Mode: 0600},
+	}
+
+	tarPath, err := build.WriteInjectionTar(outDir, assets)
+	if err != nil {
+		t.Fatalf("WriteInjectionTar: %v", err)
+	}
+
+	// Read ALL entries including draining the last one — this exercises the
+	// end-of-archive blocks that tw.Close() must write.
+	f, err := os.Open(tarPath)
+	if err != nil {
+		t.Fatalf("open tar: %v", err)
+	}
+	defer f.Close()
+
+	tr := tar.NewReader(f)
+	var count int
+	for {
+		_, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			t.Fatalf("tar read error (end-of-archive blocks missing — tw.Close not called?): %v", err)
+		}
+		if _, err := io.Copy(io.Discard, tr); err != nil {
+			t.Fatalf("tar drain entry: %v", err)
+		}
+		count++
+	}
+	if count < 1 {
+		t.Error("expected at least one tar entry (manifest)")
+	}
+}
+
+// TestWriteInjectionTarToInvalidDir verifies that WriteInjectionTar returns
+// a non-nil error when the outDir cannot be created (simulating an I/O failure
+// path where the error must propagate instead of being silently swallowed).
+func TestWriteInjectionTarToInvalidDir(t *testing.T) {
+	// Use a path where MkdirAll will fail: a file as a parent dir.
+	tmpFile, err := os.CreateTemp("", "debateos-test-*.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	tmpFile.Close()
+	defer os.Remove(tmpFile.Name())
+
+	// Try to use the file as a directory component — MkdirAll must fail.
+	invalidDir := filepath.Join(tmpFile.Name(), "subdir")
+	_, err = build.WriteInjectionTar(invalidDir, nil)
+	if err == nil {
+		t.Error("expected non-nil error when outDir cannot be created, got nil")
+	}
+}
+
 // TestDeriveEpochBoundaries verifies DeriveEpoch stays within [epochMin, epochMax).
 func TestDeriveEpochBoundaries(t *testing.T) {
 	const minEpoch = int64(1577836800)

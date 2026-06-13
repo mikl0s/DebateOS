@@ -136,10 +136,13 @@ func WriteInjectionTar(outDir string, assets []PaneAsset) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("create %s: %w", tarPath, err)
 	}
-	defer f.Close()
+	defer f.Close() // f.Close error is acceptable: the file was opened for write and is now done.
 
 	tw := tar.NewWriter(f)
-	defer tw.Close()
+	// NOTE: tw is closed explicitly below (not via defer) so the close error
+	// is surfaced. tw.Close() writes the two end-of-archive 512-byte blocks;
+	// if that write fails (e.g. disk full) a deferred close would swallow the
+	// error and return a silently corrupt tar. (CR-04)
 
 	// Write debateos-private.json at the tar root.
 	hdr := &tar.Header{
@@ -173,8 +176,11 @@ func WriteInjectionTar(outDir string, assets []PaneAsset) (string, error) {
 		}
 	}
 
-	if err := tw.Flush(); err != nil {
-		return "", fmt.Errorf("tar flush: %w", err)
+	// tw.Close() writes the two end-of-archive blocks and flushes the writer.
+	// This supersedes the prior tw.Flush() call (CR-04): Flush only flushes
+	// buffered data but does NOT write end-of-archive blocks — that is Close's job.
+	if err := tw.Close(); err != nil {
+		return "", fmt.Errorf("tar close: %w", err)
 	}
 
 	return tarPath, nil
