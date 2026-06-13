@@ -1,0 +1,89 @@
+# build/actions/build-speech.yml
+#
+# Reusable GitHub Actions workflow for DebateOS speech builds (BLD-02).
+#
+# On: workflow_call — callers use this workflow from their own repo:
+#   uses: mikl0s/DebateOS/.github/workflows/build-speech.yml@main
+#   with:
+#     speech-dir: path/to/speech
+#     profile: vanilla-arch
+#
+# The job runs inside the SAME Docker image that powers the local build channel
+# (BLD-01): ghcr.io/mikl0s/debateos:latest
+# This satisfies the same-image property (03-CONTEXT.md BLD-01/BLD-02).
+#
+# Assumptions (03-RESEARCH.md A2, A3):
+#   A2: Cross-repo workflow_call access — public repo; any fork can call this.
+#       DEFERRED verification: live cross-repo run requires a fork + CI minutes.
+#       Document the exact steps in build/actions/README.md.
+#   A3: ghcr.io/mikl0s/debateos:latest is the published GHCR image path.
+#
+# Security (T-03-CIWF):
+#   - No DebateOS infrastructure in the critical path — the workflow runs on
+#     the CALLER's runner/minutes (zero-cost invariant 4/5).
+#   - Default permissions: read-only (contents: read).
+#   - PANE_AGE_KEY secret is optional; not required for public-pane builds.
+#   - Image pulled from public GHCR; no credentials needed.
+
+on:
+  workflow_call:
+    inputs:
+      speech-dir:
+        description: "Path to the speech directory in the caller's repo"
+        required: true
+        type: string
+      profile:
+        description: "Translator variant profile name (e.g. vanilla-arch, cachyos, garuda)"
+        required: false
+        type: string
+        default: vanilla-arch
+      skip-iso:
+        description: "Stop after profile emission; skip the full mkarchiso ISO build"
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      PANE_AGE_KEY:
+        description: "Optional age private key for private-pane builds (base64-encoded)"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/mikl0s/debateos:latest
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+
+      - name: Build speech
+        # Security (T-03-CIWF): all untrusted inputs are passed via env vars,
+        # never interpolated directly into the run: shell string.
+        # ${{ inputs.* }} values in env: are passed as literal strings by the
+        # GHA runner and are never evaluated as shell before assignment.
+        env:
+          SPEECH_SUBDIR: ${{ inputs.speech-dir }}
+          PROFILE: ${{ inputs.profile }}
+          SKIP_ISO: ${{ inputs.skip-iso && '1' || '0' }}
+          WORKSPACE: ${{ github.workspace }}
+        run: |
+          SKIP_FLAG=""
+          if [ "${SKIP_ISO}" = "1" ]; then
+            SKIP_FLAG="--skip-iso"
+          fi
+          cd /debateos
+          /usr/local/bin/debateos build \
+            --dir "${WORKSPACE}/${SPEECH_SUBDIR}" \
+            --profile "${PROFILE}" \
+            --out "${WORKSPACE}/out" \
+            ${SKIP_FLAG}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: debateos-build-${{ github.run_id }}
+          path: out/
+          if-no-files-found: warn

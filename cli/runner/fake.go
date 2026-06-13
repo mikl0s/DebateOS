@@ -44,3 +44,35 @@ func joinKey(name string, args []string) string {
 	}
 	return name + " " + strings.Join(args, " ")
 }
+
+// FakeRunnerFunc is a test double that delegates Run and Output to user-supplied
+// functions. This allows per-call error control that FakeRunner (single Err) cannot.
+//
+// Usage:
+//
+//	count := 0
+//	fr := &runner.FakeRunnerFunc{RunFn: func(name string, args ...string) error {
+//	    count++
+//	    if count > 1 { return errors.New("second call fails") }
+//	    return nil
+//	}}
+type FakeRunnerFunc struct {
+	RunFn    func(name string, args ...string) error
+	OutputFn func(name string, args ...string) ([]byte, error)
+}
+
+// Run delegates to RunFn if set; otherwise returns nil.
+func (f *FakeRunnerFunc) Run(name string, args ...string) error {
+	if f.RunFn != nil {
+		return f.RunFn(name, args...)
+	}
+	return nil
+}
+
+// Output delegates to OutputFn if set; otherwise returns nil, nil.
+func (f *FakeRunnerFunc) Output(name string, args ...string) ([]byte, error) {
+	if f.OutputFn != nil {
+		return f.OutputFn(name, args...)
+	}
+	return nil, nil
+}

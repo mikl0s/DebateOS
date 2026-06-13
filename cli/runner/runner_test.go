@@ -82,6 +82,59 @@ func TestExecRunner_Output(t *testing.T) {
 	}
 }
 
+// TestFakeRunnerFunc_RunWithFn verifies that FakeRunnerFunc delegates to RunFn.
+func TestFakeRunnerFunc_RunWithFn(t *testing.T) {
+	callCount := 0
+	fr := &runner.FakeRunnerFunc{
+		RunFn: func(name string, args ...string) error {
+			callCount++
+			return nil
+		},
+	}
+	if err := fr.Run("git", "pull"); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if callCount != 1 {
+		t.Fatalf("expected RunFn called once, got %d", callCount)
+	}
+}
+
+// TestFakeRunnerFunc_RunNilFn verifies that FakeRunnerFunc.Run with nil RunFn returns nil.
+func TestFakeRunnerFunc_RunNilFn(t *testing.T) {
+	fr := &runner.FakeRunnerFunc{}
+	if err := fr.Run("git", "push"); err != nil {
+		t.Fatalf("unexpected error with nil RunFn: %v", err)
+	}
+}
+
+// TestFakeRunnerFunc_OutputWithFn verifies FakeRunnerFunc delegates to OutputFn.
+func TestFakeRunnerFunc_OutputWithFn(t *testing.T) {
+	fr := &runner.FakeRunnerFunc{
+		OutputFn: func(name string, args ...string) ([]byte, error) {
+			return []byte("abc123\n"), nil
+		},
+	}
+	out, err := fr.Output("git", "rev-parse", "HEAD")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if string(out) != "abc123\n" {
+		t.Fatalf("got %q, want %q", string(out), "abc123\n")
+	}
+}
+
+// TestFakeRunnerFunc_OutputNilFn verifies FakeRunnerFunc.Output with nil OutputFn returns nil, nil.
+func TestFakeRunnerFunc_OutputNilFn(t *testing.T) {
+	fr := &runner.FakeRunnerFunc{}
+	out, err := fr.Output("git", "rev-parse", "HEAD")
+	if err != nil {
+		t.Fatalf("unexpected error with nil OutputFn: %v", err)
+	}
+	if out != nil {
+		t.Fatalf("expected nil output with nil OutputFn, got %q", out)
+	}
+}
+
 // errTestError is a sentinel error for testing.
 var errTestError = &testErr{}
 

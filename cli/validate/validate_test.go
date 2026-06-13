@@ -91,3 +91,48 @@ func TestValidate_InvalidFlag(t *testing.T) {
 		t.Fatal("expected non-zero exit for unknown flag, got 0")
 	}
 }
+
+// TestValidate_NoHomeOrDebateosDIR verifies that validate fails clearly when
+// neither DEBATEOS_DIR nor HOME is set and no --dir flag is provided.
+func TestValidate_NoHomeOrDebateosDIR(t *testing.T) {
+	t.Setenv("DEBATEOS_DIR", "")
+	t.Setenv("HOME", "")
+	t.Setenv("XDG_CONFIG_HOME", "")
+
+	var stdout, stderr bytes.Buffer
+	code := validate.Run([]string{}, &stdout, &stderr)
+	if code == 0 {
+		t.Fatal("expected non-zero exit when no config dir available, got 0")
+	}
+	// Should have an error message.
+	if stderr.Len() == 0 {
+		t.Error("expected error message on stderr")
+	}
+}
+
+// TestValidate_MinimalSpeech verifies that a minimal valid speech (no opinions)
+// validates cleanly and prints OK.
+func TestValidate_MinimalSpeech(t *testing.T) {
+	tmp := t.TempDir()
+	t.Setenv("DEBATEOS_DIR", tmp)
+
+	speech := `schema: 1
+id: minimal-validate
+foundation: arch
+points: []
+opinions: []
+`
+	if err := os.WriteFile(filepath.Join(tmp, "speech.yaml"), []byte(speech), 0644); err != nil {
+		t.Fatalf("write speech.yaml: %v", err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := validate.Run([]string{}, &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("expected exit 0 for minimal speech, got %d\nstdout: %s\nstderr: %s",
+			code, stdout.String(), stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "OK") {
+		t.Errorf("expected 'OK' in stdout, got: %s", stdout.String())
+	}
+}

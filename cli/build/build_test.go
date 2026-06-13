@@ -527,3 +527,142 @@ func tarKeys(m map[string][]byte) []string {
 	}
 	return keys
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Additional coverage: error paths + edge cases
+// ─────────────────────────────────────────────────────────────────────────────
+
+// TestBuildBadSpeechDir verifies that an invalid speech dir returns non-zero.
+func TestBuildBadSpeechDir(t *testing.T) {
+	fake := &runner.FakeRunner{}
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", "/nonexistent/speech/dir", "--out", t.TempDir()},
+		&stdout, &stderr, fake,
+	)
+	if code == 0 {
+		t.Fatal("expected non-zero exit for bad speech dir, got 0")
+	}
+	if stderr.Len() == 0 {
+		t.Error("expected error message on stderr")
+	}
+}
+
+// TestBuildUnknownFlag verifies that an unknown flag returns non-zero.
+func TestBuildUnknownFlag(t *testing.T) {
+	fake := &runner.FakeRunner{}
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--not-a-real-flag"},
+		&stdout, &stderr, fake,
+	)
+	if code == 0 {
+		t.Fatal("expected non-zero exit for unknown flag, got 0")
+	}
+}
+
+// TestBuildRunnerError verifies that a translate Runner error propagates to non-zero exit.
+func TestBuildRunnerError(t *testing.T) {
+	speechDir := minimalSpeechDir(t)
+	outDir := t.TempDir()
+
+	// FakeRunner returns an error for any call.
+	fake := &runner.FakeRunner{Err: fmt.Errorf("simulated translate error")}
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", outDir, "--profile", "vanilla-arch"},
+		&stdout, &stderr, fake,
+	)
+	if code == 0 {
+		t.Fatal("expected non-zero exit when translate fails, got 0")
+	}
+	if !strings.Contains(stderr.String(), "translate") && !strings.Contains(stderr.String(), "build") {
+		t.Errorf("expected translate/build error on stderr: %s", stderr.String())
+	}
+}
+
+// TestBuildSkipISORunnerError verifies that a translate Runner error in --skip-iso
+// mode still propagates to non-zero exit.
+func TestBuildSkipISORunnerError(t *testing.T) {
+	speechDir := minimalSpeechDir(t)
+	outDir := t.TempDir()
+
+	fake := &runner.FakeRunner{Err: fmt.Errorf("simulated translate error")}
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", outDir, "--skip-iso"},
+		&stdout, &stderr, fake,
+	)
+	if code == 0 {
+		t.Fatal("expected non-zero when translate fails in --skip-iso mode, got 0")
+	}
+}
+
+// TestInjectionTarEmptyAssets verifies that WriteInjectionTar with nil assets
+// still writes a valid tar with only the manifest.
+func TestInjectionTarEmptyAssets(t *testing.T) {
+	outDir := t.TempDir()
+	tarPath, err := build.WriteInjectionTar(outDir, nil)
+	if err != nil {
+		t.Fatalf("WriteInjectionTar(nil): %v", err)
+	}
+
+	entries := readTarEntries(t, tarPath)
+	if _, ok := entries["debateos-private.json"]; !ok {
+		t.Errorf("manifest missing from empty tar; entries: %v", tarKeys(entries))
+	}
+	if len(entries) != 1 {
+		t.Errorf("empty tar should have exactly 1 entry (manifest), got %d: %v", len(entries), tarKeys(entries))
+	}
+}
+
+// TestSanitizeDstEmptyRejected verifies that an empty dst is rejected.
+func TestSanitizeDstEmptyRejected(t *testing.T) {
+	outDir := t.TempDir()
+	_, err := build.WriteInjectionTar(outDir, []build.PaneAsset{
+		{Dst: "", Content: []byte("x"), Mode: 0600},
+	})
+	if err == nil {
+		t.Error("expected error for empty dst, got nil")
+	}
+}
+
+// TestBuildNoConfigDir verifies that build fails clearly when neither DEBATEOS_DIR
+// nor HOME is set and no --dir flag is provided.
+func TestBuildNoConfigDir(t *testing.T) {
+	t.Setenv("DEBATEOS_DIR", "")
+	t.Setenv("HOME", "")
+	t.Setenv("XDG_CONFIG_HOME", "")
+
+	fake := &runner.FakeRunner{}
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--out", t.TempDir()},
+		&stdout, &stderr, fake,
+	)
+	if code == 0 {
+		t.Fatal("expected non-zero exit when config dir unavailable, got 0")
+	}
+	if stderr.Len() == 0 {
+		t.Error("expected error message on stderr")
+	}
+}
+
+// TestDeriveEpochBoundaries verifies DeriveEpoch stays within [epochMin, epochMax).
+func TestDeriveEpochBoundaries(t *testing.T) {
+	const minEpoch = int64(1577836800)
+	const maxEpoch = int64(2208988800)
+
+	testCases := [][]byte{
+		[]byte(""),
+		[]byte("a"),
+		[]byte("hello world"),
+		make([]byte, 1024),
+	}
+	for _, tc := range testCases {
+		e := build.DeriveEpoch(tc)
+		if e < minEpoch || e >= maxEpoch {
+			t.Errorf("DeriveEpoch(%q) = %d outside [%d, %d)", tc, e, minEpoch, maxEpoch)
+		}
+	}
+}
