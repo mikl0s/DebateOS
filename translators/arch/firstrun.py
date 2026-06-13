@@ -14,7 +14,12 @@ Generated units follow 02-RESEARCH.md Pattern 2:
 
 Security: T-02-11 — units are placed in etc/systemd/USER/ (not system/), ensuring
 they run in the target user context, not root scope.
+
+WR-08: The unit template is loaded from templates/firstrun.service.tpl (single
+source of truth) rather than being duplicated as an inline string literal.
 """
+
+import os
 
 # ---------------------------------------------------------------------------
 # Unit file name helper
@@ -22,6 +27,22 @@ they run in the target user context, not root scope.
 
 FLAG_FILE_DIR = "/var/lib/debateos"
 FLAG_FILE_PREFIX = ".firstrun-"
+
+_TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
+
+
+def _load_unit_template() -> str:
+    """Load the firstrun.service.tpl template from disk (single source of truth, WR-08).
+
+    Returns:
+        The raw template string.
+
+    Raises:
+        FileNotFoundError: if templates/firstrun.service.tpl is missing.
+    """
+    path = os.path.join(_TEMPLATES_DIR, "firstrun.service.tpl")
+    with open(path) as fh:
+        return fh.read()
 
 
 def firstrun_unit_name(opinion_id: str) -> str:
@@ -56,22 +77,6 @@ def _flag_file_path(opinion_id: str) -> str:
 # render_firstrun_unit
 # ---------------------------------------------------------------------------
 
-_UNIT_TEMPLATE = """\
-[Unit]
-Description=DebateOS first-run: {description}
-ConditionPathExists=!{flag_file}
-After=graphical-session.target
-
-[Service]
-Type=oneshot
-ExecStart={exec_path}
-ExecStartPost=/bin/touch {flag_file}
-RemainAfterExit=yes
-
-[Install]
-WantedBy=graphical-session.target
-"""
-
 
 def render_firstrun_unit(
     opinion_id: str,
@@ -83,6 +88,9 @@ def render_firstrun_unit(
     The unit is flag-file guarded: it only runs if the flag file does not
     exist, and creates the flag file on success — ensuring idempotency across
     multiple user logins without relying on ConditionFirstBoot (Pitfall 3).
+
+    The template is loaded from templates/firstrun.service.tpl — single source
+    of truth (WR-08).
 
     Args:
         opinion_id: The opinion ID, e.g. "OM-102". Used to:
@@ -98,7 +106,8 @@ def render_firstrun_unit(
         written to airootfs/etc/systemd/user/debateos-firstrun-<id>.service.
     """
     flag_file = _flag_file_path(opinion_id)
-    return _UNIT_TEMPLATE.format(
+    template = _load_unit_template()
+    return template.format(
         description=description,
         flag_file=flag_file,
         exec_path=exec_path,
