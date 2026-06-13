@@ -68,9 +68,9 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 
 <!-- Sources: REQ-dual-foundation-proof, D8, D9, docs/07 Phase 4 -->
 
-- [ ] **DEB-01**: Debian translator (`translators/debian/`) wraps live-build/preseed and emits a bootable, fully-unattended Debian installer from a resolved speech, declaring its capabilities like Arch's
+- [x] **DEB-01**: Debian translator (`translators/debian/`) wraps live-build/preseed and emits a bootable, fully-unattended Debian installer from a resolved speech, declaring its capabilities like Arch's
 - [ ] **DEB-02**: DUAL-FOUNDATION PROOF — a representative speech builds installers for BOTH Arch and Debian from the same resolved input
-- [ ] **DEB-03**: Arch assumptions that leaked into schema/resolver/opinions are identified and fixed; schema/capability adjustments documented
+- [x] **DEB-03**: Arch assumptions that leaked into schema/resolver/opinions are identified and fixed; schema/capability adjustments documented
 
 ### Community Model
 
@@ -156,9 +156,9 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | BLD-03 | Phase 3 | Complete (03-04: scripts/determinism-test.sh; sha256 identical across two runs on this host) |
 | BLD-04 | Phase 3 | Complete (03-04: docs/cli-build-channels.md end-to-end walkthrough; zero hosting cost; no central service) |
 | PRIV-01 | Phase 3 | Complete (03-02/03-03/03-04: pane.yaml local-only 0600; injection tar next to ISO; scripts/secret-free-check.sh PASSES; docs/cli-build-channels.md key-management) |
-| DEB-01 | Phase 4 | Pending |
+| DEB-01 | Phase 4 | Complete |
 | DEB-02 | Phase 4 | Pending |
-| DEB-03 | Phase 4 | Pending |
+| DEB-03 | Phase 4 | Complete |
 | COMM-01 | Phase 4 | Pending |
 | REG-01 | Phase 5 | Pending |
 | UI-01 | Phase 5 | Pending |
