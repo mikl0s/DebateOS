@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "generated_at": "2026-01-01T00:00:00Z",
+  "points": [
+    {
+      "id": "registry-test/sample-point",
+      "name": "Sample Point",
+      "intent": "A sample point for registry generator tests covering both arch and debian compatibility scenarios.",
+      "curator": "test@debateos.example",
+      "members": [
+        "SMP-001",
+        "SMP-002",
+        "SMP-003"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "deploy-sddm-theme"
+          ]
+        }
+      ],
+      "tags": []
+    }
+  ]
+}
