@@ -120,7 +120,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — CLI foundation: config-dir resolver + Runner interface + compose/validate subcommands + dispatch entrypoint (CLI-01)
+- [x] 03-01-PLAN.md — CLI foundation: config-dir resolver + Runner interface + compose/validate subcommands + dispatch entrypoint (CLI-01) (completed 2026-06-13)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 

@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-05-PLAN.md — slow gates + north-star pipeline
-last_updated: "2026-06-13T00:47:40.231Z"
-last_activity: 2026-06-12 -- Phase 2 Plan 04 complete (Omarchy north-star composition)
+stopped_at: Completed 03-01-PLAN.md — CLI foundation config/runner/compose/validate
+last_updated: "2026-06-13T00:00:00.000Z"
+last_activity: 2026-06-13 -- Phase 3 Plan 01 complete (CLI foundation)
 progress:
   total_phases: 6
   completed_phases: 3
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 
 ## Current Position
 
-Phase: 2 (Arch Translator) — EXECUTING
-Plan: 5 of 5
+Phase: 3 (CLI & Build Channels) — EXECUTING
+Plan: 1 of 4
 Status: Ready to execute
-Last activity: 2026-06-12 -- Phase 2 Plan 04 complete (Omarchy north-star composition)
+Last activity: 2026-06-13 -- Phase 3 Plan 01 complete (CLI foundation)
 
 Progress: [███░░░░░░░] 36%
 
@@ -60,6 +60,7 @@ Progress: [███░░░░░░░] 36%
 | Phase 02-arch-translator P02 | 11 min | 3 tasks (6 commits) | 16 files |
 | Phase 02-arch-translator P04 | 25 min | 2 tasks | 170 files |
 | Phase 02-arch-translator P05 | 18h | - tasks | - files |
+| Phase 03-cli-build-channels P01 | 12 min | 2 tasks (4 commits) | 12 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,13 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: capabilities.json updated to actual opinion tokens (163 tokens) extracted from examples/omarchy/opinions/*.yaml; old broad conceptual names removed
 - [Phase ?]: devtmpfs restriction on Proxmox VE documented as environment limitation; all tooling is correct; full ISO build requires standard Linux host
 
+### Decisions from Plan 03-01
+
+- [03-01]: Runner interface uses variadic args (exec.Command(name, args...)); never sh -c — T-03-AI mitigation
+- [03-01]: cli/internal/loader.ResolveDir() extracted as shared pipeline for compose and validate — prevents drift from cmd/resolve-json
+- [03-01]: os.Exit called only in cmd/debateos/main.go; all cli/ packages return int — fully testable subcommand pattern
+- [03-01]: filippo.io/age v1.3.1 manually promoted to direct require in go.mod (go mod tidy prunes it until pane package imports it in 03-02)
+
 ### Decisions from Plan 00-01
 
 - Base package list (155 packages) split into 12 logical package-install opinions — maximizes composability
@@ -131,7 +139,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-12T23:50:27.873Z
-Stopped at: Completed 02-05-PLAN.md — slow gates + north-star pipeline
+Last session: 2026-06-13T00:00:00.000Z
+Stopped at: Completed 03-01-PLAN.md — CLI foundation config/runner/compose/validate
 Resume file: None
-Next: Phase 2 Plan 05 (02-05-PLAN.md) — north-star integration (resolve→translate→build pipeline)
+Next: Phase 3 Plan 02 (03-02-PLAN.md) — private pane + age X25519 backup/restore
