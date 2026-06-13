@@ -150,8 +150,8 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 04-01-PLAN.md — Extract translators/common/ shared core (contract/manifest/firstrun) + Arch regression gate (DEB-03)
-- [ ] 04-02-PLAN.md — Foundation-neutral dual-foundation example speech + clean-resolve Go gate (DEB-02)
+- [x] 04-01-PLAN.md — Extract translators/common/ shared core (contract/manifest/firstrun) + Arch regression gate (DEB-03)
+- [x] 04-02-PLAN.md — Foundation-neutral dual-foundation example speech + clean-resolve Go gate (DEB-02)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 

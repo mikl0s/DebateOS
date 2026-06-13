@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-01-PLAN.md — translators/common shared core + Arch re-exports + regression gate
-last_updated: "2026-06-13T14:10:00.000Z"
-last_activity: 2026-06-13 -- Phase 4 Plan 01 complete
+stopped_at: Completed 04-02-PLAN.md — foundation-neutral dual-foundation example speech + TestExampleDualFoundation clean-resolve gate (DEB-02)
+last_updated: "2026-06-13T13:45:00.000Z"
+last_activity: 2026-06-13 -- Phase 4 Plan 02 complete
 progress:
   total_phases: 6
   completed_phases: 4
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 4 (Debian Translator) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Executing Phase 4
-Last activity: 2026-06-13 -- Phase 4 Plan 01 complete (translators/common extraction)
+Last activity: 2026-06-13 -- Phase 4 Plan 02 complete (dual-foundation example speech + Go clean-resolve gate)
 
 Progress: [███████░░░] 70%
 
@@ -65,6 +65,7 @@ Progress: [███████░░░] 70%
 | Phase 03-cli-build-channels P03 | 20 min | 2 tasks (3 commits) | 5 files |
 | Phase 03-cli-build-channels P04 | 17 min | 3 tasks (3 commits) | 18 files |
 | Phase 04-debian-translator P01 | ~20 min | 3 tasks (3 commits) | 13 files |
+| Phase 04-debian-translator P02 | ~8 min | 2 tasks (2 commits) | 11 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,12 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: age X25519 identity local-only, no escrow (PRIV-01/D16): identity.age 0600 in config dir
 - [Phase ?]: pane backup routes git via Runner interface — FakeRunner in tests, zero network calls
 - [Phase ?]: only pane.yaml.age (ciphertext) ever staged — plaintext never in git (T-03-PLAINTEXT)
+
+### Decisions from Plan 04-02
+
+- [04-02]: foundation: debian in dual-foundation speech.yaml — dual-foundation-check routes to debian by default; Arch translator invoked on same resolved.json explicitly in 04-05
+- [04-02]: No hardware_condition on any DF opinion — ensures all 5 apply on empty baseline profile for unambiguous clean-resolve assertion
+- [04-02]: 5 foundation-neutral capability tokens confirmed in translators/arch/capabilities.json: install-packages, deploy-config-file-tree, enable-systemd-service, write-sysctl-drop-in, add-user-to-group — Plan 04-03 must declare all 5 in Debian capabilities.json
 
 ### Decisions from Plan 04-01
 
@@ -169,7 +176,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-13T12:28:45Z
-Stopped at: Completed 03-04-PLAN.md — Docker image + GHA workflow + determinism/secret-free/coverage gates + Phase 3 finalized
+Last session: 2026-06-13T13:45:00Z
+Stopped at: Completed 04-02-PLAN.md — foundation-neutral dual-foundation example speech + TestExampleDualFoundation clean-resolve gate
 Resume file: None
-Next: Phase 4 (Debian Translator) — plan phase 04 to begin (DEB-01..03, COMM-01)
+Next: Phase 4 Plan 3 — Debian translator generator + capabilities.json (must declare: install-packages, deploy-config-file-tree, enable-systemd-service, write-sysctl-drop-in, add-user-to-group)
