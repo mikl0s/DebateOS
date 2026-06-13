@@ -13,8 +13,9 @@
 //
 //	compose   Print a resolution preview with explanations.
 //	validate  Parse, schema-validate, and clean-resolve the speech (CI-friendly).
+//	pane      Manage the private pane (set/get/list/backup/restore).
 //
-// Additional subcommands (pane, build) will be added by plans 03-02 and 03-03.
+// Additional subcommands (build) will be added by plan 03-03.
 package main
 
 import (
@@ -22,6 +23,8 @@ import (
 	"os"
 
 	"github.com/mikl0s/debateos/cli/compose"
+	"github.com/mikl0s/debateos/cli/pane"
+	"github.com/mikl0s/debateos/cli/runner"
 	"github.com/mikl0s/debateos/cli/validate"
 )
 
@@ -30,6 +33,7 @@ const usage = `usage: debateos <command> [flags]
 Commands:
   compose   Print a resolution preview with full explanations.
   validate  Parse + schema-validate + clean-resolve gate (CI-friendly; exits non-zero on failure).
+  pane      Manage the private pane: set/get/list/backup/restore (see 'debateos pane --help').
 
 Run 'debateos <command> --help' for per-command flags.
 `
@@ -45,6 +49,8 @@ func main() {
 		os.Exit(compose.Run(os.Args[2:], os.Stdout, os.Stderr))
 	case "validate":
 		os.Exit(validate.Run(os.Args[2:], os.Stdout, os.Stderr))
+	case "pane":
+		os.Exit(pane.Run(os.Args[2:], os.Stdout, os.Stderr, runner.ExecRunner{}))
 	default:
 		fmt.Fprintf(os.Stderr, "debateos: unknown command %q\n\n", os.Args[1])
 		fmt.Fprint(os.Stderr, usage)

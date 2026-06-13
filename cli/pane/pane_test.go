@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mikkel0s/debateos/cli/pane"
-	"github.com/mikkel0s/debateos/cli/runner"
+	"github.com/mikl0s/debateos/cli/pane"
+	"github.com/mikl0s/debateos/cli/runner"
 )
 
 // ─── Task 1: age identity + encrypt/decrypt ───────────────────────────────
