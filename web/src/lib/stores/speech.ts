@@ -9,7 +9,7 @@
  */
 
 import { writable, derived, get } from 'svelte/store';
-import type { Opinion, HardwareProfile } from '$lib/types.js';
+import type { Opinion, HardwareProfile, ResolvedSpeech } from '$lib/types.js';
 
 // ────────────────────────────────────────────────────────────────────────────
 // Pane type (a point added to the debate)
@@ -110,3 +110,13 @@ export const allOpinions = derived(debate, ($debate) =>
 
 /** Derived: count of panes. */
 export const paneCount = derived(debate, ($debate) => $debate.panes.length);
+
+// ────────────────────────────────────────────────────────────────────────────
+// Resolved speech store (IN-04)
+// Shared between the debate page (writer) and the export page (reader).
+// The debate page writes the WASM resolver output here so the export page
+// can download the user's actual resolved speech — not a static example.
+// ────────────────────────────────────────────────────────────────────────────
+
+/** resolvedSpeechStore holds the most recent WASM resolver output. */
+export const resolvedSpeechStore = writable<ResolvedSpeech | null>(null);

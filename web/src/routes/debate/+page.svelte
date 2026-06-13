@@ -15,7 +15,7 @@
 
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
-	import { debate, allOpinions } from '$lib/stores/speech.js';
+	import { debate, allOpinions, resolvedSpeechStore } from '$lib/stores/speech.js';
 	import { mapExplanation, type ConflictView } from '$lib/conflict.js';
 	import DebateStage from '$lib/components/DebateStage.svelte';
 	import ResolutionPanel from '$lib/components/ResolutionPanel.svelte';
@@ -68,6 +68,7 @@
 			resolvedSpeech = null;
 			conflictViews = [];
 			resolveError = null;
+			resolvedSpeechStore.set(null); // clear shared store (IN-04)
 			return;
 		}
 
@@ -93,6 +94,9 @@
 			const { resolved, error } = debateosResolve(input);
 			resolvedSpeech = resolved;
 			resolveError = error ?? null;
+
+			// Publish to shared store so export page can download the real result (IN-04).
+			resolvedSpeechStore.set(resolved);
 
 			// Map resolver explanations to ConflictViews (A1 + A9)
 			conflictViews = (resolved.explanations ?? []).map(mapExplanation);
