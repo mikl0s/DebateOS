@@ -1,0 +1,23 @@
+---
+variant: debian
+description: "Debian stable — standard apt repos, GRUB2 bootloader, initramfs-tools."
+version_at_research: "2026-06-13"
+
+# Uses standard Debian mirrors; custom repos come from opinions' custom_repos.
+# Structure must accommodate a future ubuntu.yaml — no code branches on name (ARCH-04 invariant).
+repos: []
+
+# debian-archive-keyring is pre-installed; no extra keyrings needed for standard repos.
+keyring_install_before_repos: []
+
+kernel:
+  package: linux-image-amd64
+  headers: linux-headers-amd64
+
+defaults:
+  initramfs: initramfs-tools   # Debian default (NOT mkinitcpio)
+  bootloader: grub2            # Debian default (NOT limine)
+  filesystem: ext4             # Debian default
+
+# No pre-seeded opinions for vanilla Debian stable.
+pre_seeded_opinions: []
