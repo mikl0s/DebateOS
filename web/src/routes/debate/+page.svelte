@@ -128,16 +128,16 @@
 	}
 
 	function handleApplyPatch(_patchId: string) {
-		// Patch application: remove the conflicting opinion and add the patch.
-		// For v1 UI, we just drop the conflicting opinion (full patch add requires
-		// the registry lookup — deferred to Forum integration in 05-05).
-		// For now: trigger a re-resolve which will show the updated state.
-		scheduleResolve();
+		// v1: patch application requires a registry lookup (deferred to Forum
+		// integration). Show honest user feedback instead of silently re-resolving
+		// with identical state (which looked like a broken button). (WR-02)
+		resolveError = 'Patch application is not yet supported in v1. Add the patch opinion manually.';
 	}
 
-	// Demo: add conflicting points for testing (used by e2e via page.evaluate)
-	// Exposed as window.debateAddConflict for Playwright test wiring
-	if (typeof window !== 'undefined') {
+	// Demo: add conflicting points for testing (used by e2e via page.evaluate).
+	// Gated on import.meta.env.DEV so these globals are absent in production builds
+	// and cannot be abused to inject arbitrary opinion data. (WR-04)
+	if (typeof window !== 'undefined' && import.meta.env.DEV) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(window as any).debateAddTestPane = (pointId: string, pointName: string, opinions: Opinion[]) => {
 			debate.addPane(pointId, pointName, opinions);
