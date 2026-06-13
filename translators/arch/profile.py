@@ -115,9 +115,17 @@ def _sanitize_dst(dst: str) -> str:
         The normalized relative path string.
 
     Raises:
-        ValueError: If ``dst`` is absolute or contains ``..`` that would
-            escape the target root. The error message names the offending dst.
+        ValueError: If ``dst`` is empty, ``'.'``, absolute, or contains ``..``
+            that would escape the target root. The error message names the
+            offending dst (WR-02, T-02-08).
     """
+    # WR-02: Reject empty or sentinel-root dst values.
+    if not dst or dst.strip() in (".", ""):
+        raise ValueError(
+            f"file_asset dst is empty or '.' — a concrete relative path is required "
+            f"(T-02-08 path traversal guard)."
+        )
+
     # Reject absolute paths
     if os.path.isabs(dst):
         raise ValueError(
@@ -162,7 +170,12 @@ def _build_repo_section(repo: dict) -> str:
     if sig == "Never":
         lines.append(
             f"# WARNING: sig_level=Never for [{repo['name']}] — "
-            f"unsigned packages accepted; verify source (T-02-10)"
+            f"all package signatures bypassed; verify source (T-02-10)"
+        )
+    elif sig == "OptionalTrustAll":
+        lines.append(
+            f"# WARNING: sig_level=OptionalTrustAll for [{repo['name']}] — "
+            f"unsigned packages accepted; verify source (T-02-10, WR-01)"
         )
     lines.append(f"[{repo['name']}]")
     lines.append(f"Server = {repo['url']}")
@@ -196,6 +209,12 @@ def emit_profile_tree(
             outside the target root (T-02-08).
     """
     out_dir = str(out_dir)
+
+    # --- T-02-08 / CR-04: Validate ALL file_asset dst paths BEFORE any file I/O ---
+    # Fail-fast: if any dst is invalid, raise immediately and write nothing.
+    for fa in manifest.file_assets:
+        _sanitize_dst(fa.get("dst", ""))
+
     os.makedirs(out_dir, exist_ok=True)
 
     # Apply variant to get ordered repos + keyring packages
@@ -230,13 +249,6 @@ def emit_profile_tree(
     manifest_dict["keyring_install_before_repos"] = keyring_pkgs
     manifest_dict["trust_warnings"] = manifest.trust_warnings + trust_warnings
     _write_build_manifest(out_dir, manifest_dict)
-
-    # --- Validate file_asset dst paths (T-02-08) ---
-    # Done last so the tree is fully written before raising on invalid assets.
-    # (We validate after writing so other files are committed; the error is
-    # raised before the caller uses the tree.)
-    for fa in manifest.file_assets:
-        _sanitize_dst(fa.get("dst", ""))
 
 
 def _default_base_repos() -> list:
