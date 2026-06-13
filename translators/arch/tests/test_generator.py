@@ -90,8 +90,9 @@ class TestGenerateEndToEnd:
             )
             bm = os.path.join(out_dir, "build-manifest.json")
             assert os.path.isfile(bm)
-            # Must be valid JSON with expected keys
-            data = json.load(open(bm))
+            # Must be valid JSON with expected keys (IN-04: use context manager)
+            with open(bm) as fh:
+                data = json.load(fh)
             assert "target_packages" in data
             assert "file_assets" in data
 
