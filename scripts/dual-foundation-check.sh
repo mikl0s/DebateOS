@@ -128,6 +128,12 @@ echo ""
 # ---------------------------------------------------------------------------
 
 echo "--- Step 2: Arch translator (same resolved.json) ---"
+# WR-02 NOTE: We intentionally run the Arch translator on a debian-foundation
+# resolved.json to prove the abstraction holds. The Arch translator ignores the
+# foundation field for translation purposes but the emitted build-manifest.json
+# will carry foundation="debian" — this is expected and documented as part of
+# the dual-foundation proof design.  The Arch translator is invoked explicitly
+# out-of-band here; in production, the build system dispatches by foundation.
 mkdir -p "${ARCH_PROFILE_DIR}"
 
 ARCH_TRANSLATE_EXIT=0
@@ -284,8 +290,16 @@ echo ""
 
 echo "--- Step 5b: Regression tests ---"
 go test ./... -count=1 >"${WORK_DIR}/go-test-all.log" 2>&1 || true
-if grep -Eq '^ok ' "${WORK_DIR}/go-test-all.log" && ! grep -Eq '^FAIL' "${WORK_DIR}/go-test-all.log"; then
-    pass "go test ./... -count=1: all packages GREEN"
+# WR-03 fix: Treat absence of '^FAIL' as GREEN (handles the no-test-files edge
+# where go test exits 0 but emits no '^ok' lines). If any package fails to build
+# or a test fails, go test emits '^FAIL <pkg>' which the grep catches.
+if ! grep -Eq '^FAIL\b' "${WORK_DIR}/go-test-all.log"; then
+    # No FAIL lines — all tested packages (if any) are green
+    if grep -Eq '^ok\b' "${WORK_DIR}/go-test-all.log"; then
+        pass "go test ./... -count=1: all packages GREEN"
+    else
+        pass "go test ./... -count=1: no test files (nothing to fail)"
+    fi
 else
     fail "go test ./... failed"
     tail -20 "${WORK_DIR}/go-test-all.log" >&2
@@ -356,7 +370,7 @@ print(MIN_E + (raw % (MAX_E - MIN_E)))
     echo "  Running: bash scripts/debian-build-iso.sh ${DEBIAN_PROFILE_DIR} ${ISO_DIR}"
     if bash "${SCRIPT_DIR}/debian-build-iso.sh" "${DEBIAN_PROFILE_DIR}" "${ISO_DIR}" \
            2>&1 | tee "${WORK_DIR}/build.log"; then
-        ISO_FILE="$(ls "${ISO_DIR}"/*.iso 2>/dev/null | head -1 || true)"
+        ISO_FILE="$(find "${ISO_DIR}" -maxdepth 1 -name '*.iso' | head -1 || true)"
         if [[ -f "${ISO_FILE:-}" ]]; then
             pass "Debian ISO built: ${ISO_FILE}"
         else

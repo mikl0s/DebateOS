@@ -178,6 +178,21 @@ mkdir -p "${OUT_DIR}"
 CONFIG_ABS="$(realpath "${CONFIG_TREE_DIR}")"
 OUT_ABS="$(realpath "${OUT_DIR}")"
 
+# IN-03: Validate that CONFIG_ABS and OUT_ABS contain no shell metacharacters
+# before they are used in Docker volume mount args and log output.
+# These paths come from user-provided positional arguments; paths with
+# colons or newlines would break Docker's -v mount syntax.
+if printf '%s' "${CONFIG_ABS}" | grep -qP '[:\n\t]' 2>/dev/null || \
+   printf '%s' "${CONFIG_ABS}" | grep -q $'[:\n\t]'; then
+    echo "ERROR: CONFIG_ABS contains invalid characters (colon/newline/tab): ${CONFIG_ABS}" >&2
+    exit 1
+fi
+if printf '%s' "${OUT_ABS}" | grep -qP '[:\n\t]' 2>/dev/null || \
+   printf '%s' "${OUT_ABS}" | grep -q $'[:\n\t]'; then
+    echo "ERROR: OUT_ABS contains invalid characters (colon/newline/tab): ${OUT_ABS}" >&2
+    exit 1
+fi
+
 echo "=== DebateOS Debian ISO Build ==="
 echo "  Config tree:       ${CONFIG_ABS}"
 echo "  Output dir:        ${OUT_ABS}"
