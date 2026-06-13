@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
+status: Awaiting next milestone
 stopped_at: Completed 05-05-PLAN.md — GitHub OAuth, conflict threads, Reindex, forumctl arm64
-last_updated: "2026-06-13T16:56:13.359Z"
-last_activity: 2026-06-13 -- Phase 5 Plan 1 complete (registry generator + go.mod)
+last_updated: "2026-06-13T17:39:27.987Z"
+last_activity: 2026-06-13 — Milestone v1.0 completed and archived
 progress:
   total_phases: 6
   completed_phases: 6
@@ -25,12 +25,10 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 
 ## Current Position
 
-Phase: 5 (Registry, Forum & Debate UI) — EXECUTING
-Plan: 6 of 6
-Status: Phase complete — ready for verification
-Last activity: 2026-06-13 -- Phase 5 Plan 1 complete (registry generator + go.mod)
-
-Progress: [█████████░] 83%
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-13 — Milestone v1.0 completed and archived
 
 ## Performance Metrics
 
@@ -225,3 +223,7 @@ Items acknowledged and deferred at v1.0 milestone close on 2026-06-13 (all envir
 | verification | Phase 05 — live GitHub OAuth, Pages deploy, Oracle A1 deploy, Actions index rebuild | human_needed (deferred-to-host/CI) |
 
 All three phases passed code-level verification; only environment-bound execution remains, with run instructions in each phase VERIFICATION.md and forum/deploy/oracle-a1.md + docs.
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

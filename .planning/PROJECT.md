@@ -8,23 +8,27 @@ DebateOS is a decentralized, zero-cost system for composing Linux installations 
 
 A user composes a speech from multiple curators' points, resolves conflicts explainably, and produces a bootable unattended installer for their chosen foundation — entirely on free public tooling and user-owned compute, with no central service in the critical path.
 
+## Current State
+
+**Shipped v1.0 (2026-06-13)** — all 6 phases (0–5), 29 plans, 42 tasks. ~16.6k Go LOC + ~7k Python + ~3k Svelte/TS. Repo: github.com/mikl0s/DebateOS. Audit: 35/35 requirements satisfied, 18/18 integration points wired, all gates green (determinism, secret-free, dual-foundation 20/20, forum-offline invariant-4, WASM parity, coverage). v1.0 archived in `milestones/v1.0-*.md`.
+
+**Deferred to a capable host/CI (env-blocked on the Proxmox dev host, not code gaps):** full mkarchiso/live-build ISO builds (devtmpfs/loop restricted), live GitHub OAuth/Pages/Actions runs, Oracle A1 arm64 Forum deploy. Tooling complete + tested with fakes/structural gates; run instructions in each phase VERIFICATION.md, `forum/deploy/oracle-a1.md`, and `v1.0-MILESTONE-AUDIT.md`.
+
 ## Requirements
 
-### Validated
+### Validated (v1.0)
 
-(None yet — ship to validate)
+- ✓ Phase 0 evidence base (134-opinion Omarchy inventory + CachyOS/Garuda variant study) — v1.0
+- ✓ Opinion/Point/Speech schemas from Phase 0 evidence; human-readable YAML — v1.0 (RSCH/SCHM)
+- ✓ Rule-based Go resolver, native + WASM byte-identical, docs/04 hierarchy with explanations — v1.0 (RSLV-01..06)
+- ✓ NORTH STAR: Omarchy reproducible as a speech on vanilla Arch (north-star equivalence 16/16) — v1.0 (ARCH)
+- ✓ Go CLI + two deterministic zero-cost build channels (local Docker, GitHub Actions) — v1.0 (CLI/BLD/PRIV)
+- ✓ Dual-foundation proof: one resolved speech → Arch AND Debian (20/20 equivalence) — v1.0 (DEB/COMM)
+- ✓ Git-backed registry + optional Forum (OAuth-only, rebuildable) + WASM Debate UI (Pages + CLI-embedded) — v1.0 (REG/UI/BRND/FORM)
 
-### Active
+### Active (next milestone)
 
-See `.planning/REQUIREMENTS.md` for the full checkable list (34 v1 requirements). Headlines:
-
-- [ ] Phase 0 research deliverables (Omarchy deep-dive + CachyOS/Garuda variant study) gate all schema/code work
-- [ ] Opinion/Point/Speech schemas derived from Phase 0 evidence; human-readable YAML throughout
-- [ ] Rule-based Go resolver (native + WASM, identical results) implementing the docs/04 hierarchy with explanations
-- [ ] NORTH STAR: Omarchy reproducible as a speech on vanilla Arch (Phase 2)
-- [ ] Go CLI + two deterministic build channels (local Docker, user-owned GitHub Actions) at zero cost
-- [ ] Dual-foundation proof: same resolved speech builds Arch AND Debian installers (Phase 4)
-- [ ] Git-backed registry (authoritative) + optional Forum (discovery only) + visual Debate UI (Pages + CLI-embedded)
+Fresh requirements defined via `/gsd-new-milestone`. Leading candidates from v1.0 deferrals + tech debt: execute the deferred ISO builds + live deploys on a capable host; Debate UI browse/registry data wiring (Wave-2 stub); patch-apply UX in the UI; Postgres FTS backend; additional foundations (Fedora) / Ubuntu variant profiles.
 
 ### Out of Scope
 
@@ -107,4 +111,4 @@ All decisions below are LOCKED by the ADR (`docs/09-decisions.md`). Do not re-op
 | Omarchy-on-variant retarget (CachyOS/Garuda) recorded as non-gating stretch criterion in Phase 2 | D20 explicitly: stretch validation, not a gate | — Pending |
 
 ---
-*Last updated: 2026-06-12 after doc ingest + project initialization*
+*Last updated: 2026-06-13 after v1.0 milestone*
