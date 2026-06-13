@@ -36,7 +36,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -71,21 +70,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Pretty-print for readability (translator reads it back via json.Load).
-	var prettyBuf interface{}
-	if err := json.Unmarshal(out, &prettyBuf); err != nil {
-		// Fallback: write compact JSON (should not happen)
-		os.Stdout.Write(out) //nolint:errcheck
-		os.Stdout.Write([]byte("\n"))
-		return
-	}
-	prettyOut, err := json.MarshalIndent(prettyBuf, "", "  ")
-	if err != nil {
-		os.Stdout.Write(out) //nolint:errcheck
-		os.Stdout.Write([]byte("\n"))
-		return
-	}
-	os.Stdout.Write(prettyOut) //nolint:errcheck
+	// IN-03: Write the canonical bytes directly so that SOURCE_DATE_EPOCH derivation
+	// is consistent with CanonicalJSON output (re-marshalling via map[string]interface{}
+	// reorders keys alphabetically, producing a non-canonical byte sequence).
+	// The translator's json.loads() handles compact JSON without issue.
+	os.Stdout.Write(out) //nolint:errcheck
 	os.Stdout.Write([]byte("\n"))
 }
 
