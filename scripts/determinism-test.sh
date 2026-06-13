@@ -124,6 +124,19 @@ PYEOF
 echo "--- Derived SOURCE_DATE_EPOCH: ${EPOCH} ---"
 echo ""
 
+# Export SOURCE_DATE_EPOCH so the gzip stream header uses the deterministic
+# epoch rather than the current wall-clock time.  Without this export, GNU
+# tar's -z/-czf pipes through gzip, which embeds time.Now() in the gzip
+# header regardless of --mtime — two runs separated by even one second
+# produce different SHA-256 checksums.  We additionally pipe explicitly
+# through `gzip -n` (--no-name: suppress filename/timestamp in header)
+# for defence-in-depth on any gzip version that does not honour
+# SOURCE_DATE_EPOCH.
+#
+# Reference: https://reproducible-builds.org/docs/source-date-epoch/
+# Mirror of cli/build comment noting "gzip -n" requirement (BLD-03 / CR-02).
+export SOURCE_DATE_EPOCH="${EPOCH}"
+
 # ─── Deterministic tar (03-RESEARCH.md Pattern 5, verified flags) ──────────
 # Flags:
 #   --sort=name                       alphabetical entry order
@@ -132,6 +145,8 @@ echo ""
 #   --numeric-owner                   numeric owner fields (no user/group name lookup)
 #   --pax-option=...delete=atime,...  strip atime/ctime from PAX extended headers
 #                                     (Pitfall 2: stale PAX timestamps break determinism)
+#   gzip -n                           suppress filename+timestamp in gzip header
+#                                     (defence-in-depth alongside SOURCE_DATE_EPOCH)
 #
 # The arch-profile/ tree is tarred (not resolved.json or private-injection.tar,
 # which contain timestamps or are empty on this host path).
@@ -154,14 +169,14 @@ tar \
     --mtime="@${EPOCH}" \
     --owner=0 --group=0 --numeric-owner \
     --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
-    -czf "${TAR1}" -C "${PROFILE_DIR1}" .
+    -c -C "${PROFILE_DIR1}" . | gzip -n > "${TAR1}"
 
 tar \
     --sort=name \
     --mtime="@${EPOCH}" \
     --owner=0 --group=0 --numeric-owner \
     --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
-    -czf "${TAR2}" -C "${PROFILE_DIR2}" .
+    -c -C "${PROFILE_DIR2}" . | gzip -n > "${TAR2}"
 
 echo ""
 
