@@ -3,8 +3,8 @@ package store
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/mikl0s/debateos/forum/migrations"
 	"github.com/mikl0s/debateos/forum/store/generated"
@@ -90,13 +90,20 @@ func (s *SQLiteStore) SearchPoints(ctx context.Context, q, foundation string, li
 		return nil, fmt.Errorf("SearchPoints: rows: %w", err)
 	}
 
-	// Filter by foundation (JSON substring check on stored JSON array).
+	// Filter by foundation: parse the JSON array and check exact membership (CR-04).
+	// Substring-contains on the raw JSON string was injection-prone — e.g.
+	// foundation=arch","debian would match any record containing both adjacently.
 	if foundation != "" {
 		filtered := results[:0]
-		needle := `"` + foundation + `"`
 		for _, p := range results {
-			if strings.Contains(p.FoundationCompat, needle) {
-				filtered = append(filtered, p)
+			var ids []string
+			if err := json.Unmarshal([]byte(p.FoundationCompat), &ids); err == nil {
+				for _, id := range ids {
+					if id == foundation {
+						filtered = append(filtered, p)
+						break
+					}
+				}
 			}
 		}
 		results = filtered

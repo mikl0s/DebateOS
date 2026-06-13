@@ -76,6 +76,58 @@ func TestSearchPoints(t *testing.T) {
 	}
 }
 
+// TestFoundationFilterInjectionRejected: CR-04 — the foundation filter must
+// perform exact membership check via JSON parsing, not substring-contains.
+// A crafted value like `arch","debian` must NOT match records containing
+// only "arch" or only "debian" (injection bypass rejected).
+// A plain value like "arch" must match records that contain "arch".
+func TestFoundationFilterInjectionRejected(t *testing.T) {
+	ctx := context.Background()
+	s, err := store.NewInMemory()
+	if err != nil {
+		t.Fatalf("NewInMemory: %v", err)
+	}
+	defer s.Close()
+
+	// Insert a point with only "arch" in its foundation compat.
+	if err := s.UpsertPoint(ctx, store.PointEntry{
+		ID: "arch-only", Name: "Arch Tool", Intent: "arch only tool",
+		Curator: "alice", FoundationCompat: `["arch"]`,
+	}); err != nil {
+		t.Fatalf("UpsertPoint: %v", err)
+	}
+
+	// Exact match "arch" should find the point.
+	results, err := s.SearchPoints(ctx, "arch", "arch", 10)
+	if err != nil {
+		t.Fatalf("SearchPoints: %v", err)
+	}
+	found := false
+	for _, p := range results {
+		if p.ID == "arch-only" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("CR-04: exact foundation=arch should match arch-only point")
+	}
+
+	// Injection attempt: foundation=`arch","debian` must NOT match arch-only.
+	// The old substring check would build needle=`"arch","debian"` which is not
+	// a substring of `["arch"]`, so it would not match — but it WOULD match
+	// a record like `["arch","debian"]`. We test the injection case directly:
+	// the injected value `arch","debian` is not a member of ["arch"], so must not match.
+	injectResults, err := s.SearchPoints(ctx, "arch", `arch","debian`, 10)
+	if err != nil {
+		t.Fatalf("SearchPoints injection: %v", err)
+	}
+	for _, p := range injectResults {
+		if p.ID == "arch-only" {
+			t.Errorf("CR-04: injection foundation=arch\",\"debian should NOT match arch-only (exact-membership check required)")
+		}
+	}
+}
+
 // TestListGetUpsert: UpsertPoint then GetPoint round-trips all fields; ListPoints returns inserted points.
 func TestListGetUpsert(t *testing.T) {
 	ctx := context.Background()
