@@ -32,6 +32,7 @@ const usage = `usage: debateos <command> [flags]
 
 Commands:
   compose   Print a resolution preview with full explanations.
+            Use --serve [--addr :8080] to serve the embedded Debate UI offline at localhost.
   validate  Parse + schema-validate + clean-resolve gate (CI-friendly; exits non-zero on failure).
   build     Resolve speech → emit arch profile → docker ISO build (--dry-run / --skip-iso).
   pane      Manage the private pane: set/get/list/backup/restore (see 'debateos pane --help').
