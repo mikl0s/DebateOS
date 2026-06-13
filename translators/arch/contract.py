@@ -47,10 +47,12 @@ def load_resolved_speech(path: str) -> dict:
     with open(path) as fh:
         data = json.load(fh)
 
-    # Ensure every expected key is present; default to empty list / dict.
+    # Ensure every expected key is present; default to empty list.
+    # All keys (including explanations) default to [] — both branches of the
+    # original ternary returned [], so the conditional was dead code (WR-04).
     for key in _RESOLVED_SPEECH_KEYS:
         if key not in data:
-            data[key] = [] if key != "explanations" else []
+            data[key] = []
 
     return data
 
