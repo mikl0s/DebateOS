@@ -124,26 +124,49 @@ func loadPane(dir string) (paneData, error) {
 	return m, nil
 }
 
-// savePane writes pane.yaml to dir with mode 0600 (T-03-PERM).
+// savePane writes pane.yaml to dir with mode 0600 (T-03-PERM) atomically.
+//
+// WR-04: the old O_TRUNC path truncated pane.yaml before writing; a process
+// kill or disk-full mid-write would leave an unrecoverable corrupt/empty file.
+// The temp+rename pattern is atomic on POSIX: the file is either fully written
+// (rename succeeds) or the old content is preserved (rename never happens).
 func savePane(dir string, m paneData) error {
 	if err := os.MkdirAll(dir, 0700); err != nil {
 		return fmt.Errorf("mkdir %s: %w", dir, err)
 	}
-	path := filepath.Join(dir, paneFile)
 	out, err := yaml.Marshal(m)
 	if err != nil {
 		return fmt.Errorf("marshal pane: %w", err)
 	}
-	// Use OpenFile to guarantee 0600 even on first create (T-03-PERM / Pitfall 4).
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
+
+	// Write to a temp file in the same directory so the eventual rename is
+	// within the same filesystem (atomic on POSIX).
+	tmp, err := os.CreateTemp(dir, ".pane.yaml.tmp.*")
 	if err != nil {
-		return fmt.Errorf("write %s: %w", path, err)
+		return fmt.Errorf("create temp: %w", err)
 	}
-	defer f.Close()
-	if _, err := f.Write(out); err != nil {
-		return fmt.Errorf("write %s: %w", path, err)
+	tmpName := tmp.Name()
+	// Clean up the temp file on any failure path.
+	defer func() { _ = os.Remove(tmpName) }()
+
+	// Set 0600 before writing — temp file must not be readable by others even
+	// during the write window (T-03-PERM / Pitfall 4).
+	// os.CreateTemp uses 0600 on Linux by default; the explicit Chmod is for
+	// clarity and cross-platform safety.
+	if err := os.Chmod(tmpName, 0600); err != nil {
+		tmp.Close()
+		return fmt.Errorf("chmod temp: %w", err)
 	}
-	return nil
+	if _, err := tmp.Write(out); err != nil {
+		tmp.Close()
+		return fmt.Errorf("write temp: %w", err)
+	}
+	if err := tmp.Close(); err != nil {
+		return fmt.Errorf("close temp: %w", err)
+	}
+
+	// Atomic rename: replaces the destination only when the write is complete.
+	return os.Rename(tmpName, filepath.Join(dir, paneFile))
 }
 
 // cmdSet handles: pane set <key> <value>

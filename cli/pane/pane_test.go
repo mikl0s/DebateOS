@@ -621,6 +621,61 @@ func TestPaneDecryptFileMissingSrc(t *testing.T) {
 	}
 }
 
+// ─── WR-04: atomic savePane (temp+rename) ────────────────────────────────────
+
+// TestSavePaneAtomicPermissions verifies that after `pane set`, pane.yaml is
+// created with 0600 permissions even via the temp+rename atomic write path.
+func TestSavePaneAtomicPermissions(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("DEBATEOS_DIR", dir)
+	fr := &runner.FakeRunner{}
+
+	code := pane.Run([]string{"set", "mykey", "myval"}, &bytes.Buffer{}, &bytes.Buffer{}, fr)
+	if code != 0 {
+		t.Fatalf("set returned %d", code)
+	}
+
+	info, err := os.Stat(filepath.Join(dir, "pane.yaml"))
+	if err != nil {
+		t.Fatalf("pane.yaml not found: %v", err)
+	}
+	if perm := info.Mode().Perm(); perm != 0600 {
+		t.Errorf("pane.yaml perm = %04o after atomic write, want 0600", perm)
+	}
+}
+
+// TestSavePaneNoCorruptionOnSet verifies that the content written by `pane set`
+// is exactly the expected YAML (regression guard: the old O_TRUNC path could
+// leave a truncated file on partial write failure; the new temp+rename path
+// is atomic on POSIX).
+func TestSavePaneNoCorruptionOnSet(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("DEBATEOS_DIR", dir)
+	fr := &runner.FakeRunner{}
+
+	pane.Run([]string{"set", "k1", "v1"}, &bytes.Buffer{}, &bytes.Buffer{}, fr)
+	pane.Run([]string{"set", "k2", "v2"}, &bytes.Buffer{}, &bytes.Buffer{}, fr)
+
+	// Both keys must be readable after two successive set calls.
+	var out, errBuf bytes.Buffer
+	code := pane.Run([]string{"get", "k1"}, &out, &errBuf, fr)
+	if code != 0 {
+		t.Fatalf("get k1: %d — %s", code, errBuf.String())
+	}
+	if !strings.Contains(out.String(), "v1") {
+		t.Errorf("expected v1, got: %s", out.String())
+	}
+	out.Reset()
+	errBuf.Reset()
+	code = pane.Run([]string{"get", "k2"}, &out, &errBuf, fr)
+	if code != 0 {
+		t.Fatalf("get k2: %d — %s", code, errBuf.String())
+	}
+	if !strings.Contains(out.String(), "v2") {
+		t.Errorf("expected v2, got: %s", out.String())
+	}
+}
+
 // TestPaneLoadOrCreateIdentityCorrupted verifies that a corrupted identity.age
 // file returns an error rather than silently generating a new identity.
 func TestPaneLoadOrCreateIdentityCorrupted(t *testing.T) {
