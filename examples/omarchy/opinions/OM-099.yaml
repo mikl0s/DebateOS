@@ -3,10 +3,8 @@ id: OM-099
 status: required
 name: Limine Bootloader Configuration
 category: bootloader-config
-intent: Configure the Limine bootloader with mkinitcpio hooks including Plymouth and btrfs-overlayfs. Set up unified kernel
-  image generation. Configure the btrfs snapshot boot menu. Set up the Thunderbolt module. Create a root snapper configuration
-  and disable btrfs quotas for performance. Enable the snapshot sync service. Restore initramfs hooks disabled earlier. Trigger
-  a full unified kernel image rebuild. Register the Limine EFI boot entry.
+intent: Configure the bootloader with snapshot boot-menu integration, set up initramfs generation, register the EFI boot
+  entry, and enable the snapshot synchronization service.
 install_phase: login
 depends_on:
 - id: OM-002

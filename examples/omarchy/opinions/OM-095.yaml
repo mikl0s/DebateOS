@@ -3,8 +3,7 @@ id: OM-095
 status: required
 name: Plymouth Boot Splash Theme
 category: theming
-intent: Install the Omarchy custom Plymouth boot splash theme and set it as the active default theme so the Omarchy branded
-  animation appears during boot.
+intent: Deploy the Omarchy boot splash theme assets and activate them as the system default.
 install_phase: login
 depends_on:
 - id: OM-016
