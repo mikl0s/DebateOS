@@ -1,0 +1,920 @@
+{
+  "schema": 1,
+  "generated_at": "2026-06-13T00:14:36+00:00",
+  "points": [
+    {
+      "id": "omarchy/ai-tooling",
+      "name": "AI Tooling",
+      "intent": "Install and configure all AI coding assistant and agent tooling, including native packages, runtime global installs, agent skill links, and the Pi agent extension.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-010",
+        "OM-023",
+        "OM-054",
+        "OM-055"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "create-symlinks-across-multiple-agent-skill-directories",
+            "deploy-agent-extension-file",
+            "install-npm-global-packages"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/apple-hardware-support",
+      "name": "Apple Hardware Support",
+      "intent": "Install and configure Apple-specific hardware support: SPI keyboard driver, NVMe suspend fix, and full T2 chip support stack.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-086",
+        "OM-087",
+        "OM-088"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "detect-t2-chip-by-pci-id",
+            "install-dkms-kernel-module-packages",
+            "install-t2-specific-kernel-and-hardware-packages",
+            "read-dmi-product-name",
+            "write-bootloader-kernel-parameters",
+            "write-mkinitcpio-module-configuration",
+            "write-mkinitcpio-module-list"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/application-configuration-and-defaults",
+      "name": "Application Configuration and Defaults",
+      "intent": "Deploy the baseline configuration file tree, configure MIME type associations, set XDG user directories, configure GPG, write sudoers rules, initialize locate database, and establish default user preferences.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-028",
+        "OM-030",
+        "OM-031",
+        "OM-032",
+        "OM-033",
+        "OM-034",
+        "OM-035",
+        "OM-044",
+        "OM-045",
+        "OM-048"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "copy-branding-assets-to-user-config",
+            "deploy-gpg-daemon-config",
+            "invoke-xdg-user-dirs-update",
+            "modify-pam-faillock-config",
+            "modify-pam-sddm-autologin",
+            "modify-pam-system-auth",
+            "rebuild-desktop-application-database",
+            "register-mime-type-associations",
+            "restart-gpg-daemon",
+            "run-updatedb",
+            "write-gtk-bookmarks-file"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/asus-hardware-support",
+      "name": "ASUS Hardware Support",
+      "intent": "Install ASUS-specific hardware control daemons and fix device-specific hardware issues for ASUS ROG and ExpertBook/Zenbook variants.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-024",
+        "OM-078",
+        "OM-079",
+        "OM-080",
+        "OM-083"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "eval-dmi-hardware-condition",
+            "write-bootloader-entry-tool-drop-in",
+            "write-libinput-quirks-override-file",
+            "write-udev-rules-file-to-set-device-integration-attributes"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/battery-and-power-management",
+      "name": "Battery and Power Management",
+      "intent": "Configure power profile switching and WiFi power-save mode based on AC adapter state, restrict the locate database update to AC power, and manage battery monitoring.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-058",
+        "OM-059",
+        "OM-060"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "write-systemd-service-drop-in-with-ac-power-condition"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/boot-login-and-snapshot-configuration",
+      "name": "Boot, Login, and Snapshot Configuration",
+      "intent": "Configure the complete boot and login stack: Plymouth boot splash, GNOME keyring for auto-login, SDDM display manager with auto-login, hibernation support, and the Limine bootloader with initramfs hooks, unified kernel image generation, btrfs snapshot menu, and EFI entry registration.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-095",
+        "OM-096",
+        "OM-097",
+        "OM-098",
+        "OM-099"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "add-kernel-resume-parameters",
+            "configure-mkinitcpio-hooks-and-modules",
+            "configure-swap-resume-device",
+            "copy-plymouth-theme-directory",
+            "create-snapper-configuration",
+            "deploy-sddm-theme",
+            "disable-btrfs-quota-accounting",
+            "install-initramfs-hooks",
+            "manage-efi-boot-entries",
+            "manage-limine-bootloader-installation",
+            "modify-pam-sddm-config",
+            "set-default-plymouth-theme",
+            "write-keyring-descriptor-files-with-correct-permissions",
+            "write-sddm-config-drop-ins"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/browser-and-web-access",
+      "name": "Browser and Web Access",
+      "intent": "Install the primary web browser and its supporting libraries.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-008"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": true
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/containerization-and-virtualization",
+      "name": "Containerization and Virtualization",
+      "intent": "Install container and virtualization tooling and configure the container daemon with production-ready settings including log limits, DNS, network configuration, and service activation.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-011",
+        "OM-043"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": true
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/desktop-theming-configuration",
+      "name": "Desktop Theming Configuration",
+      "intent": "Configure the active theme system including the browser policy integration, application-specific symlinks, and Plymouth boot splash branding.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-029"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "create-config-symlinks",
+            "manage-multi-app-theme-system",
+            "write-browser-policy-files"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/developer-toolchain",
+      "name": "Developer Toolchain",
+      "intent": "Install the core development tooling: language runtimes and version manager, build tools, database libraries, the editor with curated plugin configuration, version control tooling, and the work-directory setup.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-009",
+        "OM-017",
+        "OM-019",
+        "OM-041",
+        "OM-042"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "configure-version-manager",
+            "rewrite-shebang-line",
+            "run-post-install-setup-script",
+            "set-global-runtime-versions"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/first-run-desktop-services",
+      "name": "First-Run Desktop Services",
+      "intent": "Start and enable desktop services that require an active user session on first login: the Elephant application launcher, SwayOSD on-screen display server, and internal monitor recovery service.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-108",
+        "OM-110",
+        "OM-111"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": true
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/first-run-gtk-and-user-preferences",
+      "name": "First-Run GTK and User Preferences",
+      "intent": "Apply GTK/GNOME theme settings, enable primary paste, and deliver onboarding notifications — all of which require a running display session and settings backend.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-102",
+        "OM-109",
+        "OM-112",
+        "OM-113"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "invoke-gsettings-to-set-desktop-theme-and-icon-theme",
+            "invoke-gsettings-to-set-gtk-interface-preference",
+            "invoke-gtk-update-icon-cache",
+            "self-delete-hook-script-after-execution",
+            "send-desktop-notification",
+            "send-desktop-notifications-with-structured-text"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/first-run-system-setup",
+      "name": "First-Run System Setup",
+      "intent": "Perform one-time setup steps that require a live display session after the user's first login: network connectivity check, firewall configuration, DNS resolver symlink, battery monitor setup, and post-first-run sudoers cleanup.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-101",
+        "OM-103",
+        "OM-104",
+        "OM-105",
+        "OM-106",
+        "OM-107"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "detect-network-connectivity",
+            "enable-ufw-systemd-service",
+            "invoke-powerprofilesctl",
+            "invoke-ufw-docker-for-container-rules",
+            "invoke-ufw-to-configure-firewall-rules",
+            "query-compositor-for-monitor-scale",
+            "remove-specific-sudoers-drop-in-file",
+            "send-desktop-notifications",
+            "write-scale-factor-to-compositor-environment-config"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/fonts-and-visual-assets",
+      "name": "Fonts and Visual Assets",
+      "intent": "Install and register fonts used by the Omarchy desktop environment.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-018"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "deploy-font-file",
+            "rebuild-font-cache"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/framework-hardware-support",
+      "name": "Framework Hardware Support",
+      "intent": "Install and configure Framework-specific hardware: QMK HID tool for Framework 16 RGB control, audio profile correction for Framework 13 AMD, and udev access rules.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-025",
+        "OM-084",
+        "OM-085"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "eval-dmi-hardware-condition",
+            "invoke-pipewire-card-profile-selection"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/gpu-and-display-drivers",
+      "name": "GPU and Display Drivers",
+      "intent": "Detect and install GPU drivers and video acceleration packages for NVIDIA, AMD, Intel, and Apple Silicon GPUs, including Vulkan drivers.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-068",
+        "OM-069",
+        "OM-070"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "append-compositor-environment-variable-declarations",
+            "detect-gpu-model",
+            "detect-gpu-vendors-from-pci-device-list",
+            "detect-intel-gpu-generation",
+            "install-dkms-driver-packages",
+            "install-generation-appropriate-video-acceleration-packages",
+            "install-vendor-specific-vulkan-driver-packages",
+            "write-mkinitcpio-config-drop-in"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/hardware-peripheral-configuration",
+      "name": "Hardware Peripheral Configuration",
+      "intent": "Configure input and peripheral hardware behavior applicable to many systems: Apple-style function key mode, USB autosuspend policy, power button behavior, and ASUS ROG laptop audio fixes.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-063",
+        "OM-066",
+        "OM-067",
+        "OM-081",
+        "OM-082"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "deploy-wireplumber-config-file",
+            "invoke-alsa-mixer-controls",
+            "store-alsa-state",
+            "write-kernel-module-option-config-to-disable-usb-autosuspend"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/hyprland-desktop-stack",
+      "name": "Hyprland Desktop Stack",
+      "intent": "Install and configure the complete Wayland compositor session stack including the compositor, session launcher, display portal, idle daemon, screen lock, color temperature control, status bar, notification daemon, application launcher, background setter, on-screen display, polkit agent, and the display manager with auto-login.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-006",
+        "OM-015",
+        "OM-039",
+        "OM-040",
+        "OM-046",
+        "OM-049",
+        "OM-056"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "copy-lua-config-file-to-user-state-directory",
+            "create-config-symlinks",
+            "create-package-manager-post-update-hooks",
+            "create-state-files-for-feature-toggle-system",
+            "create-xdg-autostart-entries",
+            "read-system-keyboard-config",
+            "write-compositor-keyboard-layout",
+            "write-xcompose-config"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/intel-hardware-optimizations",
+      "name": "Intel Hardware Optimizations",
+      "intent": "Configure Intel-specific power management, thermal control, camera support, kernel selection, and hardware workarounds for supported Intel CPU and chipset generations.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-071",
+        "OM-072",
+        "OM-073",
+        "OM-074",
+        "OM-075",
+        "OM-076",
+        "OM-077"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "install-alternative-kernel-package",
+            "install-and-enable-power-management-daemon",
+            "install-and-enable-thermal-management-daemon",
+            "install-camera-firmware-driver-packages",
+            "install-firmware-packages",
+            "probe-acpi-device-ids",
+            "read-cpu-model-from-proc-cpuinfo",
+            "remove-default-kernel-package",
+            "write-bootloader-entry-tool-drop-in"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/media-and-creative-applications",
+      "name": "Media and Creative Applications",
+      "intent": "Install the full suite of media consumption and creation tools: video player, audio tools, screen recorder, image viewer, image editor, PDF viewer, screenshot tools, and screen annotation.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-012"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": true
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/networking-and-connectivity-configuration",
+      "name": "Networking and Connectivity Configuration",
+      "intent": "Enable and configure network management, wireless regulatory domain, Bluetooth, printing services, and DNS resolution.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-061",
+        "OM-062",
+        "OM-064",
+        "OM-065"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "deploy-wireplumber-config-drop-in",
+            "derive-wireless-regulatory-domain",
+            "modify-config-file-entry",
+            "read-system-timezone"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/other-vendor-hardware-support",
+      "name": "Other Vendor Hardware Support",
+      "intent": "Install hardware support for Dell, Microsoft Surface, Lenovo, Broadcom WiFi, Motorcomm Ethernet, Synaptics touchpad, and Tuxedo/Clevo keyboard backlight hardware.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-026",
+        "OM-027",
+        "OM-089",
+        "OM-090",
+        "OM-091",
+        "OM-092",
+        "OM-093",
+        "OM-094"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "conditionally-load-kernel-module-with-options",
+            "detect-loaded-kernel-modules",
+            "detect-pci-device-by-name-pattern",
+            "detect-system-vendor-from-dmi",
+            "detect-touchpad-type-from-kernel-input-devices",
+            "eval-dmi-hardware-condition",
+            "install-dkms-driver-packages",
+            "install-dkms-wifi-driver-packages",
+            "read-pci-device-ids",
+            "write-kernel-module-option-config-for-sound-driver-pin-quirk",
+            "write-mkinitcpio-module-list-configuration"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/package-manager-finalization",
+      "name": "Package Manager Finalization and Post-Install Repositories",
+      "intent": "Write the final package manager configuration for the installed system, including the conditional addition of the arch-mact2 unsigned repository for Apple T2 hardware post-install updates.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-100"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "conditionally-append-unsigned-repository-for-t2-hardware",
+            "deploy-final-package-manager-config"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/productivity-and-communication",
+      "name": "Productivity and Communication Applications",
+      "intent": "Install personal productivity and communication applications: note-taking, secure messaging, office suite, markdown editor, audio streaming, and local file sharing.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-013"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": true
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/repository-bootstrap-and-preflight",
+      "name": "Repository Bootstrap and Preflight",
+      "intent": "Establish the package manager configuration, apply any pending migrations, and set the install-time execution context before any packages are installed.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-001",
+        "OM-002",
+        "OM-003",
+        "OM-004",
+        "OM-005"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "disable-package-manager-hooks",
+            "log-structured-key-value-data",
+            "maintain-applied-migrations-state",
+            "restore-package-manager-hooks",
+            "run-migration-scripts"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/security-and-network-services",
+      "name": "Security and Network Services",
+      "intent": "Install and configure system security tools including firewall, printing support, network service discovery, cryptographic keyring, and power management daemon.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-016"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": true
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/system-infrastructure-and-hooks",
+      "name": "System Infrastructure and Hooks",
+      "intent": "Enable and configure supporting system services and infrastructure hooks that underpin the desktop: kernel modules cleanup, FUSE unmount hook, and brightness control sudo access.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-051",
+        "OM-052",
+        "OM-057"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "install-executable-sleep-hook-script"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/system-performance-tuning",
+      "name": "System Performance Tuning",
+      "intent": "Tune system kernel and resource parameters for a developer-oriented desktop: inotify watchers, file descriptor limits, TCP MTU probing, and fast shutdown timeouts.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-036",
+        "OM-037",
+        "OM-038",
+        "OM-050"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": true
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/system-utilities-and-hardware-tools",
+      "name": "System Utilities and Hardware Tools",
+      "intent": "Install system utilities covering Bluetooth management, disk tools, file manager and extensions, display brightness control, system monitoring, file search, and network tools.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-014",
+        "OM-047",
+        "OM-053"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "deploy-plugin-files-to-application-extension-directory"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/terminal-and-shell-toolchain",
+      "name": "Terminal and Shell Toolchain",
+      "intent": "Install and configure the primary terminal emulator, multiplexer, and shell enhancement tools that provide the daily command-line working environment.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-007"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": true
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/visual-themes",
+      "name": "Visual Themes",
+      "intent": "Provide the complete set of 21 selectable visual theme bundles that a user can switch between at runtime without reinstalling the system.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-114",
+        "OM-115",
+        "OM-116",
+        "OM-117",
+        "OM-118",
+        "OM-119",
+        "OM-120",
+        "OM-121",
+        "OM-122",
+        "OM-123",
+        "OM-124",
+        "OM-125",
+        "OM-126",
+        "OM-127",
+        "OM-128",
+        "OM-129",
+        "OM-130",
+        "OM-131",
+        "OM-132",
+        "OM-133",
+        "OM-134"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "deploy-file-asset-payloads-to-theme-directories"
+          ]
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "omarchy/web-applications-and-launcher-entries",
+      "name": "Web Applications and Launcher Entries",
+      "intent": "Install web applications as Chromium PWAs and configure TUI applications as windowed launcher entries with custom icons and compositor layout hints.",
+      "curator": "omarchy@basecamp.com",
+      "members": [
+        "OM-020",
+        "OM-021",
+        "OM-022"
+      ],
+      "foundation_compat": [
+        {
+          "foundation": "arch",
+          "compatible": true
+        },
+        {
+          "foundation": "debian",
+          "compatible": false,
+          "missing_capabilities": [
+            "copy-icon-files-to-app-icon-directory",
+            "create-desktop-launcher-entries",
+            "create-desktop-launcher-entries-with-compositor-hints",
+            "register-url-scheme-handlers"
+          ]
+        }
+      ],
+      "tags": []
+    }
+  ]
+}

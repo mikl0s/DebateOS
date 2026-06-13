@@ -12,7 +12,7 @@
 //
 //	reindex — Rebuild the SQLite index from a static registry index.json file.
 //	           FORUM_DB              — SQLite database file (default: forum.db)
-//	           FORUM_INDEX           — path to registry index.json (default: index.json)
+//	           FORUM_INDEX           — path to registry index.json (default: registry/index.json)
 //
 // Security (D13, mandatory):
 //   - Secrets are read from environment only — never from flags or config files.
@@ -72,7 +72,7 @@ Environment variables:
   GITHUB_CLIENT_ID       GitHub OAuth app client ID
   GITHUB_CLIENT_SECRET   GitHub OAuth app client secret
   GITHUB_REDIRECT_URL    OAuth callback URL   (default: http://localhost:8080/oauth/callback)
-  FORUM_INDEX            Path to registry index.json (default: index.json, reindex only)
+  FORUM_INDEX            Path to registry index.json (default: registry/index.json, reindex only)
 
 Security notes:
   - All secrets must be supplied via environment, never command-line flags.
@@ -125,7 +125,7 @@ func runServe() error {
 // runReindex rebuilds the Forum's SQLite index from a registry index.json file.
 func runReindex() error {
 	dsn := envOrDefault("FORUM_DB", "forum.db")
-	indexPath := envOrDefault("FORUM_INDEX", "index.json")
+	indexPath := envOrDefault("FORUM_INDEX", "registry/index.json")
 
 	// Load the registry index.
 	f, err := os.Open(indexPath)
