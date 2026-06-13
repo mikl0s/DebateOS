@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-02-PLAN.md — SvelteKit+Tailwind v4 scaffold, typed WASM loader, BRND-01 landing page, build-wasm.sh
-last_updated: "2026-06-13T16:07:58.699Z"
+stopped_at: Completed 05-05-PLAN.md — GitHub OAuth, conflict threads, Reindex, forumctl arm64
+last_updated: "2026-06-13T16:18:48.094Z"
 last_activity: 2026-06-13 -- Phase 5 Plan 1 complete (registry generator + go.mod)
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 29
-  completed_plans: 27
+  completed_plans: 28
   percent: 83
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 5 (Registry, Forum & Debate UI) — EXECUTING
-Plan: 5 of 6
+Plan: 6 of 6
 Status: Ready to execute
 Last activity: 2026-06-13 -- Phase 5 Plan 1 complete (registry generator + go.mod)
 
@@ -73,6 +73,7 @@ Progress: [█████████░] 83%
 | Phase 05-registry-forum-debate-ui P02 | 30 min | 2 tasks | 20 files |
 | Phase 05-registry-forum-debate-ui P03 | 35 | 2 tasks | 17 files |
 | Phase 05-registry-forum-debate-ui P04 | 40 min | 2 tasks | 17 files |
+| Phase 05-registry-forum-debate-ui P05 | 6min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -128,6 +129,10 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: [05-03] FTS5 MATCH query written as raw sql.DB; sqlc cannot parse FTS5 virtual table columns
 - [Phase ?]: [05-03] IdentityFn seam: func(*http.Request)(string,bool) injected at NewRouter; 05-05 wires real OAuth session
 - [Phase ?]: [05-03] Foundation filter in Go after FTS5 (JSON substring on foundation_compat); no SQL injection surface
+- [Phase ?]: [05-05] OAuthProvider interface + FakeOAuthProvider: no live GitHub calls in tests; CSRF state (crypto/rand); token discarded after GetUserID (T-05-13/14)
+- [Phase ?]: [05-05] NewRouterWithOAuth alongside legacy NewRouter: backward-compatible; 05-03 tests unchanged; prod path uses session-backed IdentityFn
+- [Phase ?]: [05-05] Reindex stores full FoundationCompat struct array as JSON; Reindex idempotent (UpsertPoint ON CONFLICT DO UPDATE); DB-loss recovery tested (FORM-05)
+- [Phase ?]: [05-05] forumctl read-only fallback when GITHUB_CLIENT_ID/SECRET unset; env-driven config only (no secrets in code, D13)
 
 ### Decisions from Plan 05-01
 
@@ -204,7 +209,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-13T16:07:58.694Z
-Stopped at: Completed 05-02-PLAN.md — SvelteKit+Tailwind v4 scaffold, typed WASM loader, BRND-01 landing page, build-wasm.sh
+Last session: 2026-06-13T16:18:48.089Z
+Stopped at: Completed 05-05-PLAN.md — GitHub OAuth, conflict threads, Reindex, forumctl arm64
 Resume file: None
 Next: Phase 5 Plan 02 — SvelteKit Debate UI scaffold (WASM integration, adapter-static, dual delivery)

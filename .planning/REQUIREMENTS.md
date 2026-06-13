@@ -104,8 +104,8 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 - [x] **FORM-01**: Forum search and discovery over indexed points/speeches — by curator, tag, popularity, freshness, and foundation compatibility (SQLite FTS5 behind the abstracted store)
 - [x] **FORM-02**: Subscriptions: a user can follow curators and subscribe to point sets or individual points; subscribed points merge into one coherent speech that resolves and builds a single installer
 - [x] **FORM-03**: Ratings/reputation are lightweight and tied to GitHub OAuth identity only — no DebateOS-native accounts, passwords, email, or 2FA
-- [ ] **FORM-04**: Conflict threads host the docs/04 community workflow: known-conflict registry, disposable-environment repro notes, discussion, and links to the patch-opinion PRs that resolve them — patches live in Git and survive the Forum
-- [ ] **FORM-05**: Forum is optional and additive: the core compose→resolve→build path works with the Forum offline; total DB loss is recoverable by re-indexing GitHub; no untrusted code execution, no secrets at rest; deployed per D15 with deployment notes
+- [x] **FORM-04**: Conflict threads host the docs/04 community workflow: known-conflict registry, disposable-environment repro notes, discussion, and links to the patch-opinion PRs that resolve them — patches live in Git and survive the Forum
+- [x] **FORM-05**: Forum is optional and additive: the core compose→resolve→build path works with the Forum offline; total DB loss is recoverable by re-indexing GitHub; no untrusted code execution, no secrets at rest; deployed per D15 with deployment notes
 
 ## v2 Requirements
 
@@ -167,8 +167,8 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | FORM-01 | Phase 5 | Complete |
 | FORM-02 | Phase 5 | Complete |
 | FORM-03 | Phase 5 | Complete |
-| FORM-04 | Phase 5 | Pending |
-| FORM-05 | Phase 5 | Pending |
+| FORM-04 | Phase 5 | Complete |
+| FORM-05 | Phase 5 | Complete |
 
 **Coverage:**
 
