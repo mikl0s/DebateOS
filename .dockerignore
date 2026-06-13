@@ -6,8 +6,11 @@
 # NEVER enter the image layers, even if accidentally present in the repo root.
 #
 # Private pane & age identity (PRIV-01)
+# WR-06: Docker's filepath.Match semantics match *.age only at the build-context
+# root. Use **/*.age for defence-in-depth so age files accidentally committed
+# inside subdirectories (e.g. translators/arch/key.age) are also excluded.
 pane.yaml
-*.age
+**/*.age
 identity.age
 private-injection.tar
 
