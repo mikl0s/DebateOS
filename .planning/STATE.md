@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-04-PLAN.md — Docker image + GHA workflow + determinism/secret-free/coverage gates + Phase 3 finalized
-last_updated: "2026-06-13T13:33:31.133Z"
-last_activity: 2026-06-13 -- Phase 4 execution started
+stopped_at: Completed 04-01-PLAN.md — translators/common shared core + Arch re-exports + regression gate
+last_updated: "2026-06-13T14:10:00.000Z"
+last_activity: 2026-06-13 -- Phase 4 Plan 01 complete
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 23
-  completed_plans: 18
-  percent: 67
+  completed_plans: 19
+  percent: 70
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 4 (Debian Translator) — EXECUTING
-Plan: 1 of 5
+Plan: 2 of 5
 Status: Executing Phase 4
-Last activity: 2026-06-13 -- Phase 4 execution started
+Last activity: 2026-06-13 -- Phase 4 Plan 01 complete (translators/common extraction)
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
@@ -64,6 +64,7 @@ Progress: [█████░░░░░] 50%
 | Phase 03-cli-build-channels P02 | 35 | 2 tasks | 5 files |
 | Phase 03-cli-build-channels P03 | 20 min | 2 tasks (3 commits) | 5 files |
 | Phase 03-cli-build-channels P04 | 17 min | 3 tasks (3 commits) | 18 files |
+| Phase 04-debian-translator P01 | ~20 min | 3 tasks (3 commits) | 13 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,13 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: age X25519 identity local-only, no escrow (PRIV-01/D16): identity.age 0600 in config dir
 - [Phase ?]: pane backup routes git via Runner interface — FakeRunner in tests, zero network calls
 - [Phase ?]: only pane.yaml.age (ciphertext) ever staged — plaintext never in git (T-03-PLAINTEXT)
+
+### Decisions from Plan 04-01
+
+- [04-01]: check_capabilities removed from common/manifest.py — caller-responsibility per translator; generator.py calls it before BuildManifest.from_resolved() (SC-3/ARCH-03 gate preserved)
+- [04-01]: Shim re-export pattern for arch/*.py — bare-name imports continue working; common/ is single source of truth
+- [04-01]: Parameterized template_dir in render_firstrun_unit — Debian can pass its own template path; common default used otherwise
+- [04-01]: Clean extraction path taken — no 30-min fallback needed; 16/16 north-star + 135 arch + 36 common tests all green
 
 ### Decisions from Plan 03-04
 
