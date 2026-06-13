@@ -1,114 +1,33 @@
 """
-firstrun.py — First-run systemd user oneshot unit generator for the Arch translator.
+firstrun.py — Re-export shim for the Arch translator.
 
-Provides:
-- render_firstrun_unit(opinion_id, description, exec_path) → str
+The canonical implementation lives in translators/common/firstrun.py.
+This shim re-exports all public names so that existing bare-name imports
+within the Arch translator continue to work unchanged:
 
-Generated units follow 02-RESEARCH.md Pattern 2:
-- User-scope systemd oneshot service (not system scope)
-- ConditionPathExists=!/var/lib/debateos/.firstrun-<id>.done (flag-file guard, Pitfall 3)
-- ExecStartPost=/bin/touch <flag-file> (idempotency)
-- RemainAfterExit=yes
-- WantedBy=graphical-session.target (requires live user session)
-- After=graphical-session.target (ordering)
+    from firstrun import render_firstrun_unit, firstrun_unit_name  # still works
 
-Security: T-02-11 — units are placed in etc/systemd/USER/ (not system/), ensuring
-they run in the target user context, not root scope.
+Single source of truth: translators/common/firstrun.py
 
-WR-08: The unit template is loaded from templates/firstrun.service.tpl (single
-source of truth) rather than being duplicated as an inline string literal.
+The common implementation defaults to translators/common/templates/ for the
+firstrun.service.tpl template. The Arch translator calls render_firstrun_unit
+without a template_dir override (the common template is identical to the
+former arch template — byte-for-byte identical).
 """
+# noqa: F401,F403
+from common.firstrun import (  # noqa: F401
+    render_firstrun_unit,
+    firstrun_unit_name,
+    FLAG_FILE_DIR,
+    FLAG_FILE_PREFIX,
+    _DEFAULT_TEMPLATES_DIR as _TEMPLATES_DIR,
+    _flag_file_path,
+    _load_unit_template,
+)
 
-import os
-
-# ---------------------------------------------------------------------------
-# Unit file name helper
-# ---------------------------------------------------------------------------
-
-FLAG_FILE_DIR = "/var/lib/debateos"
-FLAG_FILE_PREFIX = ".firstrun-"
-
-_TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
-
-
-def _load_unit_template() -> str:
-    """Load the firstrun.service.tpl template from disk (single source of truth, WR-08).
-
-    Returns:
-        The raw template string.
-
-    Raises:
-        FileNotFoundError: if templates/firstrun.service.tpl is missing.
-    """
-    path = os.path.join(_TEMPLATES_DIR, "firstrun.service.tpl")
-    with open(path) as fh:
-        return fh.read()
-
-
-def firstrun_unit_name(opinion_id: str) -> str:
-    """Return the canonical service unit filename for a first-run opinion.
-
-    Format: debateos-firstrun-<opinion_id>.service
-
-    Args:
-        opinion_id: The opinion ID string, e.g. "OM-102".
-
-    Returns:
-        The unit filename string, e.g. "debateos-firstrun-OM-102.service".
-    """
-    return f"debateos-firstrun-{opinion_id}.service"
-
-
-def _flag_file_path(opinion_id: str) -> str:
-    """Return the absolute flag file path for a first-run opinion.
-
-    Format: /var/lib/debateos/.firstrun-<opinion_id>.done
-
-    Args:
-        opinion_id: The opinion ID string.
-
-    Returns:
-        Absolute path string for the flag file.
-    """
-    return f"{FLAG_FILE_DIR}/{FLAG_FILE_PREFIX}{opinion_id}.done"
-
-
-# ---------------------------------------------------------------------------
-# render_firstrun_unit
-# ---------------------------------------------------------------------------
-
-
-def render_firstrun_unit(
-    opinion_id: str,
-    description: str,
-    exec_path: str,
-) -> str:
-    """Render a systemd user oneshot unit for a first-run opinion.
-
-    The unit is flag-file guarded: it only runs if the flag file does not
-    exist, and creates the flag file on success — ensuring idempotency across
-    multiple user logins without relying on ConditionFirstBoot (Pitfall 3).
-
-    The template is loaded from templates/firstrun.service.tpl — single source
-    of truth (WR-08).
-
-    Args:
-        opinion_id: The opinion ID, e.g. "OM-102". Used to:
-            - Name the flag file (/var/lib/debateos/.firstrun-OM-102.done)
-            - Name the service unit (debateos-firstrun-OM-102.service)
-        description: Human-readable description of the first-run action.
-            Appears in the unit's Description= field.
-        exec_path: Absolute path to the executable to run at first login.
-            Appears in ExecStart=.
-
-    Returns:
-        A complete systemd unit file contents as a string, ready to be
-        written to airootfs/etc/systemd/user/debateos-firstrun-<id>.service.
-    """
-    flag_file = _flag_file_path(opinion_id)
-    template = _load_unit_template()
-    return template.format(
-        description=description,
-        flag_file=flag_file,
-        exec_path=exec_path,
-    )
+__all__ = [
+    "render_firstrun_unit",
+    "firstrun_unit_name",
+    "FLAG_FILE_DIR",
+    "FLAG_FILE_PREFIX",
+]

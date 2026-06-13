@@ -33,7 +33,13 @@ _ARCH_DIR = os.path.dirname(os.path.abspath(__file__))
 if _ARCH_DIR not in sys.path:
     sys.path.insert(0, _ARCH_DIR)
 
-from capabilities import load_capabilities
+# Ensure translators/ (parent of arch/) is on sys.path so `import common`
+# resolves when running from inside translators/arch/ context.
+_TRANSLATORS_DIR = os.path.dirname(_ARCH_DIR)
+if _TRANSLATORS_DIR not in sys.path:
+    sys.path.insert(0, _TRANSLATORS_DIR)
+
+from capabilities import load_capabilities, check_capabilities
 from contract import load_opinion_bodies
 from manifest import BuildManifest
 from profile import emit_profile_tree
@@ -97,7 +103,12 @@ def generate(
     # --- Step 2: Load capabilities ---
     capabilities = load_capabilities()
 
-    # --- Step 3: Build BuildManifest (includes capability gate) ---
+    # --- Step 3: Build BuildManifest ---
+    # SC-3 / ARCH-03: Run the capability gate BEFORE manifest assembly.
+    # The shared common/manifest.py is foundation-neutral and does not call
+    # check_capabilities internally — the translator (generator.py) owns the
+    # gate call so each foundation's capability set applies correctly.
+    check_capabilities(resolved, opinions_index, capabilities)
     manifest = BuildManifest.from_resolved(
         resolved=resolved,
         opinions_index=opinions_index,

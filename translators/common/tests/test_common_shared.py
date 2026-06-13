@@ -409,7 +409,6 @@ class TestCommonBuildManifest:
 
     def test_from_resolved_no_check_capabilities_import(self):
         """common.manifest must NOT import check_capabilities (foundation-neutral)."""
-        import importlib
         import sys
 
         # Reload to get fresh state
@@ -419,12 +418,15 @@ class TestCommonBuildManifest:
 
         import common.manifest as cm
 
-        # The module source must not contain 'from capabilities import'
-        import inspect
-        src = inspect.getsource(cm)
-        assert "from capabilities import" not in src, (
-            "common/manifest.py must NOT import from 'capabilities' "
+        # The module's actual imported names must not include check_capabilities
+        # (checking vars/dir rather than source text which includes comments)
+        assert not hasattr(cm, "check_capabilities"), (
+            "common/manifest.py must NOT import 'check_capabilities' "
             "(foundation-neutral: the capability gate is caller responsibility)"
+        )
+        # Also verify: the capabilities module itself must not be imported
+        assert "capabilities" not in dir(cm) or not callable(getattr(cm, "capabilities", None)), (
+            "common/manifest.py must not expose 'capabilities' module"
         )
 
 

@@ -406,10 +406,15 @@ def test_sig_level_optionaltrust_all_captured_in_trust_warnings():
 # ---------------------------------------------------------------------------
 
 
-def test_from_resolved_raises_on_unsupported_required_capability():
-    """from_resolved must raise CapabilityError if a required opinion needs unsupported cap."""
-    from manifest import BuildManifest  # noqa: E402
-    from capabilities import CapabilityError  # noqa: E402
+def test_capability_gate_raises_on_unsupported_required_capability():
+    """check_capabilities must raise CapabilityError if a required opinion needs unsupported cap.
+
+    Note: Since translators/common/manifest.py is foundation-neutral, the
+    capability gate (check_capabilities) is now called by the CALLER (generator.py)
+    before BuildManifest.from_resolved(). This test verifies the gate contract
+    via check_capabilities directly, which is the correct call site (ARCH-03 / SC-3).
+    """
+    from capabilities import check_capabilities, CapabilityError  # noqa: E402
 
     rs = make_resolved(["OM-BAD"], ["OM-BAD"])
     idx = {
@@ -422,13 +427,17 @@ def test_from_resolved_raises_on_unsupported_required_capability():
     caps = {"install-named-packages"}  # npm not declared
 
     with pytest.raises(CapabilityError):
-        BuildManifest.from_resolved(rs, idx, caps, b"dummy")
+        check_capabilities(rs, idx, caps)
 
 
-def test_from_resolved_capability_gate_runs_before_assembly():
-    """CapabilityError must be raised before any manifest data is assembled."""
-    from manifest import BuildManifest  # noqa: E402
-    from capabilities import CapabilityError  # noqa: E402
+def test_capability_gate_runs_before_assembly():
+    """CapabilityError must be raised when check_capabilities is called before assembly.
+
+    Note: The gate is now caller-responsibility (generator.py calls
+    check_capabilities before BuildManifest.from_resolved). This test verifies
+    that the gate fires correctly via direct check_capabilities call.
+    """
+    from capabilities import check_capabilities, CapabilityError  # noqa: E402
 
     rs = make_resolved(["OM-OK", "OM-BAD"], ["OM-OK", "OM-BAD"])
     idx = {
@@ -443,7 +452,7 @@ def test_from_resolved_capability_gate_runs_before_assembly():
     caps = {"install-named-packages"}
 
     with pytest.raises(CapabilityError):
-        BuildManifest.from_resolved(rs, idx, caps, b"dummy")
+        check_capabilities(rs, idx, caps)
 
 
 # ---------------------------------------------------------------------------
