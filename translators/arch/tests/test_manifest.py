@@ -372,6 +372,35 @@ def test_sig_level_required_not_in_trust_warnings():
     assert len(manifest.trust_warnings) == 0
 
 
+def test_sig_level_optionaltrust_all_captured_in_trust_warnings():
+    """Custom repos with sig_level=OptionalTrustAll must appear in trust_warnings (WR-01)."""
+    from manifest import BuildManifest  # noqa: E402
+
+    rs = make_resolved(["OM-REPO"], ["OM-REPO"])
+    idx = {
+        "OM-REPO": base_opinion(
+            "OM-REPO",
+            custom_repos=[
+                {
+                    "name": "omarchy",
+                    "url": "https://packages.omarchy.org/stable",
+                    "sig_level": "OptionalTrustAll",
+                    "priority": 10,
+                    "keyring": "40DFB630FF42BCFFB047046CF0134EE680CAC571",
+                }
+            ],
+            translator_capabilities=["add-signed-external-repo"],
+        ),
+    }
+    manifest = BuildManifest.from_resolved(rs, idx, FULL_CAPS, b"dummy")
+    assert len(manifest.trust_warnings) > 0, (
+        "OptionalTrustAll must produce a trust_warning in the manifest"
+    )
+    warning_text = " ".join(manifest.trust_warnings)
+    assert "omarchy" in warning_text
+    assert "OptionalTrustAll" in warning_text or "unsigned" in warning_text.lower()
+
+
 # ---------------------------------------------------------------------------
 # Tests: BuildManifest.from_resolved — capability gate integration
 # ---------------------------------------------------------------------------

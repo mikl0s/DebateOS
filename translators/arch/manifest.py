@@ -245,15 +245,22 @@ class BuildManifest:
             if "theme" in opinion and opinion["theme"] is not None:
                 themes.append(dict(opinion["theme"]))
 
-            # Custom repos + trust warnings for sig_level=Never (T-02-02)
+            # Custom repos + trust warnings for sig_level=Never/OptionalTrustAll (T-02-02, WR-01)
             for repo in opinion.get("custom_repos", []):
                 repo_copy = dict(repo)
                 custom_repos.append(repo_copy)
-                if repo.get("sig_level") == "Never":
+                sig = repo.get("sig_level", "")
+                if sig == "Never":
                     trust_warnings.append(
                         f"WARNING: repo '{repo['name']}' has sig_level=Never "
+                        f"(opinion {opinion_id}) — all package signatures bypassed; "
+                        f"verify repo source before use (T-02-02)."
+                    )
+                elif sig == "OptionalTrustAll":
+                    trust_warnings.append(
+                        f"WARNING: repo '{repo['name']}' has sig_level=OptionalTrustAll "
                         f"(opinion {opinion_id}) — unsigned packages accepted; "
-                        f"verify repo source before use."
+                        f"verify repo source before use (T-02-02, WR-01)."
                     )
 
         source_date_epoch = derive_source_date_epoch(resolved_bytes)

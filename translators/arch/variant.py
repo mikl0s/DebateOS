@@ -112,8 +112,14 @@ def apply_variant(variant: dict, base_pacman_repos: list) -> dict:
         if sig == "Never":
             trust_warnings.append(
                 f"WARNING: repo '{repo['name']}' has sig_level=Never "
+                f"(variant {variant.get('variant', '?')}) — all package signatures bypassed; "
+                f"verify repo source before use (T-02-10)."
+            )
+        elif sig == "OptionalTrustAll":
+            trust_warnings.append(
+                f"WARNING: repo '{repo['name']}' has sig_level=OptionalTrustAll "
                 f"(variant {variant.get('variant', '?')}) — unsigned packages accepted; "
-                f"verify repo source before use."
+                f"verify repo source before use (T-02-10, WR-01)."
             )
 
         if repo.get("above_core", False):
