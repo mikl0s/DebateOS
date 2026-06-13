@@ -16,7 +16,7 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
 - [x] **Phase 2: Arch Translator** - mkarchiso-wrapping translator with variant-profile structure; NORTH STAR: Omarchy as a speech on vanilla Arch (completed 2026-06-12)
 - [x] **Phase 3: CLI & Build Channels** - Go CLI, private-pane/secrets model, deterministic Docker + GitHub Actions builds at zero cost (completed 2026-06-13)
 - [x] **Phase 4: Debian Translator** - live-build/preseed translator; dual-foundation proof from one resolved speech; de-Arch the abstraction (completed 2026-06-13)
-- [ ] **Phase 5: Registry, Forum & Debate UI** - Static registry index, optional Forum (search/subscriptions/ratings/conflict threads), visual Debate UI on Pages + embedded in CLI
+- [x] **Phase 5: Registry, Forum & Debate UI** - Static registry index, optional Forum (search/subscriptions/ratings/conflict threads), visual Debate UI on Pages + embedded in CLI (completed 2026-06-13)
 
 ## Phase Details
 
@@ -190,7 +190,7 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 
 - [x] 05-05-PLAN.md — Forum GitHub OAuth flow (fake provider in tests) + conflict threads + re-index (rebuildable) + forumctl binary + boundary tests (FORM-03, FORM-04, FORM-05)
-- [ ] 05-06-PLAN.md — Dual-delivery go:embed serve (`debateos compose --serve`) + invariant-4 offline gate + Actions index workflow + Oracle A1/Pages deploy docs + coverage gate + REQUIREMENTS finalize (UI-02, REG-01, FORM-05, BRND-01)
+- [x] 05-06-PLAN.md — Dual-delivery go:embed serve (`debateos compose --serve`) + invariant-4 offline gate + Actions index workflow + Oracle A1/Pages deploy docs + coverage gate + REQUIREMENTS finalize (UI-02, REG-01, FORM-05, BRND-01)
 
 **UI hint**: yes
 
@@ -206,7 +206,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | 2. Arch Translator | 5/5 | Complete   | 2026-06-13 |
 | 3. CLI & Build Channels | 4/4 | Complete   | 2026-06-13 |
 | 4. Debian Translator | 5/5 | Complete   | 2026-06-13 |
-| 5. Registry, Forum & Debate UI | 5/6 | In Progress|  |
+| 5. Registry, Forum & Debate UI | 6/6 | Complete   | 2026-06-13 |
 
 ---
 *Roadmap created: 2026-06-12 from ADR-locked phase structure (docs/07, docs/09 via .planning/intel/)*
