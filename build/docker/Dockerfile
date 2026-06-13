@@ -22,7 +22,12 @@
 # Verified: 2026-06-12
 
 # ─── Stage 1: Build the static debateos binary ───────────────────────────────
-FROM golang:1.24 AS builder
+# Pin builder by SHA-256 digest (WR-01): a mutable golang:1.24 tag would allow
+# a silently-updated image to inject a malicious compiler without any version
+# change visible in this file. Re-verify the digest quarterly.
+#   docker buildx imagetools inspect golang:1.24 | grep Digest
+# Verified: 2026-06-13 — golang:1.24 (manifest list, all platforms)
+FROM golang:1.24@sha256:d2d2bc1c84f7e60d7d2438a3836ae7d0c847f4888464e7ec9ba3a1339a1ee804 AS builder
 
 WORKDIR /src
 
