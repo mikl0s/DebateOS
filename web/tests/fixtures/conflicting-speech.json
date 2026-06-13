@@ -1,0 +1,41 @@
+{
+  "speech": {
+    "schema": 1,
+    "id": "e2e-conflicting",
+    "name": "E2E Conflicting Speech — SDDM vs greetd",
+    "foundation": "arch",
+    "points": [
+      { "id": "e2e-display-sddm" },
+      { "id": "e2e-display-greetd" }
+    ]
+  },
+  "opinions": [
+    {
+      "schema": 1,
+      "id": "OM-015",
+      "name": "Desktop Shell Components (SDDM display manager)",
+      "category": "package-install",
+      "intent": "Install graphical desktop shell components including the SDDM display manager.",
+      "status": "required",
+      "conflicts": [
+        { "id": "OM-015-greetd" }
+      ],
+      "packages": ["sddm", "waybar", "mako", "polkit-gnome"]
+    },
+    {
+      "schema": 1,
+      "id": "OM-015-greetd",
+      "name": "Desktop Shell Components (greetd display manager)",
+      "category": "package-install",
+      "intent": "Alternative desktop shell using greetd instead of SDDM.",
+      "status": "required",
+      "conflicts": [
+        { "id": "OM-015" }
+      ],
+      "packages": ["greetd", "greetd-tuigreet", "waybar", "mako", "polkit-gnome"]
+    }
+  ],
+  "hardware": {
+    "predicates": []
+  }
+}
