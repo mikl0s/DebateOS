@@ -32,19 +32,32 @@ export type {
 	Speech
 };
 
-let wasmReady = false;
+// wasmPromise is a module-level Promise singleton (IN-03).
+// Replacing the boolean wasmReady flag with a Promise makes the idempotency
+// guard race-safe: concurrent calls to loadDebateosWasm() all await the same
+// Promise rather than racing two WebAssembly.instantiateStreaming calls.
+let wasmPromise: Promise<void> | null = null;
 
 /**
  * loadDebateosWasm — loads debateos.wasm and registers window.debateosResolve.
  *
  * Must be called from onMount() (CSR only — Pitfall 3).
- * Idempotent: subsequent calls return immediately if WASM is already loaded.
+ * Idempotent and race-safe: concurrent calls all await the same Promise (IN-03).
  *
  * @param base - The SvelteKit base path (from $app/paths). Empty string for localhost.
  */
-export async function loadDebateosWasm(base = ''): Promise<void> {
-	if (wasmReady) return;
+export function loadDebateosWasm(base = ''): Promise<void> {
+	if (!wasmPromise) {
+		wasmPromise = _loadDebateosWasm(base);
+	}
+	return wasmPromise;
+}
 
+/**
+ * _loadDebateosWasm is the actual async loader. Only called once; all
+ * concurrent callers share the returned Promise via loadDebateosWasm.
+ */
+async function _loadDebateosWasm(base: string): Promise<void> {
 	// wasm_exec.js adds globalThis.Go — copy at build time from GOROOT (T-05-03).
 	// Using dynamic import with the base-prefixed URL.
 	await import(/* @vite-ignore */ `${base}/wasm_exec.js`);
@@ -60,8 +73,6 @@ export async function loadDebateosWasm(base = ''): Promise<void> {
 	// go.run() is non-blocking (WASM main() does select{}).
 	// init() in main.go registers window.debateosResolve synchronously before main().
 	go.run(result.instance);
-
-	wasmReady = true;
 }
 
 /**
