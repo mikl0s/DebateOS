@@ -1,0 +1,15 @@
+schema: 1
+id: DF-005
+status: required
+name: Add User to Video Group
+category: user-group
+intent: >
+  Add the installing user to the 'video' group, granting access to video devices
+  and GPU nodes. The 'video' group exists on both Arch and Debian systems; no
+  distribution-specific mechanic is required beyond the standard usermod/gpasswd
+  invocation that translators already handle.
+install_phase: post-install
+translator_capabilities:
+- add-user-to-group
+group_memberships:
+- group: video

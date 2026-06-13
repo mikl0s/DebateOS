@@ -1,0 +1,17 @@
+schema: 1
+id: DF-001
+status: required
+name: Base CLI Toolset
+category: package-install
+intent: >
+  Install a minimal set of foundational CLI utilities (git, curl, vim) that are
+  available under the same upstream names in both Arch Linux and Debian, giving
+  every DebateOS system a baseline of essential developer and operator tools.
+  No distribution-specific packages or name aliases are used.
+install_phase: packaging
+translator_capabilities:
+- install-packages
+packages:
+- git
+- curl
+- vim

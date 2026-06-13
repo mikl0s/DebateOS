@@ -1,0 +1,9 @@
+Welcome to DebateOS
+===================
+This system was configured by the DebateOS composition engine.
+Foundation: dual-foundation proof (foundation-neutral opinions)
+
+All installed opinions are OS-agnostic; this speech resolves cleanly
+on both Arch Linux and Debian using the same resolved.json.
+
+See: examples/dual-foundation/README.md for details.

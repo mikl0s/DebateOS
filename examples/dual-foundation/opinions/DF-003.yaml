@@ -1,0 +1,16 @@
+schema: 1
+id: DF-003
+status: required
+name: Enable Time Synchronisation Service
+category: service
+intent: >
+  Enable and start the systemd-timesyncd NTP client so the system clock is kept
+  accurate from first boot. The unit name is the same on both Arch and Debian;
+  no distribution-specific mechanic is needed beyond enabling the systemd unit.
+install_phase: config
+translator_capabilities:
+- enable-systemd-service
+services:
+- name: systemd-timesyncd.service
+  enable: true
+  deferred: false

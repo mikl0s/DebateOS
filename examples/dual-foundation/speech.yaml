@@ -1,0 +1,7 @@
+schema: 1
+id: dual-foundation-proof
+name: Dual-Foundation Proof — Foundation-Neutral Representative Speech
+foundation: debian
+points:
+- id: DF-base-cli
+- id: DF-system-tuning

@@ -1,0 +1,16 @@
+schema: 1
+id: DF-004
+status: required
+name: TCP Fast Open Sysctl Tuning
+category: sysctl
+intent: >
+  Enable TCP Fast Open for both client and server connections (value 3) via a
+  sysctl drop-in file. This kernel network parameter is foundation-neutral and
+  is applied via /etc/sysctl.d/ which exists on both Arch and Debian systems.
+install_phase: config
+translator_capabilities:
+- write-sysctl-drop-in
+sysctl_params:
+- key: net.ipv4.tcp_fastopen
+  value: "3"
+  drop_in_file: 50-debateos.conf

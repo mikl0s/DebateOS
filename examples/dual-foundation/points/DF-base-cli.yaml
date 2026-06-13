@@ -1,0 +1,13 @@
+schema: 1
+id: DF-base-cli
+name: Dual-Foundation Base CLI
+intent: >
+  Install a minimal CLI toolset and deploy the system message-of-the-day banner.
+  Both opinions use only foundation-neutral capability tokens supported by every
+  DebateOS translator.
+curator: debateos@example.com
+members:
+- id: DF-001
+  status: required
+- id: DF-002
+  status: required

@@ -1,0 +1,16 @@
+schema: 1
+id: DF-system-tuning
+name: Dual-Foundation System Tuning
+intent: >
+  Configure system-level services, kernel parameters, and user group memberships
+  using only foundation-neutral capability tokens. Every opinion in this point
+  can be effectuated by both the Arch and Debian translators without any
+  distribution-specific mechanic leaking through the schema.
+curator: debateos@example.com
+members:
+- id: DF-003
+  status: required
+- id: DF-004
+  status: required
+- id: DF-005
+  status: required

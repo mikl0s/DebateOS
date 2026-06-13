@@ -1,0 +1,15 @@
+schema: 1
+id: DF-002
+status: required
+name: System Message of the Day
+category: config-file
+intent: >
+  Deploy a static /etc/motd banner that identifies this system as a DebateOS-managed
+  installation. The file is a plain text asset; no distribution-specific tooling is
+  required to deploy it beyond copying a file to the target path.
+install_phase: config
+translator_capabilities:
+- deploy-config-file-tree
+file_assets:
+- src: assets/motd
+  dst: etc/motd
