@@ -724,7 +724,10 @@ jobs:
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
+
+> Both questions RESOLVED 2026-06-13 by the orchestrator under the locked autonomous-run mandate: (1) the CLI computes SOURCE_DATE_EPOCH from the canonical resolved.json sha256 and exports it to BOTH the translate subprocess and the docker build subprocess — single derivation point, translator's own derivation kept as a consistency assert; (2) private-injection.tar layout: archive root mirrors target-filesystem-relative paths (same convention as file_assets dst, e.g. etc/..., home/...), plus a root-level debateos-private.json manifest (version, created, file list + modes); the first-boot unit extracts to / applying the same dst sanitization rules as the translator (no absolute/traversal paths).
+
 
 1. **Source of SOURCE_DATE_EPOCH in debateos build**
    - What we know: `manifest.py` in the translator derives `SOURCE_DATE_EPOCH` from the resolved-speech sha256. The CLI calls the translator as a subprocess.
