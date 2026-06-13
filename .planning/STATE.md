@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-02-PLAN.md — foundation-neutral dual-foundation example speech + TestExampleDualFoundation clean-resolve gate
-last_updated: "2026-06-13T14:05:20.751Z"
-last_activity: 2026-06-13 -- Phase 4 Plan 02 complete (dual-foundation example speech + Go clean-resolve gate)
+stopped_at: Completed 04-05-PLAN.md — Phase 4 COMPLETE (dual-foundation proof gate + Debian build scripts + ownership model + DEB/COMM requirements finalized)
+last_updated: "2026-06-13T15:35:00.000Z"
+last_activity: 2026-06-13 -- Phase 4 Plan 05 complete (DEB-02 dual-foundation gate 20/20 PASS; DEB-01/DEB-02/DEB-03/COMM-01 Complete; Phase 4 Complete)
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 23
-  completed_plans: 22
-  percent: 67
+  completed_plans: 23
+  percent: 96
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 
 ## Current Position
 
-Phase: 4 (Debian Translator) — EXECUTING
-Plan: 5 of 5
-Status: Ready to execute
-Last activity: 2026-06-13 -- Phase 4 Plan 02 complete (dual-foundation example speech + Go clean-resolve gate)
+Phase: 4 (Debian Translator) — COMPLETE
+Plan: 5 of 5 (ALL PLANS COMPLETE)
+Status: Phase 4 finalized; Phase 5 (Registry, Forum & Debate UI) ready to begin
+Last activity: 2026-06-13 -- Phase 4 Plan 05 complete (DEB-02 dual-foundation gate 20/20 PASS; Phase 4 requirements DEB-01/DEB-02/DEB-03/COMM-01 all Complete)
 
-Progress: [███████░░░] 70%
+Progress: [█████████░] 96%
 
 ## Performance Metrics
 
@@ -67,6 +67,8 @@ Progress: [███████░░░] 70%
 | Phase 04-debian-translator P01 | ~20 min | 3 tasks (3 commits) | 13 files |
 | Phase 04-debian-translator P02 | ~8 min | 2 tasks (2 commits) | 11 files |
 | Phase 04-debian-translator P03 | 35 min | 3 tasks | 20 files |
+| Phase 04-debian-translator P04 | 18 min | 2 tasks (3 commits) | 3 files |
+| Phase 04-debian-translator P05 | 35 min | 3 tasks (3 commits) | 8 files |
 
 ## Accumulated Context
 
@@ -115,6 +117,12 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: age X25519 identity local-only, no escrow (PRIV-01/D16): identity.age 0600 in config dir
 - [Phase ?]: pane backup routes git via Runner interface — FakeRunner in tests, zero network calls
 - [Phase ?]: only pane.yaml.age (ciphertext) ever staged — plaintext never in git (T-03-PLAINTEXT)
+
+### Decisions from Plan 04-05
+
+- [04-05]: dual-foundation-check.sh runs each pytest suite in a separate invocation (arch/debian/common independently) — combined invocation causes bare-name import collision (capabilities module from arch shadows debian's; pre-existing issue not introduced by this plan)
+- [04-05]: Cross-foundation equivalence proof: same 3 packages (git, curl, vim) from both translators' build-manifest.json target_packages fields confirms the dual-foundation abstraction is real
+- [04-05]: debian:stable pinned to sha256:fa0ca9c113cbc97c1e2eb40d7012b43bdfb70abe4218229c366de911c5b32cd2 (VERIFIED 2026-06-13, live-build 1:20250505+deb13u1 confirmed)
 
 ### Decisions from Plan 04-02
 
@@ -177,7 +185,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-13T14:05:20.746Z
-Stopped at: Completed 04-02-PLAN.md — foundation-neutral dual-foundation example speech + TestExampleDualFoundation clean-resolve gate
+Last session: 2026-06-13T15:35:00.000Z
+Stopped at: Completed 04-05-PLAN.md — Phase 4 COMPLETE (dual-foundation proof gate 20/20, Debian build scripts, ownership model, DEB-01/DEB-02/DEB-03/COMM-01 all Complete)
 Resume file: None
-Next: Phase 4 Plan 3 — Debian translator generator + capabilities.json (must declare: install-packages, deploy-config-file-tree, enable-systemd-service, write-sysctl-drop-in, add-user-to-group)
+Next: Phase 5 — Registry, Forum & Debate UI (static registry index + optional Forum + visual Debate UI on Pages + embedded in CLI)
