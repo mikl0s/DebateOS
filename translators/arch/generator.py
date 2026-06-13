@@ -34,7 +34,7 @@ if _ARCH_DIR not in sys.path:
     sys.path.insert(0, _ARCH_DIR)
 
 from capabilities import load_capabilities
-from contract import load_resolved_speech, load_opinion_bodies
+from contract import load_opinion_bodies
 from manifest import BuildManifest
 from profile import emit_profile_tree
 from variant import load_variant_profile
@@ -82,16 +82,22 @@ def generate(
             the target root (T-02-08 path sanitization).
     """
     # --- Step 1: Load resolved speech + opinion bodies ---
-    resolved = load_resolved_speech(resolved_path)
+    # IN-02: Read the resolved speech file only once — derive both the parsed
+    # dict and the raw bytes from a single open() call to avoid inconsistency
+    # between the two reads if the file were modified between them.
+    with open(resolved_path, "rb") as fh:
+        resolved_bytes = fh.read()
+    resolved = json.loads(resolved_bytes.decode("utf-8"))
+    # Apply the same key-defaulting as contract.load_resolved_speech
+    for _key in ("applied", "skipped", "dropped", "install_order", "explanations"):
+        if _key not in resolved:
+            resolved[_key] = []
     opinions_index = load_opinion_bodies(opinions_path)
 
     # --- Step 2: Load capabilities ---
     capabilities = load_capabilities()
 
     # --- Step 3: Build BuildManifest (includes capability gate) ---
-    with open(resolved_path, "rb") as fh:
-        resolved_bytes = fh.read()
-
     manifest = BuildManifest.from_resolved(
         resolved=resolved,
         opinions_index=opinions_index,
