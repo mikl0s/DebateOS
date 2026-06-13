@@ -3,12 +3,12 @@
 # Thin caller workflow for the DebateOS repository itself (BLD-02).
 #
 # This workflow calls the reusable build-speech workflow defined in
-# build/actions/build-speech.yml via the same-repo `uses: ./.github/workflows/`
-# path — proving the same-image reuse property.
+# .github/workflows/reusable-build-speech.yml (GitHub only discovers reusable
+# workflows under .github/workflows/).
 #
 # For cross-repo usage (user forks, template repos) see build/actions/README.md.
 # The cross-repo call uses:
-#   uses: mikl0s/DebateOS/.github/workflows/build-speech.yml@main
+#   uses: mikl0s/DebateOS/.github/workflows/reusable-build-speech.yml@main
 #
 # Triggers: push to paths that change example speeches or the build infrastructure.
 # This is the "self-test" path for the DebateOS repo CI.
@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   build-omarchy-example:
-    uses: ./.github/workflows/build-speech.yml
+    uses: ./.github/workflows/reusable-build-speech.yml
     with:
       speech-dir: examples/omarchy
       profile: vanilla-arch
