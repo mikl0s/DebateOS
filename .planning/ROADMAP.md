@@ -156,7 +156,7 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [x] 04-03-PLAN.md — Debian translator core: capability gate + apt sig_level mapping + preseed/chroot-hook emitter + translate entrypoint (DEB-01, DEB-03)
-- [ ] 04-04-PLAN.md — Foundation-aware build.go dispatch (foundationRegistry) + DEB-03 Arch-leak audit doc (DEB-01, DEB-03)
+- [x] 04-04-PLAN.md — Foundation-aware build.go dispatch (foundationRegistry) + DEB-03 Arch-leak audit doc (DEB-01, DEB-03)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -189,7 +189,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | 1. Schema & Resolver Core | 5/5 | Complete   | 2026-06-12 |
 | 2. Arch Translator | 5/5 | Complete   | 2026-06-13 |
 | 3. CLI & Build Channels | 4/4 | Complete   | 2026-06-13 |
-| 4. Debian Translator | 3/5 | In Progress|  |
+| 4. Debian Translator | 4/5 | In Progress|  |
 | 5. Registry, Forum & Debate UI | 0/TBD | Not started | - |
 
 ---
