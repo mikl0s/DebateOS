@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-03-PLAN.md — build subcommand resolve→epoch→translate→docker + injection tar
-last_updated: "2026-06-13T12:11:20Z"
-last_activity: 2026-06-13 -- Phase 3 Plan 03 complete (build subcommand + private-injection.tar)
+stopped_at: Completed 03-04-PLAN.md — Docker image + GHA workflow + determinism/secret-free/coverage gates + docs + Phase 3 finalized
+last_updated: "2026-06-13T12:28:45Z"
+last_activity: 2026-06-13 -- Phase 3 Plan 04 complete (Docker image + build channels + gates; Phase 3 all 4 plans done)
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 18
-  completed_plans: 16
-  percent: 50
+  completed_plans: 17
+  percent: 56
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 
 ## Current Position
 
-Phase: 3 (CLI & Build Channels) — EXECUTING
-Plan: 3 of 4
-Status: Ready to execute plan 4
-Last activity: 2026-06-13 -- Phase 3 Plan 03 complete (build subcommand + private-injection.tar)
+Phase: 3 (CLI & Build Channels) — COMPLETE
+Plan: 4 of 4 (Phase 3 finished)
+Status: Phase 3 complete; ready to plan Phase 4 (Debian Translator)
+Last activity: 2026-06-13 -- Phase 3 Plan 04 complete (Docker image + GHA workflow + determinism/coverage gates + docs; Phase 3 finalized)
 
-Progress: [████░░░░░░] 44%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ Progress: [████░░░░░░] 44%
 | Phase 03-cli-build-channels P01 | 12 min | 2 tasks (4 commits) | 12 files |
 | Phase 03-cli-build-channels P02 | 35 | 2 tasks | 5 files |
 | Phase 03-cli-build-channels P03 | 20 min | 2 tasks (3 commits) | 5 files |
+| Phase 03-cli-build-channels P04 | 17 min | 3 tasks (3 commits) | 18 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,15 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: pane backup routes git via Runner interface — FakeRunner in tests, zero network calls
 - [Phase ?]: only pane.yaml.age (ciphertext) ever staged — plaintext never in git (T-03-PLAINTEXT)
 
+### Decisions from Plan 03-04
+
+- [03-04]: build/docker/Dockerfile digest IDENTICAL to translators/arch/Dockerfile — single pin source of truth; quarterly-reverify comment in both files
+- [03-04]: GHA workflow_call inputs via env: vars in run: steps — T-03-CIWF injection guard; not inline ${{ }} interpolation
+- [03-04]: FakeRunnerFunc added to cli/runner for per-call error control in tests; complements FakeRunner (single Err for all calls)
+- [03-04]: cli coverage gate 85% achieved at 85.6% via: new loader_test.go (12 tests) + extended pane/build/validate/runner tests
+- [03-04]: Determinism gate uses python3 to derive SOURCE_DATE_EPOCH in shell (mirrors manifest.py algorithm exactly without Go subprocess)
+- [03-04]: Phase 3 finalized: all 4 plans complete; CLI-01/02 + BLD-01..04 + PRIV-01 marked Complete in REQUIREMENTS.md
+
 ### Decisions from Plan 03-03
 
 - [03-03]: DeriveEpoch exported from cli/build — 03-04 determinism gate imports without re-implementing (epochMin=1577836800, epochMax=2208988800 mirror manifest.py)
@@ -151,7 +161,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-13T12:11:20Z
-Stopped at: Completed 03-03-PLAN.md — build subcommand + private-injection.tar
+Last session: 2026-06-13T12:28:45Z
+Stopped at: Completed 03-04-PLAN.md — Docker image + GHA workflow + determinism/secret-free/coverage gates + Phase 3 finalized
 Resume file: None
-Next: Phase 3 Plan 04 (03-04-PLAN.md) — Docker image + GHA workflow + determinism/coverage gates
+Next: Phase 4 (Debian Translator) — plan phase 04 to begin (DEB-01..03, COMM-01)
