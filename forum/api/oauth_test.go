@@ -255,8 +255,29 @@ func TestTokenNotPersisted(t *testing.T) {
 	}
 
 	// Query the raw SQLite DB for the token string — must not appear anywhere.
+	// IN-02: enumerate all user tables from sqlite_master so newly-added tables
+	// (e.g. an audit log) are automatically covered without changing this test.
 	db := s.DB()
-	tables := []string{"points", "subscriptions", "ratings", "conflict_threads"}
+	masterRows, err := db.QueryContext(context.Background(),
+		"SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '%_fts%'")
+	if err != nil {
+		t.Fatalf("sqlite_master query: %v", err)
+	}
+	var tables []string
+	for masterRows.Next() {
+		var tbl string
+		if err := masterRows.Scan(&tbl); err != nil {
+			masterRows.Close()
+			t.Fatalf("scan table name: %v", err)
+		}
+		tables = append(tables, tbl)
+	}
+	masterRows.Close()
+	if len(tables) == 0 {
+		t.Fatal("no user tables found in sqlite_master — schema may have changed")
+	}
+	t.Logf("IN-02: checking %d tables for token leakage: %v", len(tables), tables)
+
 	for _, tbl := range tables {
 		rows, err := db.QueryContext(context.Background(), "SELECT * FROM "+tbl)
 		if err != nil {
@@ -275,10 +296,10 @@ func TestTokenNotPersisted(t *testing.T) {
 				t.Fatalf("scan %s: %v", tbl, err)
 			}
 			for _, v := range vals {
-				if s, ok := v.(string); ok {
-					if strings.Contains(s, "fake-access-token") {
+				if sv, ok := v.(string); ok {
+					if strings.Contains(sv, "fake-access-token") {
 						rows.Close()
-						t.Errorf("token found in table %s: %q", tbl, s)
+						t.Errorf("token found in table %s: %q", tbl, sv)
 					}
 				}
 			}
