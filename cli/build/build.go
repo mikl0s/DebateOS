@@ -152,11 +152,12 @@ func Run(args []string, stdout, stderr io.Writer, r runner.Runner) int {
 	}
 
 	// Docker argv (T-03-DKARG: variadic, no sh -c).
-	// Volumes: speech dir at /speech, out dir at /out.
+	// Volumes: speech dir at /speech (read-only — WR-07: container must not
+	// modify the user's speech dir), out dir at /out (read-write for artifacts).
 	// SOURCE_DATE_EPOCH passed as -e flag.
 	dockerArgs := []string{
 		"run",
-		"-v", speechDir + ":/speech",
+		"-v", speechDir + ":/speech:ro",
 		"-v", outDir + ":/out",
 		"-e", epochEnv,
 		dockerImage,
