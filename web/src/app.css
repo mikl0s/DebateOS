@@ -1,0 +1,119 @@
+/* DebateOS Web — Global Stylesheet
+ * Tailwind v4 (@tailwindcss/vite — no tailwind.config.js)
+ * Tokens defined per UI-SPEC §Tailwind Theme Extension (prescriptive contract).
+ * T-05-05 mitigation: @fontsource/inter self-hosted; no external CDN.
+ */
+
+@import "tailwindcss";
+/* Variable Inter font — self-hosted, no CDN (T-05-05 offline invariant) */
+@import "@fontsource-variable/inter";
+
+/* Dark mode: class-based; dark is canonical default (html.dark).
+ * Targets elements inside .dark or that ARE .dark (matches html.dark body). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   @theme — Tailwind v4 design token contract (UI-SPEC §Tailwind Theme Extension)
+   All values are VERBATIM from the UI-SPEC table.
+   ───────────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* ── Colors: dark-mode values (canonical; dark is default) ── */
+  --color-surface-base:         #0f1117;
+  --color-surface-card:         #1a1f2e;
+  --color-surface-pane:         rgba(255, 255, 255, 0.06);
+  --color-border-subtle:        #2d3348;
+  --color-text-primary:         #f1f3f9;
+  --color-text-secondary:       #8b92a5;
+  --color-accent-brand:         #6366f1;
+  --color-conflict-hard:        #ef4444;
+  --color-conflict-compat:      #22c55e;
+  --color-conflict-warn:        #f59e0b;
+  --color-destructive:          #ef4444;
+  --color-surface-forum-offline: #2d1f0e;
+
+  /* ── Fonts ── */
+  --font-sans: 'Inter var', 'Inter', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', monospace;
+
+  /* ── Font sizes (UI-SPEC §Typography — 5 sizes only: 13/14/16/20/28) ── */
+  --font-size-code:    13px;
+  --font-size-label:   14px;
+  --font-size-body:    16px;
+  --font-size-heading: 20px;
+  --font-size-display: 28px;
+
+  /* Line heights per typography table */
+  --line-height-code:    1.6;
+  --line-height-label:   1.4;
+  --line-height-body:    1.5;
+  --line-height-heading: 1.3;
+  --line-height-display: 1.2;
+
+  /* ── Spacing (8-point scale, multiples of 4) ── */
+  --spacing-xs:  4px;
+  --spacing-sm:  8px;
+  --spacing-md:  16px;
+  --spacing-lg:  24px;
+  --spacing-xl:  32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  /* ── Special heights ── */
+  --height-foundation-bar: 56px;   /* FoundationBar fixed height */
+  --min-height-touch:      44px;   /* WCAG 2.5.5 touch target minimum */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Light-mode overrides (non-canonical; applied when .light class is present or
+   prefers-color-scheme:light without .dark override)
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  :root:not(.dark) {
+    --color-surface-base:          #f9fafb;
+    --color-surface-card:          #ffffff;
+    --color-surface-pane:          rgba(0, 0, 0, 0.04);
+    --color-border-subtle:         #e5e7eb;
+    --color-text-primary:          #111827;
+    --color-text-secondary:        #6b7280;
+    --color-accent-brand:          #4f46e5;
+    --color-conflict-hard:         #dc2626;
+    --color-conflict-compat:       #16a34a;
+    --color-conflict-warn:         #d97706;
+    --color-destructive:           #dc2626;
+    --color-surface-forum-offline: #fef3c7;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Base styles
+   ───────────────────────────────────────────────────────────────────────────── */
+html {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  background-color: var(--color-surface-base);
+  color: var(--color-text-primary);
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--color-surface-base);
+  color: var(--color-text-primary);
+}
+
+/* Focus ring: 2px solid accent-brand at 2px offset (UI-SPEC §Keyboard navigation) */
+:focus-visible {
+  outline: 2px solid var(--color-accent-brand);
+  outline-offset: 2px;
+}
+
+/* Reduced motion: disable transitions on pane animations and conflict overlays */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

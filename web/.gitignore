@@ -1,0 +1,10 @@
+node_modules/
+build/
+.svelte-kit/
+.env
+.env.*
+!.env.example
+
+# WASM artifacts — NEVER commit; built at build time (T-05-03)
+static/debateos.wasm
+static/wasm_exec.js
