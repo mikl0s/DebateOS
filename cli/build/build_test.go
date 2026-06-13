@@ -27,20 +27,180 @@ import (
 // trivially succeeds).
 func minimalSpeechDir(t *testing.T) string {
 	t.Helper()
+	return minimalSpeechDirFoundation(t, "arch")
+}
+
+// minimalSpeechDirFoundation creates a minimal speech directory with the given
+// foundation value. Used by foundation-dispatch tests (Task 1, DEB-03).
+func minimalSpeechDirFoundation(t *testing.T, foundation string) string {
+	t.Helper()
 	dir := t.TempDir()
 
 	// speech.yaml — minimal valid speech (schema: 1 required by validator)
-	speech := `schema: 1
-id: test-speech
-foundation: arch
-points: []
-opinions: []
-`
+	speech := "schema: 1\nid: test-speech\nfoundation: " + foundation + "\npoints: []\nopinions: []\n"
 	if err := os.WriteFile(filepath.Join(dir, "speech.yaml"), []byte(speech), 0644); err != nil {
 		t.Fatal(err)
 	}
 	// points/ and opinions/ can be absent — loader tolerates that.
 	return dir
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Task 1 / DEB-03: foundation-aware dispatch via foundationRegistry
+// ─────────────────────────────────────────────────────────────────────────────
+
+// TestBuildFoundationDispatch asserts that a speech whose foundation is "debian"
+// causes the translate Runner call to use "translators/debian/translate" and an
+// --out ending in "debian-profile"; when --profile is omitted, the argv carries
+// --profile debian.
+func TestBuildFoundationDispatch(t *testing.T) {
+	speechDir := minimalSpeechDirFoundation(t, "debian")
+	outDir := t.TempDir()
+	fake := &runner.FakeRunner{}
+
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", outDir, "--skip-iso"},
+		&stdout, &stderr, fake,
+	)
+	if code != 0 {
+		t.Fatalf("debian dispatch: expected exit 0, got %d\nstderr: %s", code, stderr.String())
+	}
+
+	var translateCall string
+	for _, c := range fake.Calls {
+		if strings.HasPrefix(c, "translators/debian/translate") {
+			translateCall = c
+			break
+		}
+	}
+	if translateCall == "" {
+		t.Fatalf("debian dispatch: no translators/debian/translate call found; calls: %v", fake.Calls)
+	}
+
+	// --out must end in "debian-profile".
+	if !strings.Contains(translateCall, "debian-profile") {
+		t.Errorf("debian dispatch: --out must contain 'debian-profile'; call: %q", translateCall)
+	}
+
+	// --profile must be "debian" (the foundation default when --profile is omitted).
+	tokens := strings.Fields(translateCall)
+	profileIdx := -1
+	for i, tok := range tokens {
+		if tok == "--profile" && i+1 < len(tokens) {
+			profileIdx = i + 1
+		}
+	}
+	if profileIdx == -1 {
+		t.Fatalf("debian dispatch: --profile flag not found in call: %q", translateCall)
+	}
+	if tokens[profileIdx] != "debian" {
+		t.Errorf("debian dispatch: --profile must be 'debian', got %q; call: %q", tokens[profileIdx], translateCall)
+	}
+}
+
+// TestBuildArchUnchanged asserts that a speech whose foundation is "arch" still
+// calls "translators/arch/translate" with --out ending "arch-profile" and
+// --profile vanilla-arch (the foundation default).
+func TestBuildArchUnchanged(t *testing.T) {
+	speechDir := minimalSpeechDirFoundation(t, "arch")
+	outDir := t.TempDir()
+	fake := &runner.FakeRunner{}
+
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", outDir, "--skip-iso"},
+		&stdout, &stderr, fake,
+	)
+	if code != 0 {
+		t.Fatalf("arch unchanged: expected exit 0, got %d\nstderr: %s", code, stderr.String())
+	}
+
+	var translateCall string
+	for _, c := range fake.Calls {
+		if strings.HasPrefix(c, "translators/arch/translate") {
+			translateCall = c
+			break
+		}
+	}
+	if translateCall == "" {
+		t.Fatalf("arch unchanged: no translators/arch/translate call found; calls: %v", fake.Calls)
+	}
+
+	// --out must end in "arch-profile".
+	if !strings.Contains(translateCall, "arch-profile") {
+		t.Errorf("arch unchanged: --out must contain 'arch-profile'; call: %q", translateCall)
+	}
+
+	// --profile must be "vanilla-arch" (the arch foundation default).
+	tokens := strings.Fields(translateCall)
+	profileIdx := -1
+	for i, tok := range tokens {
+		if tok == "--profile" && i+1 < len(tokens) {
+			profileIdx = i + 1
+		}
+	}
+	if profileIdx == -1 {
+		t.Fatalf("arch unchanged: --profile flag not found in call: %q", translateCall)
+	}
+	if tokens[profileIdx] != "vanilla-arch" {
+		t.Errorf("arch unchanged: --profile must be 'vanilla-arch', got %q; call: %q", tokens[profileIdx], translateCall)
+	}
+}
+
+// TestBuildExplicitProfileOverride asserts that passing --profile vanilla-arch on
+// an arch speech still works (backward compatibility).
+func TestBuildExplicitProfileOverride(t *testing.T) {
+	speechDir := minimalSpeechDirFoundation(t, "arch")
+	outDir := t.TempDir()
+	fake := &runner.FakeRunner{}
+
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", outDir, "--profile", "vanilla-arch", "--skip-iso"},
+		&stdout, &stderr, fake,
+	)
+	if code != 0 {
+		t.Fatalf("explicit profile override: expected exit 0, got %d\nstderr: %s", code, stderr.String())
+	}
+
+	var translateCall string
+	for _, c := range fake.Calls {
+		if strings.HasPrefix(c, "translators/arch/translate") {
+			translateCall = c
+			break
+		}
+	}
+	if translateCall == "" {
+		t.Fatalf("explicit profile override: no translators/arch/translate call found; calls: %v", fake.Calls)
+	}
+	if !strings.Contains(translateCall, "vanilla-arch") {
+		t.Errorf("explicit profile override: --profile vanilla-arch not found in call: %q", translateCall)
+	}
+}
+
+// TestBuildUnknownFoundation asserts that a speech with an unrecognized foundation
+// (e.g. "fedora") returns non-zero exit and stderr names the unknown foundation.
+func TestBuildUnknownFoundation(t *testing.T) {
+	speechDir := minimalSpeechDirFoundation(t, "fedora")
+	outDir := t.TempDir()
+	fake := &runner.FakeRunner{}
+
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", outDir, "--skip-iso"},
+		&stdout, &stderr, fake,
+	)
+	if code == 0 {
+		t.Fatal("unknown foundation: expected non-zero exit, got 0")
+	}
+	errOut := stderr.String()
+	if !strings.Contains(errOut, "fedora") {
+		t.Errorf("unknown foundation: stderr must name the unknown foundation 'fedora'; got: %q", errOut)
+	}
+	if len(fake.Calls) != 0 {
+		t.Errorf("unknown foundation: expected 0 runner calls, got %d: %v", len(fake.Calls), fake.Calls)
+	}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
