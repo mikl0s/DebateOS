@@ -213,3 +213,15 @@ Last session: 2026-06-13T16:56:13.354Z
 Stopped at: Completed 05-05-PLAN.md — GitHub OAuth, conflict threads, Reindex, forumctl arm64
 Resume file: None
 Next: Phase 5 Plan 02 — SvelteKit Debate UI scaffold (WASM integration, adapter-static, dual delivery)
+
+## Deferred Items
+
+Items acknowledged and deferred at v1.0 milestone close on 2026-06-13 (all environment-blocked on this Proxmox host without QEMU/devtmpfs/cloud accounts — code complete + tested with fakes/structural gates; see v1.0-MILESTONE-AUDIT.md "deferred_to_host_or_ci"):
+
+| Category | Item | Status |
+|----------|------|--------|
+| verification | Phase 03 — full ISO build + live GitHub Actions run | human_needed (deferred-to-host/CI) |
+| verification | Phase 04 — full Debian/Arch dual ISO build | human_needed (deferred-to-host) |
+| verification | Phase 05 — live GitHub OAuth, Pages deploy, Oracle A1 deploy, Actions index rebuild | human_needed (deferred-to-host/CI) |
+
+All three phases passed code-level verification; only environment-bound execution remains, with run instructions in each phase VERIFICATION.md and forum/deploy/oracle-a1.md + docs.
