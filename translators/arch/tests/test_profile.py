@@ -99,7 +99,8 @@ class TestProfileTreeStructure:
         variant = load_variant_profile("vanilla-arch")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            profiledef = open(os.path.join(out_dir, "profiledef.sh")).read()
+            with open(os.path.join(out_dir, "profiledef.sh")) as fh:
+                profiledef = fh.read()
             # Must contain the installer path with 0:0:755 permission entry
             assert "debateos-install.sh" in profiledef
             assert "0:0:755" in profiledef
@@ -119,7 +120,8 @@ class TestProfileTreeStructure:
         variant = load_variant_profile("vanilla-arch")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            zlogin = open(os.path.join(out_dir, "airootfs", "root", ".zlogin")).read()
+            with open(os.path.join(out_dir, "airootfs", "root", ".zlogin")) as fh:
+                zlogin = fh.read()
             assert "debateos-install.sh" in zlogin
             assert "tty1" in zlogin
 
@@ -159,7 +161,8 @@ class TestPackagesX86_64Minimal:
         variant = load_variant_profile("vanilla-arch")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            pkgs = open(os.path.join(out_dir, "packages.x86_64")).read()
+            with open(os.path.join(out_dir, "packages.x86_64")) as fh:
+                pkgs = fh.read()
             assert "arch-install-scripts" in pkgs
 
     def test_packages_x86_64_does_not_contain_target_packages(self):
@@ -172,7 +175,8 @@ class TestPackagesX86_64Minimal:
         variant = load_variant_profile("vanilla-arch")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            pkgs = open(os.path.join(out_dir, "packages.x86_64")).read()
+            with open(os.path.join(out_dir, "packages.x86_64")) as fh:
+                pkgs = fh.read()
             # hyprland is in the subset opinions target_packages — must NOT be in live env
             assert "hyprland" not in pkgs, (
                 "hyprland is a target package that must be in build-manifest.json, "
@@ -186,7 +190,8 @@ class TestPackagesX86_64Minimal:
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
             bm_path = os.path.join(out_dir, "build-manifest.json")
-            bm = json.load(open(bm_path))
+            with open(bm_path) as fh:
+                bm = json.load(fh)
             assert "hyprland" in bm["target_packages"], (
                 "hyprland must be in build-manifest.json target_packages"
             )
@@ -234,7 +239,8 @@ class TestFirstRunUnits:
                 f for f in os.listdir(user_unit_dir) if "OM-102" in f
             ]
             assert unit_files, "OM-102 first-run unit not found"
-            unit_content = open(os.path.join(user_unit_dir, unit_files[0])).read()
+            with open(os.path.join(user_unit_dir, unit_files[0])) as fh:
+                unit_content = fh.read()
             assert "ConditionPathExists=!" in unit_content
             assert ".firstrun-" in unit_content
 
@@ -251,7 +257,8 @@ class TestProfiledefSh:
         variant = load_variant_profile("vanilla-arch")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            profiledef = open(os.path.join(out_dir, "profiledef.sh")).read()
+            with open(os.path.join(out_dir, "profiledef.sh")) as fh:
+                profiledef = fh.read()
             assert 'iso_name="debateos"' in profiledef
 
     def test_profiledef_bootmodes(self):
@@ -260,7 +267,8 @@ class TestProfiledefSh:
         variant = load_variant_profile("vanilla-arch")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            profiledef = open(os.path.join(out_dir, "profiledef.sh")).read()
+            with open(os.path.join(out_dir, "profiledef.sh")) as fh:
+                profiledef = fh.read()
             assert "bios.syslinux" in profiledef
             assert "uefi.systemd-boot" in profiledef
 
@@ -271,8 +279,10 @@ class TestProfiledefSh:
         with tempfile.TemporaryDirectory() as out1, tempfile.TemporaryDirectory() as out2:
             emit_profile_tree(out1, manifest, variant)
             emit_profile_tree(out2, manifest, variant)
-            content1 = open(os.path.join(out1, "profiledef.sh")).read()
-            content2 = open(os.path.join(out2, "profiledef.sh")).read()
+            with open(os.path.join(out1, "profiledef.sh")) as fh:
+                content1 = fh.read()
+            with open(os.path.join(out2, "profiledef.sh")) as fh:
+                content2 = fh.read()
             assert content1 == content2, "profiledef.sh must be deterministic"
 
 
@@ -288,7 +298,8 @@ class TestPacmanConf:
         variant = load_variant_profile("vanilla-arch")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            pacman_conf = open(os.path.join(out_dir, "pacman.conf")).read()
+            with open(os.path.join(out_dir, "pacman.conf")) as fh:
+                pacman_conf = fh.read()
             assert "[core]" in pacman_conf
 
     def test_pacman_conf_cachyos_repos_injected(self):
@@ -297,7 +308,8 @@ class TestPacmanConf:
         variant = load_variant_profile("cachyos")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            pacman_conf = open(os.path.join(out_dir, "pacman.conf")).read()
+            with open(os.path.join(out_dir, "pacman.conf")) as fh:
+                pacman_conf = fh.read()
             assert "[cachyos]" in pacman_conf
 
     def test_pacman_conf_cachyos_before_core(self):
@@ -306,7 +318,8 @@ class TestPacmanConf:
         variant = load_variant_profile("cachyos")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            pacman_conf = open(os.path.join(out_dir, "pacman.conf")).read()
+            with open(os.path.join(out_dir, "pacman.conf")) as fh:
+                pacman_conf = fh.read()
             cachyos_pos = pacman_conf.find("[cachyos]")
             core_pos = pacman_conf.find("[core]")
             assert cachyos_pos != -1
@@ -326,9 +339,8 @@ class TestInstallerScript:
         variant = load_variant_profile("vanilla-arch")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            installer = open(
-                os.path.join(out_dir, "airootfs", "root", "debateos-install.sh")
-            ).read()
+            with open(os.path.join(out_dir, "airootfs", "root", "debateos-install.sh")) as fh:
+                installer = fh.read()
             assert "build-manifest" in installer or "build_manifest" in installer
 
     def test_installer_uses_noconfirm(self):
@@ -337,10 +349,64 @@ class TestInstallerScript:
         variant = load_variant_profile("vanilla-arch")
         with tempfile.TemporaryDirectory() as out_dir:
             emit_profile_tree(out_dir, manifest, variant)
-            installer = open(
-                os.path.join(out_dir, "airootfs", "root", "debateos-install.sh")
-            ).read()
+            with open(os.path.join(out_dir, "airootfs", "root", "debateos-install.sh")) as fh:
+                installer = fh.read()
             assert "--noconfirm" in installer
+
+    def test_installer_nvme_partition_naming(self):
+        """Installer uses 'p' suffix for NVMe/loop devices (CR-03).
+
+        For disk names ending in a digit (nvme0n1, loop0), partitions must be
+        named <disk>p1 / <disk>p2.  For SATA disks (sda, vda) partitions are
+        <disk>1 / <disk>2.  The template must contain the branching logic.
+        """
+        manifest = _load_subset_manifest()
+        variant = load_variant_profile("vanilla-arch")
+        with tempfile.TemporaryDirectory() as out_dir:
+            emit_profile_tree(out_dir, manifest, variant)
+            with open(os.path.join(out_dir, "airootfs", "root", "debateos-install.sh")) as fh:
+                installer = fh.read()
+            # Template must contain the nvme/loop regex branch
+            assert "nvme" in installer, "installer must detect nvme disk type"
+            # And produce the p-suffix partition naming
+            assert "p1" in installer, "installer must have p-suffix partition naming for nvme"
+
+    def test_installer_custom_repos_section(self):
+        """Installer configures custom repos from build-manifest.json before pacstrap (CR-01).
+
+        The installer must read custom_repos from the manifest and append them to
+        /etc/pacman.conf so pacstrap can fetch packages from those repos.
+        """
+        manifest = _load_subset_manifest()
+        variant = load_variant_profile("vanilla-arch")
+        with tempfile.TemporaryDirectory() as out_dir:
+            emit_profile_tree(out_dir, manifest, variant)
+            with open(os.path.join(out_dir, "airootfs", "root", "debateos-install.sh")) as fh:
+                installer = fh.read()
+            # Must reference custom_repos from manifest
+            assert "custom_repos" in installer, (
+                "installer must read custom_repos from build-manifest.json"
+            )
+            # Must append to pacman.conf
+            assert "pacman.conf" in installer, (
+                "installer must append custom repos to /etc/pacman.conf"
+            )
+
+    def test_installer_bootloader_section(self):
+        """Installer contains a bootloader installation block (CR-02).
+
+        The installer must install a bootloader after mkinitcpio.  For a limine
+        manifest the limine block must appear; for a default manifest a systemd-boot
+        fallback must be present.
+        """
+        manifest = _load_subset_manifest()
+        variant = load_variant_profile("vanilla-arch")
+        with tempfile.TemporaryDirectory() as out_dir:
+            emit_profile_tree(out_dir, manifest, variant)
+            with open(os.path.join(out_dir, "airootfs", "root", "debateos-install.sh")) as fh:
+                installer = fh.read()
+            # bootctl install is the default fallback
+            assert "bootctl" in installer, "installer must have systemd-boot fallback bootloader install"
 
 
 # ---------------------------------------------------------------------------
@@ -435,3 +501,43 @@ class TestFileAssetDstSanitization:
         with tempfile.TemporaryDirectory() as out_dir:
             with pytest.raises(ValueError):
                 emit_profile_tree(out_dir, manifest, variant)
+
+    def test_empty_dst_raises(self):
+        """A file_asset with empty dst raises ValueError (WR-02)."""
+        manifest = self._manifest_with_traversal_dst("")
+        variant = load_variant_profile("vanilla-arch")
+        with tempfile.TemporaryDirectory() as out_dir:
+            with pytest.raises(ValueError, match=r"empty|concrete"):
+                emit_profile_tree(out_dir, manifest, variant)
+
+    def test_dot_dst_raises(self):
+        """A file_asset with dst='.' raises ValueError (WR-02)."""
+        manifest = self._manifest_with_traversal_dst(".")
+        variant = load_variant_profile("vanilla-arch")
+        with tempfile.TemporaryDirectory() as out_dir:
+            with pytest.raises(ValueError, match=r"empty|concrete|\\."):
+                emit_profile_tree(out_dir, manifest, variant)
+
+    def test_traversal_dst_no_files_written(self):
+        """When file_asset dst traversal is detected, NO files must be written (CR-04 fail-fast).
+
+        Validation runs BEFORE any file I/O so the output directory remains
+        empty/absent on a path-traversal error.
+        """
+        import shutil
+        manifest = self._manifest_with_traversal_dst("../../etc/passwd")
+        variant = load_variant_profile("vanilla-arch")
+        out_dir = tempfile.mkdtemp()
+        try:
+            with pytest.raises(ValueError):
+                emit_profile_tree(out_dir, manifest, variant)
+            # The out_dir was created by mkdtemp; after the failed call it must
+            # contain NO profile files (profiledef.sh is the first file written).
+            files = []
+            for root, dirs, fnames in os.walk(out_dir):
+                files.extend(fnames)
+            assert not files, (
+                f"Expected no files after fail-fast validation, found: {files}"
+            )
+        finally:
+            shutil.rmtree(out_dir, ignore_errors=True)

@@ -36,8 +36,15 @@ sgdisk -n 2:0:0 -t 2:8300 -c 2:"Linux root" "$TARGET_DISK"
 partprobe "$TARGET_DISK"
 sleep 1
 
-EFI_PART="${TARGET_DISK}1"
-ROOT_PART="${TARGET_DISK}2"
+# CR-03: Determine partition suffix — NVMe/loop devices need a 'p' separator.
+# (e.g. /dev/nvme0n1 → /dev/nvme0n1p1; /dev/sda → /dev/sda1)
+if [[ "$TARGET_DISK" =~ nvme|loop ]]; then
+    EFI_PART="${TARGET_DISK}p1"
+    ROOT_PART="${TARGET_DISK}p2"
+else
+    EFI_PART="${TARGET_DISK}1"
+    ROOT_PART="${TARGET_DISK}2"
+fi
 
 # Format
 mkfs.fat -F32 -n EFI "$EFI_PART"
@@ -64,6 +71,35 @@ if [[ -n "$KEYRING_PKGS" ]]; then
     echo "Installing keyring packages first..."
     # shellcheck disable=SC2086
     pacman -Sy --noconfirm $KEYRING_PKGS
+fi
+
+# ---------------------------------------------------------------------------
+# CR-01: Configure custom repos in live env pacman.conf BEFORE pacstrap
+# ---------------------------------------------------------------------------
+# Read custom_repos from build-manifest.json and:
+# 1. Import each repo's GPG key fingerprint (keyring field)
+# 2. Append the repo section to /etc/pacman.conf (live env)
+# 3. Also append to /mnt/etc/pacman.conf (target) for post-install pacman use
+# 4. Sync the new repo databases
+CUSTOM_REPOS=$(jq -c '.custom_repos // []' "$MANIFEST")
+if [[ "$(echo "$CUSTOM_REPOS" | jq 'length')" -gt 0 ]]; then
+    echo "Configuring custom repos in live env pacman.conf..."
+    echo "$CUSTOM_REPOS" | jq -r '.[] | .keyring // empty' | while read -r key; do
+        if [[ -n "$key" ]]; then
+            echo "Importing GPG key: $key"
+            pacman-key --recv-keys "$key" || true
+            pacman-key --lsign-key "$key" || true
+        fi
+    done
+    # Append repo sections to live /etc/pacman.conf
+    echo "$CUSTOM_REPOS" | jq -r '.[] |
+        "# sig_level=" + .sig_level,
+        "[" + .name + "]",
+        "Server = " + .url,
+        "SigLevel = " + .sig_level,
+        ""' \
+        >> /etc/pacman.conf
+    pacman -Sy --noconfirm
 fi
 
 # ---------------------------------------------------------------------------
@@ -113,7 +149,11 @@ SYSCTL_COUNT=$(jq '.sysctl_params | length' "$MANIFEST")
 if [[ "$SYSCTL_COUNT" -gt 0 ]]; then
     mkdir -p /mnt/etc/sysctl.d
     jq -r '.sysctl_params | group_by(.drop_in_file) | .[] | {file: .[0].drop_in_file, params: .} | @json' "$MANIFEST" | while IFS= read -r group_json; do
-        drop_file=$(echo "$group_json" | jq -r '.file')
+        # WR-03: Default drop_in_file to 99-debateos.conf when field is null/absent
+        drop_file=$(echo "$group_json" | jq -r '.file // "99-debateos.conf"')
+        if [[ -z "$drop_file" || "$drop_file" == "null" ]]; then
+            drop_file="99-debateos.conf"
+        fi
         echo "$group_json" | jq -r '.params[] | "\(.key) = \(.value)"' >> "/mnt/etc/sysctl.d/$drop_file"
     done
 fi
@@ -128,5 +168,55 @@ cp "$MANIFEST" /mnt/var/lib/debateos/build-manifest.json
 # initramfs
 # ---------------------------------------------------------------------------
 arch-chroot /mnt mkinitcpio -P
+
+# ---------------------------------------------------------------------------
+# CR-02: Bootloader installation (data-driven; no per-variant code forks)
+# ---------------------------------------------------------------------------
+BOOTLOADER=$(jq -r '.bootloader // ""' "$MANIFEST" 2>/dev/null || echo "")
+if [[ "$BOOTLOADER" == "limine" ]] || jq -e '.target_packages | index("limine")' "$MANIFEST" >/dev/null 2>&1; then
+    echo "Installing limine bootloader..."
+    # limine BIOS install
+    arch-chroot /mnt limine bios-install "$TARGET_DISK" || true
+    # limine EFI install — copy EFI binary and create boot entry
+    mkdir -p /mnt/boot/efi/EFI/limine
+    cp /mnt/usr/share/limine/BOOTX64.EFI /mnt/boot/efi/EFI/limine/ 2>/dev/null || \
+        cp /mnt/usr/share/limine/limine-bios.sys /mnt/boot/efi/EFI/limine/ 2>/dev/null || true
+    # Register EFI boot entry
+    arch-chroot /mnt efibootmgr --create \
+        --disk "$TARGET_DISK" --part 1 \
+        --label "DebateOS (limine)" \
+        --loader '\EFI\limine\BOOTX64.EFI' || true
+    # Write minimal limine.cfg if not already provided by packages
+    if [[ ! -f /mnt/boot/limine.cfg ]]; then
+        KERNEL_PARAMS=$(jq -r '.kernel_params // [] | map(.key + if .value != "" then "=" + .value else "" end) | join(" ")' "$MANIFEST" 2>/dev/null || echo "")
+        cat > /mnt/boot/limine.cfg <<LIMINE_EOF
+timeout=5
+
+:DebateOS
+  protocol=linux
+  kernel_path=boot:///vmlinuz-linux
+  cmdline=root=/dev/disk/by-label/debateos rootflags=subvol=@ rw ${KERNEL_PARAMS}
+  module_path=boot:///initramfs-linux.img
+LIMINE_EOF
+    fi
+else
+    # Default: systemd-boot (vanilla-arch and others without limine)
+    echo "Installing systemd-boot bootloader..."
+    arch-chroot /mnt bootctl install
+    # Write minimal loader entry
+    KERNEL_PARAMS=$(jq -r '.kernel_params // [] | map(.key + if .value != "" then "=" + .value else "" end) | join(" ")' "$MANIFEST" 2>/dev/null || echo "")
+    mkdir -p /mnt/boot/efi/loader/entries
+    cat > /mnt/boot/efi/loader/loader.conf <<LOADER_EOF
+default debateos.conf
+timeout 5
+console-mode max
+LOADER_EOF
+    cat > /mnt/boot/efi/loader/entries/debateos.conf <<ENTRY_EOF
+title   DebateOS
+linux   /vmlinuz-linux
+initrd  /initramfs-linux.img
+options root=/dev/disk/by-label/debateos rootflags=subvol=@ rw ${KERNEL_PARAMS}
+ENTRY_EOF
+fi
 
 echo "DebateOS installation complete."
