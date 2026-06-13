@@ -15,7 +15,7 @@ v1.0 spans Phases 0–5, strictly sequential, exactly as locked by the ADR (docs
 - [x] **Phase 1: Schema & Resolver Core** - Opinion/Point/Speech schemas from Phase 0 data; rule-based Go resolver, native + WASM, built test-first (completed 2026-06-12)
 - [x] **Phase 2: Arch Translator** - mkarchiso-wrapping translator with variant-profile structure; NORTH STAR: Omarchy as a speech on vanilla Arch (completed 2026-06-12)
 - [x] **Phase 3: CLI & Build Channels** - Go CLI, private-pane/secrets model, deterministic Docker + GitHub Actions builds at zero cost (completed 2026-06-13)
-- [ ] **Phase 4: Debian Translator** - live-build/preseed translator; dual-foundation proof from one resolved speech; de-Arch the abstraction
+- [x] **Phase 4: Debian Translator** - live-build/preseed translator; dual-foundation proof from one resolved speech; de-Arch the abstraction (completed 2026-06-13)
 - [ ] **Phase 5: Registry, Forum & Debate UI** - Static registry index, optional Forum (search/subscriptions/ratings/conflict threads), visual Debate UI on Pages + embedded in CLI
 
 ## Phase Details
@@ -160,7 +160,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 04-05-PLAN.md — dual-foundation-check gate + Debian build/validate scripts + ownership-model.md + REQUIREMENTS status (DEB-01, DEB-02, COMM-01)
+- [x] 04-05-PLAN.md — dual-foundation-check gate + Debian build/validate scripts + ownership-model.md + REQUIREMENTS status (DEB-01, DEB-02, COMM-01) (completed 2026-06-13)
 
 ### Phase 5: Registry, Forum & Debate UI
 
@@ -189,7 +189,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | 1. Schema & Resolver Core | 5/5 | Complete   | 2026-06-12 |
 | 2. Arch Translator | 5/5 | Complete   | 2026-06-13 |
 | 3. CLI & Build Channels | 4/4 | Complete   | 2026-06-13 |
-| 4. Debian Translator | 4/5 | In Progress|  |
+| 4. Debian Translator | 5/5 | Complete   | 2026-06-13 |
 | 5. Registry, Forum & Debate UI | 0/TBD | Not started | - |
 
 ---

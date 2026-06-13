@@ -69,14 +69,14 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 <!-- Sources: REQ-dual-foundation-proof, D8, D9, docs/07 Phase 4 -->
 
 - [x] **DEB-01**: Debian translator (`translators/debian/`) wraps live-build/preseed and emits a bootable, fully-unattended Debian installer from a resolved speech, declaring its capabilities like Arch's
-- [ ] **DEB-02**: DUAL-FOUNDATION PROOF — a representative speech builds installers for BOTH Arch and Debian from the same resolved input
+- [x] **DEB-02**: DUAL-FOUNDATION PROOF — a representative speech builds installers for BOTH Arch and Debian from the same resolved input
 - [x] **DEB-03**: Arch assumptions that leaked into schema/resolver/opinions are identified and fixed; schema/capability adjustments documented
 
 ### Community Model
 
 <!-- Sources: REQ-translator-ownership-model -->
 
-- [ ] **COMM-01**: Translator ownership model documented: distributions invited to own their translators, curators own points/speeches, community PRs welcome
+- [x] **COMM-01**: Translator ownership model documented: distributions invited to own their translators, curators own points/speeches, community PRs welcome
 
 ### Registry
 
@@ -156,10 +156,10 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | BLD-03 | Phase 3 | Complete (03-04: scripts/determinism-test.sh; sha256 identical across two runs on this host) |
 | BLD-04 | Phase 3 | Complete (03-04: docs/cli-build-channels.md end-to-end walkthrough; zero hosting cost; no central service) |
 | PRIV-01 | Phase 3 | Complete (03-02/03-03/03-04: pane.yaml local-only 0600; injection tar next to ISO; scripts/secret-free-check.sh PASSES; docs/cli-build-channels.md key-management) |
-| DEB-01 | Phase 4 | Complete |
-| DEB-02 | Phase 4 | Pending |
-| DEB-03 | Phase 4 | Complete |
-| COMM-01 | Phase 4 | Pending |
+| DEB-01 | Phase 4 | Complete (04-03: capabilities gate + emit_profile_tree; 04-05: debian-build-iso.sh + Dockerfile + README; full lb ISO deferred to capable host — devtmpfs restriction VERIFIED) |
+| DEB-02 | Phase 4 | Complete (04-02: dual-foundation example speech + TestExampleDualFoundation; 04-05: scripts/dual-foundation-check.sh --skip-iso: 20/20 PASS — resolve ONCE, both translators, equivalence git/curl/vim + etc/motd VERIFIED) |
+| DEB-03 | Phase 4 | Complete (04-04: 6-finding audit in docs/arch-leak-audit.md; build.go foundationRegistry FIXED; 5 other findings correctly isolated/documented) |
+| COMM-01 | Phase 4 | Complete (04-05: docs/ownership-model.md — "distributions own their translators", entrypoint contract, capabilities.json, profile schema, foundationRegistry registration, translators/common/ reuse) |
 | REG-01 | Phase 5 | Pending |
 | UI-01 | Phase 5 | Pending |
 | UI-02 | Phase 5 | Pending |
@@ -196,4 +196,4 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 
 ---
 *Requirements defined: 2026-06-12*
-*Last updated: 2026-06-13 after Phase 3 completion (03-04: CLI-01, BLD-01..04, PRIV-01 marked Complete)*
+*Last updated: 2026-06-13 after Phase 4 completion (04-05: DEB-01, DEB-02, DEB-03, COMM-01 marked Complete)*
