@@ -133,6 +133,18 @@ None — no external service configuration required.
 - `debateos build` is foundation-agnostic; Debian speeches dispatch correctly
 - All DEB-03 findings documented; invariant 1 proven through audit
 
+## Self-Check: PASSED
+
+- FOUND: cli/build/build.go (foundationRegistry present, debian dispatch wired)
+- FOUND: cli/build/build_test.go (4 new dispatch tests)
+- FOUND: docs/arch-leak-audit.md (6 findings, build.go confirmed only genuine leak)
+- FOUND: .planning/phases/04-debian-translator/04-04-SUMMARY.md
+- FOUND commit babb554 (RED: foundation dispatch tests)
+- FOUND commit a0dc4c6 (GREEN: foundationRegistry in build.go)
+- FOUND commit dd3b340 (docs: arch-leak-audit.md)
+- FOUND commit d7da436 (docs: plan metadata)
+- go test ./... -count=1: ALL PASS (no regressions)
+
 ---
 *Phase: 04-debian-translator*
 *Completed: 2026-06-13*
