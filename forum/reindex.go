@@ -32,19 +32,19 @@ func Reindex(ctx context.Context, s store.Store, idx *index.RegistryIndex) error
 		return fmt.Errorf("Reindex: registry index is nil")
 	}
 
+	// Use UpsertPointBatch (no per-insert FTS rebuild) so N points require
+	// only 1 FTS rebuild at the end, not N+1 (IN-01).
 	for i, p := range idx.Points {
 		sp, err := registryPointToStore(p)
 		if err != nil {
 			return fmt.Errorf("Reindex: point[%d] %q: %w", i, p.ID, err)
 		}
-		if err := s.UpsertPoint(ctx, sp); err != nil {
+		if err := s.UpsertPointBatch(ctx, sp); err != nil {
 			return fmt.Errorf("Reindex: UpsertPoint %q: %w", p.ID, err)
 		}
 	}
 
-	// Rebuild FTS5 external-content index so full-text search is fresh.
-	// UpsertPoint already calls RebuildFTS after each insert, but calling
-	// Reindex once at the end is belt-and-suspenders.
+	// Single FTS5 rebuild after all upserts — O(1) instead of O(N).
 	if err := s.Reindex(ctx); err != nil {
 		return fmt.Errorf("Reindex: FTS rebuild: %w", err)
 	}

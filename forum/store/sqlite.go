@@ -145,7 +145,28 @@ func (s *SQLiteStore) ListPoints(ctx context.Context, limit, offset int) ([]Poin
 }
 
 // UpsertPoint inserts or updates a point and rebuilds the FTS5 index (Pitfall 5).
+// For bulk operations (e.g. Reindex) use UpsertPointBatch + a single Reindex call
+// instead to avoid N FTS rebuilds (IN-01).
 func (s *SQLiteStore) UpsertPoint(ctx context.Context, p PointEntry) error {
+	if err := s.upsertPointRaw(ctx, p); err != nil {
+		return err
+	}
+	// Rebuild FTS5 external-content table to sync with points (Pitfall 5).
+	if err := s.q.RebuildFTS(ctx); err != nil {
+		return fmt.Errorf("UpsertPoint %q: RebuildFTS: %w", p.ID, err)
+	}
+	return nil
+}
+
+// UpsertPointBatch inserts or updates a point WITHOUT rebuilding the FTS5 index.
+// Use in bulk-load loops: call this N times then call Reindex once at the end.
+// This reduces N FTS rebuilds to 1 (IN-01).
+func (s *SQLiteStore) UpsertPointBatch(ctx context.Context, p PointEntry) error {
+	return s.upsertPointRaw(ctx, p)
+}
+
+// upsertPointRaw executes the raw SQL upsert without any FTS rebuild.
+func (s *SQLiteStore) upsertPointRaw(ctx context.Context, p PointEntry) error {
 	if err := s.q.UpsertPoint(ctx, generated.UpsertPointParams{
 		ID:               p.ID,
 		Name:             p.Name,
@@ -156,10 +177,6 @@ func (s *SQLiteStore) UpsertPoint(ctx context.Context, p PointEntry) error {
 		Tags:             p.Tags,
 	}); err != nil {
 		return fmt.Errorf("UpsertPoint %q: upsert: %w", p.ID, err)
-	}
-	// Rebuild FTS5 external-content table to sync with points (Pitfall 5).
-	if err := s.q.RebuildFTS(ctx); err != nil {
-		return fmt.Errorf("UpsertPoint %q: RebuildFTS: %w", p.ID, err)
 	}
 	return nil
 }

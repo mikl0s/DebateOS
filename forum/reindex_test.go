@@ -36,6 +36,9 @@ func (e *errStore) ListPoints(_ context.Context, _, _ int) ([]store.PointEntry, 
 func (e *errStore) UpsertPoint(_ context.Context, _ store.PointEntry) error {
 	return e.upsertErr
 }
+func (e *errStore) UpsertPointBatch(_ context.Context, _ store.PointEntry) error {
+	return e.upsertErr
+}
 func (e *errStore) AddSubscription(_ context.Context, _, _ string) error   { return nil }
 func (e *errStore) RemoveSubscription(_ context.Context, _, _ string) error { return nil }
 func (e *errStore) GetSubscriptions(_ context.Context, _ string) ([]store.PointEntry, error) {

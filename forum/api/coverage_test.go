@@ -43,7 +43,8 @@ func (f *failingStore) GetPoint(_ context.Context, _ string) (*store.PointEntry,
 func (f *failingStore) ListPoints(_ context.Context, _, _ int) ([]store.PointEntry, error) {
 	return nil, f.listPointsErr
 }
-func (f *failingStore) UpsertPoint(_ context.Context, _ store.PointEntry) error { return nil }
+func (f *failingStore) UpsertPoint(_ context.Context, _ store.PointEntry) error      { return nil }
+func (f *failingStore) UpsertPointBatch(_ context.Context, _ store.PointEntry) error { return nil }
 func (f *failingStore) AddSubscription(_ context.Context, _, _ string) error {
 	return f.addSubscriptionErr
 }

@@ -50,6 +50,10 @@ type Store interface {
 	GetPoint(ctx context.Context, id string) (*PointEntry, error)
 	ListPoints(ctx context.Context, limit, offset int) ([]PointEntry, error)
 	UpsertPoint(ctx context.Context, p PointEntry) error
+	// UpsertPointBatch inserts or updates a point WITHOUT rebuilding the FTS5 index.
+	// Use this in bulk-load loops (e.g. Reindex) to avoid N FTS rebuilds;
+	// call Reindex(ctx) once after the loop. (IN-01)
+	UpsertPointBatch(ctx context.Context, p PointEntry) error
 
 	// Subscriptions (FORM-02)
 	AddSubscription(ctx context.Context, userID, pointID string) error
