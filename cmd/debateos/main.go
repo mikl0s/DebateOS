@@ -13,15 +13,15 @@
 //
 //	compose   Print a resolution preview with explanations.
 //	validate  Parse, schema-validate, and clean-resolve the speech (CI-friendly).
+//	build     Resolve → translate → docker ISO build (--dry-run / --skip-iso supported).
 //	pane      Manage the private pane (set/get/list/backup/restore).
-//
-// Additional subcommands (build) will be added by plan 03-03.
 package main
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/mikl0s/debateos/cli/build"
 	"github.com/mikl0s/debateos/cli/compose"
 	"github.com/mikl0s/debateos/cli/pane"
 	"github.com/mikl0s/debateos/cli/runner"
@@ -33,6 +33,7 @@ const usage = `usage: debateos <command> [flags]
 Commands:
   compose   Print a resolution preview with full explanations.
   validate  Parse + schema-validate + clean-resolve gate (CI-friendly; exits non-zero on failure).
+  build     Resolve speech → emit arch profile → docker ISO build (--dry-run / --skip-iso).
   pane      Manage the private pane: set/get/list/backup/restore (see 'debateos pane --help').
 
 Run 'debateos <command> --help' for per-command flags.
@@ -49,6 +50,8 @@ func main() {
 		os.Exit(compose.Run(os.Args[2:], os.Stdout, os.Stderr))
 	case "validate":
 		os.Exit(validate.Run(os.Args[2:], os.Stdout, os.Stderr))
+	case "build":
+		os.Exit(build.Run(os.Args[2:], os.Stdout, os.Stderr, runner.ExecRunner{}))
 	case "pane":
 		os.Exit(pane.Run(os.Args[2:], os.Stdout, os.Stderr, runner.ExecRunner{}))
 	default:

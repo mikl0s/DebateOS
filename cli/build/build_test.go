@@ -29,8 +29,9 @@ func minimalSpeechDir(t *testing.T) string {
 	t.Helper()
 	dir := t.TempDir()
 
-	// speech.yaml — minimal valid speech
-	speech := `id: test-speech
+	// speech.yaml — minimal valid speech (schema: 1 required by validator)
+	speech := `schema: 1
+id: test-speech
 foundation: arch
 points: []
 opinions: []
