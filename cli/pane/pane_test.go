@@ -644,6 +644,29 @@ func TestSavePaneAtomicPermissions(t *testing.T) {
 	}
 }
 
+// TestSavePaneMkdirFailure verifies that cmdSet (which calls savePane) returns
+// a non-zero exit when the config dir cannot be created (file in its place).
+func TestSavePaneMkdirFailure(t *testing.T) {
+	// Create a regular file at the path that would be the config dir.
+	tmpFile, err := os.CreateTemp("", "debateos-test-*.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	tmpFile.Close()
+	defer os.Remove(tmpFile.Name())
+
+	// DEBATEOS_DIR points at a path where the parent is a file — MkdirAll fails.
+	badDir := filepath.Join(tmpFile.Name(), "subdir")
+	t.Setenv("DEBATEOS_DIR", badDir)
+	fr := &runner.FakeRunner{}
+
+	var out, errBuf bytes.Buffer
+	code := pane.Run([]string{"set", "k", "v"}, &out, &errBuf, fr)
+	if code == 0 {
+		t.Fatal("expected non-zero exit when config dir cannot be created, got 0")
+	}
+}
+
 // TestSavePaneNoCorruptionOnSet verifies that the content written by `pane set`
 // is exactly the expected YAML (regression guard: the old O_TRUNC path could
 // leave a truncated file on partial write failure; the new temp+rename path

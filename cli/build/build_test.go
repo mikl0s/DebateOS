@@ -727,6 +727,46 @@ func TestBuildPrivatePaneMerge(t *testing.T) {
 	}
 }
 
+// TestBuildPrivatePaneMergeCorruptYAML verifies that a corrupt pane.yaml in
+// the config dir causes a warning on stderr but does NOT cause a build failure
+// (degraded but not broken — private pane is simply skipped).
+func TestBuildPrivatePaneMergeCorruptYAML(t *testing.T) {
+	speechDir := minimalSpeechDir(t)
+	outDir := t.TempDir()
+	configDir := t.TempDir()
+	t.Setenv("DEBATEOS_DIR", configDir)
+
+	// Write a corrupt pane.yaml.
+	if err := os.WriteFile(filepath.Join(configDir, "pane.yaml"), []byte("this: [bad: {"), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	fake := &runner.FakeRunner{}
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", outDir, "--profile", "vanilla-arch", "--skip-iso"},
+		&stdout, &stderr, fake,
+	)
+	if code != 0 {
+		t.Fatalf("build with corrupt pane.yaml: expected exit 0 (degraded), got %d\nstderr: %s", code, stderr.String())
+	}
+
+	// A warning must appear on stderr.
+	if !strings.Contains(stderr.String(), "warning") && !strings.Contains(stderr.String(), "pane") {
+		t.Errorf("expected warning about corrupt pane.yaml on stderr: %s", stderr.String())
+	}
+
+	// Tar should still be written (manifest-only, no pane assets).
+	tarPath := filepath.Join(outDir, "private-injection.tar")
+	if _, err := os.Stat(tarPath); err != nil {
+		t.Fatalf("private-injection.tar not found even after corrupt pane.yaml: %v", err)
+	}
+	entries := readTarEntries(t, tarPath)
+	if len(entries) != 1 {
+		t.Errorf("expected 1 entry (manifest-only) for corrupt pane.yaml, got %d: %v", len(entries), tarKeys(entries))
+	}
+}
+
 // TestBuildNoPaneMergeWhenNoPaneYaml verifies that build succeeds and writes
 // an injection tar with only the manifest when no pane.yaml is present in the
 // config dir (the no-private-pane path must still work cleanly).
@@ -828,6 +868,30 @@ func TestWriteInjectionTarToInvalidDir(t *testing.T) {
 	_, err = build.WriteInjectionTar(invalidDir, nil)
 	if err == nil {
 		t.Error("expected non-nil error when outDir cannot be created, got nil")
+	}
+}
+
+// TestBuildOutDirMkdirFail verifies that build returns non-zero when the
+// output directory cannot be created (e.g. file exists at that path).
+func TestBuildOutDirMkdirFail(t *testing.T) {
+	speechDir := minimalSpeechDir(t)
+	fake := &runner.FakeRunner{}
+
+	// Create a regular file where outDir should be — MkdirAll will fail.
+	tmpFile, err := os.CreateTemp("", "debateos-outdir-*.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	tmpFile.Close()
+	defer os.Remove(tmpFile.Name())
+
+	var stdout, stderr bytes.Buffer
+	code := build.Run(
+		[]string{"--dir", speechDir, "--out", tmpFile.Name(), "--profile", "vanilla-arch", "--skip-iso"},
+		&stdout, &stderr, fake,
+	)
+	if code == 0 {
+		t.Fatal("expected non-zero exit when outDir is a file, got 0")
 	}
 }
 
