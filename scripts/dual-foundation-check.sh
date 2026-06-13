@@ -159,6 +159,12 @@ echo ""
 echo "--- Step 3: Debian translator (same resolved.json) ---"
 mkdir -p "${DEBIAN_PROFILE_DIR}"
 
+# T-04-08: the Debian preseed emitter refuses to run without a password hash
+# (no default credential may be baked into an image). For this equivalence
+# check we supply a throwaway test hash unless the operator already set one.
+# Real builds MUST provide DEBATEOS_HASHED_PASSWORD themselves.
+export DEBATEOS_HASHED_PASSWORD="${DEBATEOS_HASHED_PASSWORD:-\$6\$rounds=656000\$debateoscheck\$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./}"
+
 DEBIAN_TRANSLATE_EXIT=0
 "${REPO_ROOT}/translators/debian/translate" \
     "${RESOLVED_JSON}" \

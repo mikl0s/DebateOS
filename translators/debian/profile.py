@@ -30,9 +30,9 @@ Security:
            embedded in shell command position (CR-01 safe pattern, mirrors arch T-02-09).
            File-asset mode values are validated against a strict allowlist before use.
 - T-04-07: sig_level Never/OptionalTrustAll → LOUD warning comment in archive file.
-- T-04-08: preseed.cfg hashed password uses a documented default hash.
-           SECURITY: Operators MUST change the default password before distribution.
-           Set DEBATEOS_HASHED_PASSWORD env var or replace the hash in preseed.cfg.
+- T-04-08: preseed.cfg has NO default password. The operator MUST set
+           DEBATEOS_HASHED_PASSWORD to a valid crypt hash ($6$...); the
+           emitter hard-fails otherwise, refusing to ship a known credential.
 
 ARCH-04 invariant: no per-variant code branches; differences are YAML data only.
 """
@@ -162,17 +162,15 @@ def _validate_mode(mode: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Default hashed password (T-04-08)
+# Hashed password requirement (T-04-08)
 # ---------------------------------------------------------------------------
-# This is the crypt hash of 'changeme123' (SHA-512).
-# SECURITY: This is a KNOWN DEFAULT — operators MUST replace it before distribution.
-# To generate a new hash: python3 -c "import crypt; print(crypt.crypt('newpass', crypt.mksalt(crypt.METHOD_SHA512)))"
-# Or set DEBATEOS_HASHED_PASSWORD environment variable before running lb build.
-_DEFAULT_HASHED_PASSWORD = (
-    "$6$rounds=656000$debateos.default$"
-    "KL7xNtJGv0GKH8yI5ZTJkv2fD.MBnkO3.e3xMqiRlN7o"
-    "I.yp6kxhBUwj7CfzxGNt7r0YJLF4wDOPkRbC8qQw0"
-)
+# SECURITY: There is intentionally NO default password. Baking a working
+# default credential into every generated image would ship installed systems
+# with a publicly-known login (violating invariant 7 / the D16 secrets model).
+# The operator MUST supply a crypt hash via DEBATEOS_HASHED_PASSWORD; the
+# emitter hard-fails otherwise. Generate one with:
+#   python3 -c "import crypt; print(crypt.crypt('newpass', crypt.mksalt(crypt.METHOD_SHA512)))"
+# A valid SHA-512 crypt hash starts with "$6$".
 
 
 # ---------------------------------------------------------------------------
@@ -252,8 +250,11 @@ def _write_preseed(out_dir: str, manifest=None) -> None:
     """Write config/includes.installer/preseed.cfg from the template.
 
     CR-02 fix: replaces all %%...%% sentinels with real values so d-i can
-    parse the preseed file. Uses documented defaults; operators must change
-    the password before distribution (T-04-08).
+    parse the preseed file.
+
+    T-04-08 (security review): the password hash has NO default. If
+    DEBATEOS_HASHED_PASSWORD is unset (or not a SHA-512 crypt hash) the
+    emitter raises — refusing to bake a known credential into the image.
 
     WR-01 fix: %%PKGSEL_PACKAGES%% is derived from manifest.target_packages
     (filtered to install_phase == "packaging") rather than hardcoded to ssh.
@@ -262,14 +263,20 @@ def _write_preseed(out_dir: str, manifest=None) -> None:
     content = tpl
 
     # CR-02: Replace user account sentinels with real values (not no-ops).
-    # Default username and full name for unattended builds.
+    # Username and full name default for unattended builds (non-secret).
     username = os.environ.get("DEBATEOS_USERNAME", "debian")
     user_fullname = os.environ.get("DEBATEOS_USER_FULLNAME", "DebateOS User")
-    # Default hashed password (sha-512 hash of 'changeme123').
-    # SECURITY NOTE (T-04-08): This is a KNOWN DEFAULT PASSWORD.
-    # Operators MUST replace it: set DEBATEOS_HASHED_PASSWORD to a crypt hash
-    # generated with: python3 -c "import crypt; print(crypt.crypt('newpass', crypt.mksalt(crypt.METHOD_SHA512)))"
-    hashed_password = os.environ.get("DEBATEOS_HASHED_PASSWORD", _DEFAULT_HASHED_PASSWORD)
+    # T-04-08: NO default password. The operator MUST provide a crypt hash;
+    # refusing to proceed prevents shipping a system with a known credential.
+    hashed_password = os.environ.get("DEBATEOS_HASHED_PASSWORD", "")
+    if not hashed_password.startswith("$"):
+        raise ValueError(
+            "DEBATEOS_HASHED_PASSWORD must be set to a valid crypt hash "
+            "(e.g. SHA-512, starting with '$6$') before emitting the Debian "
+            "preseed (T-04-08): refusing to bake a default/known password into "
+            "the installer image. Generate one with: "
+            "python3 -c \"import crypt; print(crypt.crypt('pw', crypt.mksalt(crypt.METHOD_SHA512)))\""
+        )
 
     content = content.replace("%%USERNAME%%", username)
     content = content.replace("%%USER_FULLNAME%%", user_fullname)

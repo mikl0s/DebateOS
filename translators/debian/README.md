@@ -64,6 +64,15 @@ translate <resolved.json> --opinions <dir> [--profile <name>] [--out <dir>]
 **This argv is FROZEN for Phase 3 CLI subprocess invocation (04-CONTEXT.md Integration Points).**
 Do not change argument names or ordering without updating the Phase 3 CLI contract.
 
+> **Required env var — `DEBATEOS_HASHED_PASSWORD` (T-04-08, security):** the
+> preseed emitter has **no default password** and will hard-fail if this is
+> unset or not a crypt hash (`$6$...`). This is deliberate: baking a known
+> default credential into every image would ship installed systems with a
+> public login. Generate one with
+> `python3 -c "import crypt; print(crypt.crypt('pw', crypt.mksalt(crypt.METHOD_SHA512)))"`.
+> `DEBATEOS_USERNAME` / `DEBATEOS_USER_FULLNAME` are optional (non-secret;
+> default `debian` / `DebateOS User`).
+
 | Argument | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `<resolved.json>` | yes | — | Path to the ResolvedSpeech JSON file |

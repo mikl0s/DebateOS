@@ -54,6 +54,44 @@ def _load_df_manifest() -> BuildManifest:
 
 
 # ---------------------------------------------------------------------------
+# Test: T-04-08 — no default password; hard-fail when unset (security review)
+# ---------------------------------------------------------------------------
+
+class TestPreseedPasswordRequired:
+
+    def test_emit_raises_without_password(self, monkeypatch):
+        """emit_profile_tree refuses to bake a default password (T-04-08)."""
+        monkeypatch.delenv("DEBATEOS_HASHED_PASSWORD", raising=False)
+        manifest = _load_df_manifest()
+        variant = load_variant_profile("debian")
+        with tempfile.TemporaryDirectory() as out_dir:
+            with pytest.raises(ValueError, match="DEBATEOS_HASHED_PASSWORD"):
+                emit_profile_tree(out_dir, manifest, variant)
+
+    def test_emit_raises_on_invalid_hash(self, monkeypatch):
+        """A non-crypt password value is rejected (must start with '$')."""
+        monkeypatch.setenv("DEBATEOS_HASHED_PASSWORD", "plaintextnope")
+        manifest = _load_df_manifest()
+        variant = load_variant_profile("debian")
+        with tempfile.TemporaryDirectory() as out_dir:
+            with pytest.raises(ValueError, match="DEBATEOS_HASHED_PASSWORD"):
+                emit_profile_tree(out_dir, manifest, variant)
+
+    def test_preseed_has_no_sentinels_and_real_hash(self):
+        """With a valid hash set (autouse fixture), no %% literals remain and
+        the password field is a crypt hash."""
+        manifest = _load_df_manifest()
+        variant = load_variant_profile("debian")
+        with tempfile.TemporaryDirectory() as out_dir:
+            emit_profile_tree(out_dir, manifest, variant)
+            preseed = open(
+                os.path.join(out_dir, "config", "includes.installer", "preseed.cfg")
+            ).read()
+            assert "%%" not in preseed, "unreplaced sentinel left in preseed.cfg"
+            assert "$6$" in preseed, "no SHA-512 crypt hash in preseed.cfg"
+
+
+# ---------------------------------------------------------------------------
 # Test: preseed.cfg
 # ---------------------------------------------------------------------------
 
