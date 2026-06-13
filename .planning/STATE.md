@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 03-01-PLAN.md — CLI foundation config/runner/compose/validate
-last_updated: "2026-06-13T00:00:00.000Z"
+last_updated: "2026-06-13T02:23:10.012Z"
 last_activity: 2026-06-13 -- Phase 3 Plan 01 complete (CLI foundation)
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 14
-  completed_plans: 14
+  total_plans: 18
+  completed_plans: 16
   percent: 50
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: 3 (CLI & Build Channels) — EXECUTING
-Plan: 1 of 4
+Plan: 2 of 4
 Status: Ready to execute
 Last activity: 2026-06-13 -- Phase 3 Plan 01 complete (CLI foundation)
 
@@ -61,6 +61,7 @@ Progress: [███░░░░░░░] 36%
 | Phase 02-arch-translator P04 | 25 min | 2 tasks | 170 files |
 | Phase 02-arch-translator P05 | 18h | - tasks | - files |
 | Phase 03-cli-build-channels P01 | 12 min | 2 tasks (4 commits) | 12 files |
+| Phase 03-cli-build-channels P02 | 35 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,9 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: releng-baseline-overlay: arch-build-iso.sh copies releng profile then overlays generator output inside Docker to provide syslinux/ and efiboot/ directories required by mkarchiso
 - [Phase ?]: capabilities.json updated to actual opinion tokens (163 tokens) extracted from examples/omarchy/opinions/*.yaml; old broad conceptual names removed
 - [Phase ?]: devtmpfs restriction on Proxmox VE documented as environment limitation; all tooling is correct; full ISO build requires standard Linux host
+- [Phase ?]: age X25519 identity local-only, no escrow (PRIV-01/D16): identity.age 0600 in config dir
+- [Phase ?]: pane backup routes git via Runner interface — FakeRunner in tests, zero network calls
+- [Phase ?]: only pane.yaml.age (ciphertext) ever staged — plaintext never in git (T-03-PLAINTEXT)
 
 ### Decisions from Plan 03-01
 
@@ -139,7 +143,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-13T00:00:00.000Z
+Last session: 2026-06-13T02:23:10.007Z
 Stopped at: Completed 03-01-PLAN.md — CLI foundation config/runner/compose/validate
 Resume file: None
 Next: Phase 3 Plan 02 (03-02-PLAN.md) — private pane + age X25519 backup/restore

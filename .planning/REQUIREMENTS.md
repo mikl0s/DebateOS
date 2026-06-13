@@ -47,7 +47,7 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 <!-- Sources: D7, D16, docs/03 -->
 
 - [ ] **CLI-01**: `debateos compose | validate | build | pane` work, wrapping the native resolver and invoking translators as subprocesses
-- [ ] **CLI-02**: CLI manages the user's speech including the private pane in `$HOME`, with optional backup to the user's own private Git repo
+- [x] **CLI-02**: CLI manages the user's speech including the private pane in `$HOME`, with optional backup to the user's own private Git repo
 
 ### Build Channels
 
@@ -62,7 +62,7 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 
 <!-- Sources: D16, invariant 7, docs/05 -->
 
-- [ ] **PRIV-01**: Secrets and the private pane never enter shared/public artifacts; public sharing includes only public panes; secrets inject at first boot on the target machine; key-management details finalized in Phase 3
+- [x] **PRIV-01**: Secrets and the private pane never enter shared/public artifacts; public sharing includes only public panes; secrets inject at first boot on the target machine; key-management details finalized in Phase 3
 
 ### Debian Translator
 
@@ -150,12 +150,12 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | ARCH-03 | Phase 2 | Complete (02-01) |
 | ARCH-04 | Phase 2 | Complete (02-03) |
 | CLI-01 | Phase 3 | Pending |
-| CLI-02 | Phase 3 | Pending |
+| CLI-02 | Phase 3 | Complete |
 | BLD-01 | Phase 3 | Pending |
 | BLD-02 | Phase 3 | Pending |
 | BLD-03 | Phase 3 | Pending |
 | BLD-04 | Phase 3 | Pending |
-| PRIV-01 | Phase 3 | Pending |
+| PRIV-01 | Phase 3 | Complete |
 | DEB-01 | Phase 4 | Pending |
 | DEB-02 | Phase 4 | Pending |
 | DEB-03 | Phase 4 | Pending |
