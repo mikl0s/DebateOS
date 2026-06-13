@@ -20,7 +20,7 @@ OldDocs/
 # --- Node / SvelteKit (web/) ---
 node_modules/
 .svelte-kit/
-build/
+/web/build/
 .vercel/
 *.log
 .env
