@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 4 finalized; Phase 5 (Registry, Forum & Debate UI) ready to begin
-stopped_at: Completed 04-05-PLAN.md — Phase 4 COMPLETE (dual-foundation proof gate 20/20, Debian build scripts, ownership model, DEB-01/DEB-02/DEB-03/COMM-01 all Complete)
-last_updated: "2026-06-13T15:23:28.000Z"
-last_activity: 2026-06-13 -- Phase 4 Plan 05 complete (DEB-02 dual-foundation gate 20/20 PASS; Phase 4 requirements DEB-01/DEB-02/DEB-03/COMM-01 all Complete)
+status: executing
+stopped_at: Completed 05-01-PLAN.md — REG-01 registry generator + go.mod single-owner (all Phase-5 deps pinned)
+last_updated: "2026-06-13T16:30:00.000Z"
+last_activity: 2026-06-13 -- Phase 5 Plan 1 complete (registry generator + go.mod)
 progress:
   total_phases: 6
   completed_phases: 5
-  total_plans: 23
-  completed_plans: 23
-  percent: 96
+  total_plans: 29
+  completed_plans: 24
+  percent: 83
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-12)
 
 **Core value:** Compose a speech from curators' points, resolve conflicts explainably, and build a bootable unattended installer — zero cost, no central service in the critical path.
-**Current focus:** Phase 4 — Debian Translator
+**Current focus:** Phase 5 — Registry, Forum & Debate UI
 
 ## Current Position
 
-Phase: 4 (Debian Translator) — COMPLETE
-Plan: 5 of 5 (ALL PLANS COMPLETE)
-Status: Phase 4 finalized; Phase 5 (Registry, Forum & Debate UI) ready to begin
-Last activity: 2026-06-13 -- Phase 4 Plan 05 complete (DEB-02 dual-foundation gate 20/20 PASS; Phase 4 requirements DEB-01/DEB-02/DEB-03/COMM-01 all Complete)
+Phase: 5 (Registry, Forum & Debate UI) — EXECUTING
+Plan: 2 of 6
+Status: Executing Phase 5
+Last activity: 2026-06-13 -- Phase 5 Plan 1 complete (registry generator + go.mod)
 
-Progress: [█████████░] 96%
+Progress: [█████████░] 83%
 
 ## Performance Metrics
 
@@ -69,6 +69,7 @@ Progress: [█████████░] 96%
 | Phase 04-debian-translator P03 | 35 min | 3 tasks | 20 files |
 | Phase 04-debian-translator P04 | 18 min | 2 tasks (3 commits) | 3 files |
 | Phase 04-debian-translator P05 | 35 min | 3 tasks (3 commits) | 8 files |
+| Phase 05-registry-forum-debate-ui P01 | 6 min | 2 tasks (4 commits) | 13 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,14 @@ All D1–D20 + D13a + 7 invariants are LOCKED (docs/09 via PROJECT.md `<decision
 - [Phase ?]: age X25519 identity local-only, no escrow (PRIV-01/D16): identity.age 0600 in config dir
 - [Phase ?]: pane backup routes git via Runner interface — FakeRunner in tests, zero network calls
 - [Phase ?]: only pane.yaml.age (ciphertext) ever staged — plaintext never in git (T-03-PLAINTEXT)
+
+### Decisions from Plan 05-01
+
+- [05-01]: golang.org/x/oauth2 pinned to v0.34.0 (v0.36.0 requires Go 1.25; v0.34.0 is last go-1.24-compatible release)
+- [05-01]: golang.org/x/sys pinned to v0.38.0 (v0.42.0 requires Go 1.25 via transitive chain); modernc.org/libc pinned to v1.67.6
+- [05-01]: deps_guard.go blank-import anchor in registry/ keeps chi/sqlite/oauth2 as direct requires so forum/ plans never modify go.mod (single-owner invariant)
+- [05-01]: ComputeCompat uses union of TranslatorCapabilities across all point members; result sorted by Foundation; Missing sorted lexically (Pattern 6)
+- [05-01]: Golden file auto-created on first run (os.IsNotExist → write + pass); byte-identical on subsequent runs
 
 ### Decisions from Plan 04-05
 
@@ -185,7 +194,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-13T15:35:00.000Z
-Stopped at: Completed 04-05-PLAN.md — Phase 4 COMPLETE (dual-foundation proof gate 20/20, Debian build scripts, ownership model, DEB-01/DEB-02/DEB-03/COMM-01 all Complete)
+Last session: 2026-06-13T16:30:00.000Z
+Stopped at: Completed 05-01-PLAN.md — REG-01 registry generator + go.mod single-owner (all Phase-5 deps pinned: chi v5.3.0, sqlite v1.46.1, oauth2 v0.34.0)
 Resume file: None
-Next: Phase 5 — Registry, Forum & Debate UI (static registry index + optional Forum + visual Debate UI on Pages + embedded in CLI)
+Next: Phase 5 Plan 02 — SvelteKit Debate UI scaffold (WASM integration, adapter-static, dual delivery)

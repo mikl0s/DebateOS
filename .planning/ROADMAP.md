@@ -179,7 +179,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 05-01-PLAN.md — Registry static index generator (parse/validate via resolver/parse, foundation-compat from capabilities.json, deterministic JSON + browse HTML) + go.mod single-owner of all phase Go deps (REG-01)
+- [x] 05-01-PLAN.md — Registry static index generator (parse/validate via resolver/parse, foundation-compat from capabilities.json, deterministic JSON + browse HTML) + go.mod single-owner of all phase Go deps (REG-01)
 - [ ] 05-02-PLAN.md — SvelteKit + adapter-static + Tailwind v4 scaffold, UI-SPEC @theme tokens, typed Go-WASM loader/wrapper, WASM build script, BASE_PATH dual-delivery seam, brand landing (UI-01, UI-02, BRND-01)
 
 **Wave 2** *(blocked on Wave 1 completion)*
