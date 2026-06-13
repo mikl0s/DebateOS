@@ -78,16 +78,17 @@ jobs:
           SKIP_ISO: ${{ inputs.skip-iso && '1' || '0' }}
           WORKSPACE: ${{ github.workspace }}
         run: |
-          SKIP_FLAG=""
+          # WR-02: use an array so future multi-word flag values don't word-split.
+          SKIP_ARGS=()
           if [ "${SKIP_ISO}" = "1" ]; then
-            SKIP_FLAG="--skip-iso"
+            SKIP_ARGS=("--skip-iso")
           fi
           cd /debateos
           /usr/local/bin/debateos build \
             --dir "${WORKSPACE}/${SPEECH_SUBDIR}" \
             --profile "${PROFILE}" \
             --out "${WORKSPACE}/out" \
-            ${SKIP_FLAG}
+            "${SKIP_ARGS[@]}"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

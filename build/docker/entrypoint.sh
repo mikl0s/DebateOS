@@ -39,21 +39,24 @@ PROFILE="${PROFILE:-vanilla-arch}"
 # Change to the debateos tooling root so relative translator paths resolve.
 cd /debateos
 
-# Build the --skip-iso flag if requested.
-SKIP_ISO_FLAG=""
+# Build the --skip-iso args array if requested.
+# WR-02: use a bash array so future multi-word flag values do not silently
+# word-split under set -euo pipefail. An unquoted scalar variable is a
+# style trap — any future addition of spaces produces extra empty tokens.
+SKIP_ARGS=()
 if [ "${SKIP_ISO:-0}" = "1" ]; then
-    SKIP_ISO_FLAG="--skip-iso"
+    SKIP_ARGS=("--skip-iso")
 fi
 
 echo "=== DebateOS Build ==="
 echo "  speech:  ${SPEECH_DIR}"
 echo "  out:     ${OUT_DIR}"
 echo "  profile: ${PROFILE}"
-[ -n "${SKIP_ISO_FLAG}" ] && echo "  mode:    profile-only (--skip-iso)"
+[ "${#SKIP_ARGS[@]}" -gt 0 ] && echo "  mode:    profile-only (--skip-iso)"
 echo ""
 
 exec /usr/local/bin/debateos build \
     --dir  "${SPEECH_DIR}" \
     --profile "${PROFILE}" \
     --out  "${OUT_DIR}" \
-    ${SKIP_ISO_FLAG}
+    "${SKIP_ARGS[@]}"
