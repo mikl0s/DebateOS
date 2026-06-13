@@ -116,7 +116,23 @@ Plans:
   3. Builds are deterministic — identical inputs produce identical ISOs, `SOURCE_DATE_EPOCH` keyed to the resolved-speech hash — verified by automated tests, not inspection
   4. The full path runs at zero hosting cost with no central service involved; secrets/private pane never appear in shared artifacts and inject at first boot, with the key-management design finalized and documented
 
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — CLI foundation: config-dir resolver + Runner interface + compose/validate subcommands + dispatch entrypoint (CLI-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-02-PLAN.md — Private pane + age X25519 backup/restore via Runner; 0600 enforcement; key-management finalized (CLI-02, PRIV-01)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-03-PLAN.md — build subcommand: resolve→epoch→translate→docker via Runner; --dry-run/--skip-iso; private-injection.tar (CLI-01, BLD-01, BLD-03, PRIV-01)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 03-04-PLAN.md — Multi-stage Docker image + reusable Actions workflow + thin caller + determinism/secret-free/coverage gates + docs + status (BLD-01..04, PRIV-01)
 
 ### Phase 4: Debian Translator
 
