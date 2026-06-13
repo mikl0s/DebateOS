@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# translators/debian/translate — argv-stable DebateOS Debian translator entrypoint
+#
+# FROZEN ARGV CONTRACT for Phase 3 CLI subprocess invocation (04-CONTEXT.md):
+#   translate <resolved.json> --opinions <path> --profile <name> --out <dir>
+#
+# Args:
+#   <resolved.json>    Positional: path to the ResolvedSpeech JSON (Phase 1 output)
+#   --opinions <path>  Opinion bodies source: JSON array file or YAML directory
+#   --profile <name>   Variant profile name (default: "debian")
+#   --out <dir>        Output directory for the live-build config/ tree (default: ./debian-profile)
+#
+# Exits 0 on success, non-zero on failure (capability gate, missing file, etc.)
+#
+# Source: mirrors translators/arch/translate — same contract, Debian defaults
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+
+if [[ $# -eq 0 || "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    echo "usage: translate <resolved.json> --opinions <path> [--profile <name>] [--out <dir>]" >&2
+    exit 1
+fi
+
+RESOLVED_JSON="${1:?usage: translate <resolved.json> --opinions <path> --profile <name> --out <dir>}"
+shift
+
+OPINIONS=""
+PROFILE="debian"
+OUT_DIR="./debian-profile"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --opinions)
+            OPINIONS="${2:?--opinions requires an argument}"
+            shift 2
+            ;;
+        --profile)
+            PROFILE="${2:?--profile requires an argument}"
+            shift 2
+            ;;
+        --out)
+            OUT_DIR="${2:?--out requires an argument}"
+            shift 2
+            ;;
+        *)
+            echo "unknown flag: $1" >&2
+            echo "usage: translate <resolved.json> --opinions <path> [--profile <name>] [--out <dir>]" >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [[ -z "$OPINIONS" ]]; then
+    echo "ERROR: --opinions <path> is required" >&2
+    echo "usage: translate <resolved.json> --opinions <path> [--profile <name>] [--out <dir>]" >&2
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Invoke the Python generator module
+# ---------------------------------------------------------------------------
+# PYTHONPATH ensures the module resolves correctly when called from any cwd.
+# The repo root is two levels above translators/debian/.
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+exec env PYTHONPATH="${REPO_ROOT}${PYTHONPATH:+:$PYTHONPATH}" \
+    python3 -m translators.debian.generator \
+    "$RESOLVED_JSON" "$OPINIONS" "$PROFILE" "$OUT_DIR"
