@@ -86,8 +86,11 @@ echo "  ISO: ${ISO}"
 echo "  Size: $(du -sh "${ISO}" | cut -f1)"
 echo ""
 
-TMPDIR="$(mktemp -d)"
-trap 'rm -rf "${TMPDIR}"' EXIT
+# WR-05: Use a non-colliding name — TMPDIR is a POSIX standard env var used by
+# mktemp and other tools; overwriting it would redirect their temp file creation
+# into our about-to-be-deleted directory.
+_VALIDATE_TMPDIR="$(mktemp -d)"
+trap 'rm -rf "${_VALIDATE_TMPDIR}"' EXIT
 
 # ---------------------------------------------------------------------------
 # Check 1: ISO9660 Primary Volume Descriptor (El Torito)
@@ -147,7 +150,7 @@ echo ""
 echo "--- Check 4-6: squashfs content (installer / .zlogin / first-run units) ---"
 
 # Extract just the airootfs.sfs from the ISO
-SFS_PATH="${TMPDIR}/airootfs.sfs"
+SFS_PATH="${_VALIDATE_TMPDIR}/airootfs.sfs"
 if xorriso -indev "${ISO}" -osirrox on -extract /arch/x86_64/airootfs.sfs "${SFS_PATH}" 2>/dev/null; then
     pass "airootfs.sfs extracted successfully"
 
