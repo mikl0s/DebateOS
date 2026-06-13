@@ -51,21 +51,43 @@ const (
 // Per 03-RESEARCH A3 and 03-CONTEXT BLD-01.
 const dockerImage = "ghcr.io/mikl0s/debateos:latest"
 
+// foundationConfig holds the translator-specific build parameters for one
+// foundation. The registry is the single source of truth for which translator
+// binary, profile directory name, and default profile correspond to each
+// foundation string (DEB-03 / T-04-10).
+type foundationConfig struct {
+	TranslateBin   string // e.g. "translators/arch/translate"
+	ProfileDir     string // subdirectory name under outDir, e.g. "arch-profile"
+	DefaultProfile string // default profile when --profile is empty, e.g. "vanilla-arch"
+}
+
+// foundationRegistry maps the speech Foundation field to build parameters.
+// All values are compile-time constants — no runtime derivation from speech data
+// (T-04-11: no injection surface).
+//
+// To add a new foundation: add a row here and add the translator under translators/.
+// Future: "ubuntu": {"translators/debian/translate", "debian-profile", "ubuntu"},
+var foundationRegistry = map[string]foundationConfig{
+	"arch":   {"translators/arch/translate", "arch-profile", "vanilla-arch"},
+	"debian": {"translators/debian/translate", "debian-profile", "debian"},
+}
+
 const buildUsage = `usage: debateos build [flags]
 
 Flags:
   --dir <path>      Speech directory (default: DEBATEOS_DIR or ~/.config/debateos).
-  --profile <name>  Translator profile name (default: vanilla-arch).
-  --out <path>      Output directory for resolved.json, arch-profile/, and ISO (default: ./out).
+  --profile <name>  Translator profile name (default: foundation-specific — arch→vanilla-arch,
+                    debian→debian). Explicit --profile overrides the foundation default.
+  --out <path>      Output directory for resolved.json, <foundation>-profile/, and ISO (default: ./out).
   --dry-run         Print the build plan (resolved.json path, epoch, argv) but make no Runner calls.
   --skip-iso        Run translate (profile emission) then stop before the docker ISO build.
-                    Use this on hosts that cannot run mkarchiso (devtmpfs restriction).
+                    Use this on hosts that cannot run mkarchiso or lb build (devtmpfs restriction).
 
 Output artifacts (when not --dry-run):
-  <out>/resolved.json          Canonical resolved speech (deterministic JSON).
-  <out>/arch-profile/          Arch translator profile tree (when translate runs).
-  <out>/private-injection.tar  Private pane secrets tar (local only, never in ISO).
-  <out>/*.iso                  Bootable ISO (requires capable host and no --skip-iso).
+  <out>/resolved.json                Canonical resolved speech (deterministic JSON).
+  <out>/<foundation>-profile/        Translator profile tree (when translate runs).
+  <out>/private-injection.tar        Private pane secrets tar (local only, never in ISO).
+  <out>/*.iso                        Bootable ISO (requires capable host and no --skip-iso).
 `
 
 // Run is the entry point for the "build" subcommand. It returns an exit code
@@ -78,7 +100,7 @@ func Run(args []string, stdout, stderr io.Writer, r runner.Runner) int {
 	fs.SetOutput(stderr)
 
 	dirFlag := fs.String("dir", "", "speech directory (overrides DEBATEOS_DIR)")
-	profileFlag := fs.String("profile", "vanilla-arch", "translator profile name")
+	profileFlag := fs.String("profile", "", "translator profile name (default: foundation-specific)")
 	outFlag := fs.String("out", "out", "output directory")
 	dryRunFlag := fs.Bool("dry-run", false, "print build plan, make no Runner calls")
 	skipISOFlag := fs.Bool("skip-iso", false, "stop after profile emission, skip docker ISO build")
@@ -113,6 +135,21 @@ func Run(args []string, stdout, stderr io.Writer, r runner.Runner) int {
 		return 1
 	}
 
+	// ── Step 1b: Foundation registry lookup (DEB-03 / T-04-10) ─────────────
+	// rs.Foundation comes from speech.yaml; the registry is a closed set of
+	// compile-time constants (T-04-11: no injection surface from speech data).
+	fc, ok := foundationRegistry[rs.Foundation]
+	if !ok {
+		fmt.Fprintf(stderr, "build: unknown foundation %q — no translator registered\n", rs.Foundation)
+		return 1
+	}
+
+	// Resolve effective profile: explicit --profile overrides the foundation default.
+	effectiveProfile := *profileFlag
+	if effectiveProfile == "" {
+		effectiveProfile = fc.DefaultProfile
+	}
+
 	// ── Step 2: Write canonical resolved.json ───────────────────────────────
 	canonicalBytes, err := resolve.CanonicalJSON(rs)
 	if err != nil {
@@ -138,16 +175,17 @@ func Run(args []string, stdout, stderr io.Writer, r runner.Runner) int {
 	epochEnv := fmt.Sprintf("SOURCE_DATE_EPOCH=%d", epoch)
 
 	// ── Build argv ──────────────────────────────────────────────────────────
-	profileDir := filepath.Join(outDir, "arch-profile")
+	// translateBin and profileDir come from the foundationRegistry (no hardcoding).
+	translateBin := fc.TranslateBin
+	profileDir := filepath.Join(outDir, fc.ProfileDir)
 	opinionsDir := filepath.Join(speechDir, "opinions")
 
-	// FROZEN argv contract (translators/arch/translate header, 02-CONTEXT.md):
+	// FROZEN argv contract (translator entrypoints, CONTEXT.md):
 	//   translate <resolved.json> --opinions <path> --profile <name> --out <dir>
-	translateBin := "translators/arch/translate"
 	translateArgs := []string{
 		resolvedJSONPath,
 		"--opinions", opinionsDir,
-		"--profile", *profileFlag,
+		"--profile", effectiveProfile,
 		"--out", profileDir,
 	}
 
