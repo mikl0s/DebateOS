@@ -24,9 +24,9 @@
 #   bash scripts/arch-northstar-check.sh [--skip-build]
 #
 # Options:
-#   --skip-build    Skip Steps 3 (build) and 4 (validate). Run only resolve +
-#                   translate + mechanical equivalence. Useful for fast CI passes.
-#                   The full path with build is the phase gate.
+#   --skip-build    Skip Step 4 only (Docker ISO build + structural validation).
+#                   Runs Steps 1-3 (resolve + translate + mechanical equivalence).
+#                   Useful for fast CI passes. The full path with build is the phase gate.
 #
 # Required tools:
 #   go      — for go test + go run ./cmd/resolve-json
@@ -94,7 +94,9 @@ echo ""
 echo "--- Step 1a: Go clean-resolution gate (TestExampleOmarchy) ---"
 go test ./examples/ -run TestExampleOmarchy -count=1 -v >"${WORK_DIR}/go-test-omarchy.log" 2>&1 || true
 if grep -Eq '^--- PASS: TestExampleOmarchy|^ok ' "${WORK_DIR}/go-test-omarchy.log"; then
-    pass "TestExampleOmarchy: clean resolution (Applied=99 Skipped=35 Hard-conflicts=0)"
+    # WR-06: Extract actual counts from the test log instead of hardcoding them.
+    COUNTS=$(grep -oE 'Applied=[0-9]+ Skipped=[0-9]+' "${WORK_DIR}/go-test-omarchy.log" | tail -1 || echo "counts unavailable")
+    pass "TestExampleOmarchy: clean resolution (${COUNTS} Hard-conflicts=0)"
 else
     fail "TestExampleOmarchy failed — see ${WORK_DIR}/go-test-omarchy.log"
     tail -20 "${WORK_DIR}/go-test-omarchy.log" >&2
