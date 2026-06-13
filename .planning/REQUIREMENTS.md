@@ -19,15 +19,15 @@ Requirement IDs below are the checkable v1.0 form of the ingest intel (`.plannin
 
 <!-- Sources: D17, REQ-human-readable-yaml, docs/02, docs/04 metadata floor -->
 
-- [ ] **SCHM-01**: Opinion/Point/Speech YAML schemas exist in `schemas/` (CC0), derived from Phase 0 evidence, covering the validated metadata floor: required|nice-to-have status, dependencies, conflicts, hardware conditions, ordering constraints, known patches, translator capability requirements — plus Phase 0 expansions (script payloads, theming/file assets, foundation-default modeling)
-- [ ] **SCHM-02**: Schemas and example files are human-readable: a person can understand any composition and every resolution from the YAML alone; no Arch/Debian specifics leak into schema or content (invariants 1, 3)
+- [x] **SCHM-01**: Opinion/Point/Speech YAML schemas exist in `schemas/` (CC0), derived from Phase 0 evidence, covering the validated metadata floor: required|nice-to-have status, dependencies, conflicts, hardware conditions, ordering constraints, known patches, translator capability requirements — plus Phase 0 expansions (script payloads, theming/file assets, foundation-default modeling)
+- [x] **SCHM-02**: Schemas and example files are human-readable: a person can understand any composition and every resolution from the YAML alone; no Arch/Debian specifics leak into schema or content (invariants 1, 3)
 
 ### Resolver
 
 <!-- Sources: D5, D6, D19, docs/03, docs/04 -->
 
-- [ ] **RSLV-01**: Resolver parses and validates speeches, pulls referenced points, builds the dependency/conflict graph, and applies the docs/04 hierarchy (required beats nice-to-have with visible drop + explanation; required-vs-required hard conflict unless patched; nice-vs-nice sensible default or ask), emitting a resolved speech with a human-readable explanation for every resolution
-- [ ] **RSLV-02**: Patch opinions are first-class: attached to conflict pairs in metadata, discovered and offered automatically by the resolver, able to override the hierarchy when one exists for the pair
+- [x] **RSLV-01**: Resolver parses and validates speeches, pulls referenced points, builds the dependency/conflict graph, and applies the docs/04 hierarchy (required beats nice-to-have with visible drop + explanation; required-vs-required hard conflict unless patched; nice-vs-nice sensible default or ask), emitting a resolved speech with a human-readable explanation for every resolution
+- [x] **RSLV-02**: Patch opinions are first-class: attached to conflict pairs in metadata, discovered and offered automatically by the resolver, able to override the hierarchy when one exists for the pair
 - [x] **RSLV-03**: Ordering constraints feed a topological sort producing the concrete install order; cycles are a hard composition-time error naming the offending opinions
 - [x] **RSLV-04**: Hardware-conditional opinions evaluate against declared hardware at composition time; mismatches surface during the debate with suggested swaps
 - [x] **RSLV-05**: Resolver compiles to native and WASM (`resolver/wasm` entrypoint) and produces identical results in both targets, verified by automated parity tests
@@ -137,10 +137,10 @@ Deferred post-v1.0. Tracked but not in the current roadmap (D2).
 | RSCH-01 | Phase 0 | Complete |
 | RSCH-02 | Phase 0 | Complete |
 | RSCH-03 | Phase 0 | Complete |
-| SCHM-01 | Phase 1 | Pending |
-| SCHM-02 | Phase 1 | Pending |
-| RSLV-01 | Phase 1 | Pending |
-| RSLV-02 | Phase 1 | Pending |
+| SCHM-01 | Phase 1 | Complete (01-01: schemas/*.schema.json 2020-12 + SR-001..022 README; resolver/parse strict+validate; 6 tests green) |
+| SCHM-02 | Phase 1 | Complete (01-01: TestSchemaOSAgnostic — no distro tokens in schemas; human-readable YAML) |
+| RSLV-01 | Phase 1 | Complete (01-04: resolve.Resolve docs/04 hierarchy + Explanation; 27 EC subtests green) |
+| RSLV-02 | Phase 1 | Complete (01-03: patch.FindPatch first-class patch discovery; EC-032) |
 | RSLV-03 | Phase 1 | Complete |
 | RSLV-04 | Phase 1 | Complete |
 | RSLV-05 | Phase 1 | Complete |
