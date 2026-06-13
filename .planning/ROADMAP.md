@@ -175,7 +175,23 @@ Plans:
   4. With the Forum offline, the entire compose → resolve → build path still works (invariant 4); total Forum DB loss is recoverable by re-indexing GitHub; deployment notes cover the D15 hosting target
   5. The debate-themed brand voice is applied consistently across the UI and docs without obscuring meaning
 
-**Plans**: TBD
+**Plans**: 6 plans
+Plans:
+**Wave 1**
+
+- [ ] 05-01-PLAN.md — Registry static index generator (parse/validate via resolver/parse, foundation-compat from capabilities.json, deterministic JSON + browse HTML) + go.mod single-owner of all phase Go deps (REG-01)
+- [ ] 05-02-PLAN.md — SvelteKit + adapter-static + Tailwind v4 scaffold, UI-SPEC @theme tokens, typed Go-WASM loader/wrapper, WASM build script, BASE_PATH dual-delivery seam, brand landing (UI-01, UI-02, BRND-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 05-03-PLAN.md — Forum store: migrations + FTS5 + sqlc + chi read API; search, subscriptions, OAuth-gated ratings (in-memory SQLite TDD) (FORM-01, FORM-02, FORM-03)
+- [ ] 05-04-PLAN.md — Debate UI compose flow: WASM-driven conflict visualization (triple-encoded) + ResolutionPanel + export; Playwright WASM-render e2e (A1/A3/A6/A9) (UI-01, UI-02, BRND-01)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 05-05-PLAN.md — Forum GitHub OAuth flow (fake provider in tests) + conflict threads + re-index (rebuildable) + forumctl binary + boundary tests (FORM-03, FORM-04, FORM-05)
+- [ ] 05-06-PLAN.md — Dual-delivery go:embed serve (`debateos compose --serve`) + invariant-4 offline gate + Actions index workflow + Oracle A1/Pages deploy docs + coverage gate + REQUIREMENTS finalize (UI-02, REG-01, FORM-05, BRND-01)
+
 **UI hint**: yes
 
 ## Progress
@@ -190,7 +206,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | 2. Arch Translator | 5/5 | Complete   | 2026-06-13 |
 | 3. CLI & Build Channels | 4/4 | Complete   | 2026-06-13 |
 | 4. Debian Translator | 5/5 | Complete   | 2026-06-13 |
-| 5. Registry, Forum & Debate UI | 0/TBD | Not started | - |
+| 5. Registry, Forum & Debate UI | 0/6 | Not started | - |
 
 ---
 *Roadmap created: 2026-06-12 from ADR-locked phase structure (docs/07, docs/09 via .planning/intel/)*
