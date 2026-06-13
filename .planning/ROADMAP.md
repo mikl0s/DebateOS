@@ -185,7 +185,7 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [x] 05-03-PLAN.md — Forum store: migrations + FTS5 + sqlc + chi read API; search, subscriptions, OAuth-gated ratings (in-memory SQLite TDD) (FORM-01, FORM-02, FORM-03)
-- [ ] 05-04-PLAN.md — Debate UI compose flow: WASM-driven conflict visualization (triple-encoded) + ResolutionPanel + export; Playwright WASM-render e2e (A1/A3/A6/A9) (UI-01, UI-02, BRND-01)
+- [x] 05-04-PLAN.md — Debate UI compose flow: WASM-driven conflict visualization (triple-encoded) + ResolutionPanel + export; Playwright WASM-render e2e (A1/A3/A6/A9) (UI-01, UI-02, BRND-01)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -206,7 +206,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 (strictly seque
 | 2. Arch Translator | 5/5 | Complete   | 2026-06-13 |
 | 3. CLI & Build Channels | 4/4 | Complete   | 2026-06-13 |
 | 4. Debian Translator | 5/5 | Complete   | 2026-06-13 |
-| 5. Registry, Forum & Debate UI | 3/6 | In Progress|  |
+| 5. Registry, Forum & Debate UI | 4/6 | In Progress|  |
 
 ---
 *Roadmap created: 2026-06-12 from ADR-locked phase structure (docs/07, docs/09 via .planning/intel/)*
